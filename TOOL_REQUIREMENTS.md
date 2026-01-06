@@ -255,6 +255,25 @@ When user presses `a` to accept a suggestion:
 - Changes require explicit save action (not auto-save)
 - Updates original file in place
 
+**Edit/Preview Mode:**
+- Toggle between edit and preview modes with `Ctrl+P` (or `Cmd+P` on macOS)
+- **Edit Mode:**
+  - Raw markdown editor with syntax-aware editing
+  - Shows YAML frontmatter and markdown syntax as-is
+  - Placeholder highlighting active
+- **Preview Mode:**
+  - Rendered markdown view using `glow` or similar markdown renderer
+  - Shows formatted output: headings, lists, code blocks, emphasis
+  - YAML frontmatter hidden or displayed as styled metadata card
+  - Read-only view (press `e` or `Ctrl+P` to return to edit mode)
+- Mode indicator displayed in status bar ("EDIT" / "PREVIEW")
+
+**Preview Styling:**
+- Follows minimal aesthetic: clean typography, subtle styling
+- Syntax highlighting for code blocks
+- Proper spacing and hierarchy for headings
+- Matches overall TUI color scheme
+
 ### 8. History Browser
 
 **Purpose:** View and load previous compositions from history
@@ -452,18 +471,31 @@ On first launch:
 - `/` - Open library browser
 - `Space` - Open command palette
 - `Tab` / `Shift+Tab` - Navigate placeholders
+- `Ctrl+P` (or `Cmd+P` on macOS) - Toggle edit/preview mode (when editing prompts)
 - `Esc` - Close modals/cancel
 
 ### Visual Design
-- Color-coded folder labels in library browser
-- Placeholder highlighting in composition
+
+**Design Philosophy:**
+- **Modern and Minimal** - Clean interface with intentional use of whitespace
+- **Color Usage** - Color applied sparingly, only for functional emphasis:
+  - Category/folder labels in library browser
+  - Placeholder highlighting in composition editor
+  - Error states (red) and success states (green)
+  - Syntax highlighting in preview mode
+- **Typography** - Clear hierarchy through font weight and spacing, not decoration
+- **No Visual Clutter** - Avoid borders, boxes, and unnecessary dividers
+
+**Layout:**
 - Split-pane layout with toggleable AI panel
 - Modal overlays for browser and dialogs
+- Generous padding and line spacing for readability
 
 ### Status Bar
 Located at bottom of screen, displays:
 - **Character count** (e.g., "1,234 chars")
 - **Line count** (e.g., "45 lines")
+- **Edit/Preview mode indicator** (when editing prompts: "EDIT" or "PREVIEW")
 - **Vim mode indicator** (when vim mode enabled: "INSERT", "NORMAL", "VISUAL")
 - **Notifications/warnings** (temporary messages, dismissible)
 
@@ -472,6 +504,7 @@ Located at bottom of screen, displays:
 ### Technology Stack
 - **Language:** Go
 - **TUI Framework:** Bubble Tea
+- **Markdown Rendering:** Glamour (library used by `glow`) or similar for rich markdown rendering in TUI
 - **File Selection:** Go fuzzy finder library (e.g., `go-fuzzyfinder`) with optional system fzf integration
 - **AI Integration:** Claude API
 - **Database:** SQLite for history metadata and indexing
