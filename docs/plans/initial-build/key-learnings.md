@@ -2039,7 +2039,275 @@ func (m *Model) renderStatusBar() string {
 
 **Lesson**: Implement placeholder editing as a separate mode with its own key handling. Use a boolean flag to track edit mode state. Store edit value separately from placeholder until exit. Show edit value instead of placeholder syntax during editing. Display clear mode indicator in status bar. On exit, replace placeholder with filled value and re-parse content. This provides a clean, intuitive editing experience that feels natural to vim users while remaining accessible to everyone.
 
+## Confirmation Dialog Integration for Destructive Operations
+
+**Pattern**: Multi-step confirmation workflow with type assertion for Bubble Tea models
+
+**Implementation**:
+```go
+// ui/cleanup/model.go
+type Model struct {
+    showConfirmation  bool
+    confirmation      common.ConfirmationModel
+    // ... other fields
+}
+
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+    switch msg := msg.(type) {
+    case tea.KeyMsg:
+        switch msg.String() {
+        case "enter":
+            if m.showPreview && !m.showConfirmation {
+                // Show confirmation dialog before executing
+                m.showConfirmation = true
+                m.confirmation = common.DestructiveConfirmation(
+                    "Confirm Cleanup",
+                    fmt.Sprintf("Are you sure you want to delete %d files? This action cannot be undone.", m.previewResult.FileCount),
+                )
+                m.confirmation.SetOnConfirm(func() tea.Cmd {
+                    if m.onExecute != nil {
+                        return m.onExecute()
+                    }
+                    return nil
+                })
+                m.confirmation.SetOnCancel(func() tea.Cmd {
+                    m.showConfirmation = false
+                    return nil
+                })
+                m.confirmation.SetSize(m.width, m.height)
+                return m, nil
+            }
+        }
+    }
+    
+    // Update confirmation dialog if active
+    if m.showConfirmation {
+        var confirmCmd tea.Cmd
+        model, confirmCmd := m.confirmation.Update(msg)
+        m.confirmation = model.(common.ConfirmationModel)
+        
+        // Check if confirmation was handled
+        if m.confirmation.IsConfirmed() || m.confirmation.IsCancelled() {
+            m.showConfirmation = false
+        }
+        
+        return m, confirmCmd
+    }
+    
+    // ... rest of update logic
+}
+
+func (m Model) View() string {
+    // Show confirmation dialog if active
+    if m.showConfirmation {
+        return m.confirmation.View()
+    }
+    
+    // ... render normal UI
+}
+```
+
+**Benefits**:
+- Prevents accidental destructive operations
+- User must type explicit confirmation text ("DELETE")
+- Confirmation dialog overlays entire UI when active
+- Clean separation between confirmation and main UI
+- Type assertion handles Bubble Tea model interface
+- Callback-based execution decouples UI from business logic
+
+**Lesson**: For destructive operations, implement a multi-step confirmation workflow. Show confirmation dialog before executing. Use type assertion when updating Bubble Tea models that implement the tea.Model interface. Overlay confirmation dialog by returning its View() when active. This prevents accidental data loss and provides clear user feedback.
+
+## Type Assertion for Bubble Tea Model Updates
+
+**Issue**: Bubble Tea's Update() method returns tea.Model interface, not concrete type
+
+**Problem**: When updating a child model (like confirmation dialog), the return type is tea.Model interface, but we need to assign it back to the concrete type.
+
+**Solution**: Use type assertion to convert interface back to concrete type
+
+**Implementation**:
+```go
+// Incorrect approach (compilation error):
+m.confirmation, cmd = m.confirmation.Update(msg)
+// Error: cannot use m.confirmation.Update(msg) (value of interface type tea.Model)
+//        as common.ConfirmationModel value in assignment
+
+// Correct approach with type assertion:
+model, cmd := m.confirmation.Update(msg)
+m.confirmation = model.(common.ConfirmationModel)
+```
+
+**Lesson**: When updating Bubble Tea models that implement the tea.Model interface, use type assertion to convert the returned interface back to the concrete type. This is necessary because Update() returns tea.Model interface for flexibility, but you need the concrete type to access its methods and fields.
+
+## AI Applying Indicator and Read-Only Mode
+
+**Pattern**: State-based UI feedback with editing restrictions during async operations
+
+**Implementation**:
+```go
+// ui/workspace/model.go
+type Model struct {
+    content              string
+    cursor               cursor
+    // ... other fields
+    isReadOnly           bool // true when AI is applying suggestion (blocks editing)
+    aiApplying           bool // true when AI is actively applying a suggestion
+}
+
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+    switch msg := msg.(type) {
+    case tea.KeyMsg:
+        // Block all editing when in read-only mode (AI applying suggestion)
+        if m.isReadOnly {
+            // Only allow cursor navigation in read-only mode
+            switch msg.Type {
+            case tea.KeyUp, tea.KeyDown, tea.KeyLeft, tea.KeyRight:
+                // Allow cursor navigation
+            default:
+                // Block all other keys
+                return m, nil
+            }
+        }
+        // ... rest of key handling
+    }
+    return m, nil
+}
+
+func (m *Model) SetAIApplying(applying bool) {
+    m.aiApplying = applying
+    // When AI is applying, also set read-only mode
+    m.isReadOnly = applying
+}
+
+func (m Model) renderStatusBar() string {
+    // Build status message
+    var parts []string
+    
+    // AI applying indicator (highest priority)
+    if m.aiApplying {
+        parts = append(parts, "✨ AI is applying...")
+    }
+    
+    // ... other status indicators
+    
+    return statusStyle.Render(statusText)
+}
+```
+
+**Benefits**:
+- Clear visual feedback when AI is applying changes
+- Prevents user from editing while AI is modifying content
+- Allows cursor navigation for viewing during application
+- Simple state management with two boolean flags
+- Automatic read-only mode activation when AI applies
+- Status bar indicator shows highest priority message
+
+**Lesson**: When implementing async operations that modify content, use read-only mode to prevent concurrent edits. Provide clear visual feedback in the status bar. Allow cursor navigation so users can view changes while they're being applied. Use separate flags for state (aiApplying) and behavior (isReadOnly) to enable flexible control. This prevents race conditions and provides good user experience during async operations.
+
+## Diff Viewer Modal Implementation
+
+**Pattern**: Viewport-based modal with unified diff display and color-coded changes
+
+**Implementation**:
+```go
+// ui/diffviewer/model.go
+type Model struct {
+    viewport    viewport.Model
+    diff        *ai.UnifiedDiff
+    original    string
+    edits       []ai.Edit
+    width       int
+    height      int
+    onAccept    func() tea.Cmd
+    onReject    func() tea.Cmd
+    scrollOffset int
+}
+
+func (m Model) renderDiff() {
+    var builder strings.Builder
+    
+    // Write header
+    builder.WriteString(m.diff.Header)
+    builder.WriteString("\n\n")
+    
+    // Write hunks
+    for _, hunk := range m.diff.Hunks {
+        // Write hunk header
+        hunkHeader := fmt.Sprintf("@@ -%d,%d +%d,%d @@",
+            hunk.OldStart, hunk.OldLines, hunk.NewStart, hunk.NewLines)
+        builder.WriteString(theme.DiffHunkHeaderStyle().Render(hunkHeader))
+        builder.WriteString("\n")
+        
+        // Write lines
+        for _, line := range hunk.Lines {
+            var styledLine string
+            switch line.Type {
+            case ai.DiffLineContext:
+                styledLine = theme.DiffContextStyle().Render(" " + line.Content)
+            case ai.DiffLineAddition:
+                styledLine = theme.DiffAdditionStyle().Render("+" + line.Content)
+            case ai.DiffLineDeletion:
+                styledLine = theme.DiffDeletionStyle().Render("-" + line.Content)
+            }
+            builder.WriteString(styledLine)
+            builder.WriteString("\n")
+        }
+        
+        builder.WriteString("\n")
+    }
+    
+    m.viewport.SetContent(builder.String())
+    m.viewport.GotoTop()
+}
+```
+
+**Keyboard Navigation**:
+```go
+func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+    switch msg := msg.(type) {
+    case tea.KeyMsg:
+        switch msg.String() {
+        case "enter", "y":
+            // Accept diff
+            if m.onAccept != nil {
+                return m, m.onAccept()
+            }
+        case "esc", "n", "q":
+            // Reject diff
+            if m.onReject != nil {
+                return m, m.onReject()
+            }
+        case "up", "k":
+            m.viewport.LineUp(1)
+        case "down", "j":
+            m.viewport.LineDown(1)
+        case "pgup":
+            m.viewport.HalfViewUp()
+        case "pgdown":
+            m.viewport.HalfViewDown()
+        case "home", "g":
+            m.viewport.GotoTop()
+        case "end", "G":
+            m.viewport.GotoBottom()
+        }
+    }
+    return m, nil
+}
+```
+
+**Benefits**:
+- Viewport-based scrolling handles large diffs efficiently
+- Color-coded changes (green for additions, red for deletions, cyan for hunk headers)
+- Multiple accept/reject keybindings (Enter/y, Esc/n/q) for accessibility
+- Statistics display (+X/-Y) shows change magnitude
+- Help text in footer shows all available keybindings
+- Message-based callbacks decouple UI from business logic
+- Empty state handling when no diff is available
+- Responsive to window size changes
+
+**Lesson**: Use Bubble Tea's viewport component for scrollable content. Implement multiple keybindings for the same action (Enter/y for accept, Esc/n/q for reject) to accommodate different user preferences. Color-code diff lines by type (additions, deletions, context) for immediate visual recognition. Show statistics in header to provide context about change magnitude. Use message-based callbacks for accept/reject actions to decouple UI from business logic. This provides a clean, user-friendly diff review experience.
+
 ---
 
 **Last Updated**: 2026-01-06
-**Implementation Phase**: Milestone 2 - Advanced Editing - In Progress (6/13 tasks complete)
+**Implementation Phase**: Milestone 5 - AI Integration - In Progress (31/36 tasks complete)

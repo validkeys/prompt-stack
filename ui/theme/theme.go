@@ -291,3 +291,87 @@ func BaseListItem() lipgloss.Style {
 	return lipgloss.NewStyle().
 		Foreground(lipgloss.Color(ForegroundWhite))
 }
+
+// Validation Styles
+
+// ValidationErrorStyle returns the style for validation errors
+func ValidationErrorStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(AccentRed)).
+		Bold(true)
+}
+
+// ValidationWarningStyle returns the style for validation warnings
+func ValidationWarningStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(AccentYellow))
+}
+
+// ValidationIconStyle returns the style for validation icons
+func ValidationIconStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Bold(true)
+}
+
+// ValidationPromptStyle returns the style for prompt titles in validation list
+func ValidationPromptStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(ForegroundWhite))
+}
+
+// ValidationPromptErrorStyle returns the style for prompts with errors
+func ValidationPromptErrorStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(AccentRed)).
+		Bold(true)
+}
+
+// ValidationPromptWarningStyle returns the style for prompts with warnings
+func ValidationPromptWarningStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(AccentYellow))
+}
+
+// ValidationDetailStyle returns the style for validation detail messages
+func ValidationDetailStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(ForegroundSecondary)).
+		MarginLeft(2)
+}
+
+// ValidationSummaryStyle returns the style for validation summary
+func ValidationSummaryStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(ForegroundPrimary)).
+		Bold(true).
+		MarginBottom(1)
+}
+
+// Diff Styles
+
+// DiffHunkHeaderStyle returns the style for diff hunk headers
+func DiffHunkHeaderStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(AccentCyan)).
+		Bold(true)
+}
+
+// DiffContextStyle returns the style for diff context lines
+func DiffContextStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(ForegroundMuted))
+}
+
+// DiffAdditionStyle returns the style for diff addition lines
+func DiffAdditionStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(AccentGreen)).
+		Bold(true)
+}
+
+// DiffDeletionStyle returns the style for diff deletion lines
+func DiffDeletionStyle() lipgloss.Style {
+	return lipgloss.NewStyle().
+		Foreground(lipgloss.Color(AccentRed)).
+		Bold(true)
+}

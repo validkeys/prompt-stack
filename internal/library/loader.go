@@ -109,6 +109,19 @@ func Load(dataPath string, logger *zap.Logger) (*Library, error) {
 		}
 	}
 
+	// Run validation summary and log results
+	validationSummary := lib.GetValidationSummary()
+	if validationSummary.ErrorCount > 0 {
+		logger.Warn("Library validation found errors",
+			zap.Int("error_count", validationSummary.ErrorCount),
+			zap.Int("warning_count", validationSummary.WarningCount))
+	} else if validationSummary.WarningCount > 0 {
+		logger.Info("Library validation found warnings",
+			zap.Int("warning_count", validationSummary.WarningCount))
+	} else {
+		logger.Info("Library validation passed")
+	}
+
 	return lib, nil
 }
 
@@ -163,6 +176,22 @@ func loadPrompt(filePath, dataPath string, logger *zap.Logger) (*prompt.Prompt, 
 		UsageStats: prompt.UsageMetadata{
 			UseCount: 0,
 		},
+	}
+
+	// Validate prompt (silent during loading)
+	validationResult := Validate(p, logger)
+	p.ValidationStatus = validationResult
+
+	// Log validation errors/warnings for debugging
+	if !validationResult.IsValid {
+		logger.Warn("Prompt validation failed",
+			zap.String("path", filePath),
+			zap.Int("error_count", len(validationResult.Errors)),
+			zap.Int("warning_count", len(validationResult.Warnings)))
+	} else if len(validationResult.Warnings) > 0 {
+		logger.Debug("Prompt has validation warnings",
+			zap.String("path", filePath),
+			zap.Int("warning_count", len(validationResult.Warnings)))
 	}
 
 	return p, nil
@@ -267,6 +296,49 @@ func (l *Library) GetErrorSummary() string {
 	}
 }
 
+// ValidationSummary represents validation results summary
+type ValidationSummary struct {
+	ErrorCount   int
+	WarningCount int
+	TotalFiles   int
+}
+
+// GetValidationSummary returns a summary of validation results across all prompts
+func (l *Library) GetValidationSummary() ValidationSummary {
+	summary := ValidationSummary{
+		TotalFiles: len(l.Prompts),
+	}
+
+	for _, p := range l.Prompts {
+		if !p.ValidationStatus.IsValid {
+			summary.ErrorCount += len(p.ValidationStatus.Errors)
+		}
+		summary.WarningCount += len(p.ValidationStatus.Warnings)
+	}
+
+	return summary
+}
+
+// HasValidationErrors returns true if any prompts have validation errors
+func (l *Library) HasValidationErrors() bool {
+	for _, p := range l.Prompts {
+		if !p.ValidationStatus.IsValid {
+			return true
+		}
+	}
+	return false
+}
+
+// HasValidationWarnings returns true if any prompts have validation warnings
+func (l *Library) HasValidationWarnings() bool {
+	for _, p := range l.Prompts {
+		if len(p.ValidationStatus.Warnings) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
 // parseFrontmatter extracts YAML frontmatter from content
 func parseFrontmatter(content string) (map[string]string, string, error) {
 	// Check for frontmatter markers
@@ -322,6 +394,28 @@ func parseTags(tagsStr string) []string {
 		}
 	}
 	return result
+}
+
+// AddPrompt adds a new prompt to the library
+func (l *Library) AddPrompt(p *prompt.Prompt) {
+	l.Prompts[p.FilePath] = p
+
+	// Add to index
+	indexed := &prompt.IndexedPrompt{
+		PromptID:      p.ID,
+		Title:         p.Title,
+		Tags:          p.Tags,
+		Category:      p.Category,
+		WordFrequency: prompt.ExtractKeywords(p.Content),
+		LastUsed:      p.UsageStats.LastUsed,
+		UseCount:      p.UsageStats.UseCount,
+	}
+
+	l.Index.Prompts[p.FilePath] = indexed
+
+	l.logger.Info("Prompt added to library",
+		zap.String("title", p.Title),
+		zap.String("path", p.FilePath))
 }
 
 // generateID generates a unique ID for a prompt

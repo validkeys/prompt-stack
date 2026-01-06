@@ -68,21 +68,33 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyEnter:
 			// Insert selected prompt
 			if len(m.filtered) > 0 {
-				if msg.Alt {
-					// Alt+Enter for insert on new line
+				p := m.prompts[m.filtered[m.selected]]
+				if p == nil {
+					return m, nil
+				}
+
+				// Check validation status
+				if !p.ValidationStatus.IsValid {
+					// Block insertion of error-level prompts
 					return m, func() tea.Msg {
-						return InsertPromptMsg{
-							FilePath:   m.filtered[m.selected],
-							InsertMode: InsertOnNewLine,
+						return ValidationErrorMsg{
+							FilePath: m.filtered[m.selected],
+							Errors:   p.ValidationStatus.Errors,
 						}
 					}
-				} else {
-					// Enter for insert at cursor
-					return m, func() tea.Msg {
-						return InsertPromptMsg{
-							FilePath:   m.filtered[m.selected],
-							InsertMode: InsertAtCursor,
-						}
+				}
+
+				// Allow insertion of warning-level prompts with indicator
+				insertMode := InsertAtCursor
+				if msg.Alt {
+					insertMode = InsertOnNewLine
+				}
+
+				return m, func() tea.Msg {
+					return InsertPromptMsg{
+						FilePath:    m.filtered[m.selected],
+						InsertMode:  insertMode,
+						HasWarnings: len(p.ValidationStatus.Warnings) > 0,
 					}
 				}
 			}
@@ -214,9 +226,18 @@ func (m Model) renderPromptList(width, height int) string {
 			itemStyle = theme.ListItemStyle()
 		}
 
-		// Render with category label
+		// Render with category label and validation icon
 		categoryLabel := theme.ListCategoryStyle().Render(fmt.Sprintf("[%s]", p.Category))
-		titleText := fmt.Sprintf("%s %s", categoryLabel, p.Title)
+
+		// Add validation icon if prompt has issues
+		var validationIcon string
+		if !p.ValidationStatus.IsValid {
+			validationIcon = theme.ValidationErrorStyle().Render("✗ ")
+		} else if len(p.ValidationStatus.Warnings) > 0 {
+			validationIcon = theme.ValidationWarningStyle().Render("⚠ ")
+		}
+
+		titleText := fmt.Sprintf("%s%s%s", validationIcon, categoryLabel, p.Title)
 
 		items = append(items, itemStyle.Render(titleText))
 	}
@@ -359,8 +380,14 @@ func (m Model) IsVisible() bool {
 
 // Messages
 type InsertPromptMsg struct {
-	FilePath   string
-	InsertMode InsertMode
+	FilePath    string
+	InsertMode  InsertMode
+	HasWarnings bool // true if prompt has validation warnings
+}
+
+type ValidationErrorMsg struct {
+	FilePath string
+	Errors   []prompt.ValidationError
 }
 
 // Helper functions

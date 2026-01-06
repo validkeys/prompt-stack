@@ -9,6 +9,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/kyledavis/prompt-stack/internal/ai"
 	"github.com/kyledavis/prompt-stack/internal/editor"
 	"github.com/kyledavis/prompt-stack/ui/theme"
 )
@@ -28,9 +29,13 @@ type Model struct {
 	width                int
 	height               int
 	placeholders         []editor.Placeholder
-	activePlaceholder    int    // -1 if none active
-	placeholderEditMode  bool   // true when editing a placeholder
-	placeholderEditValue string // current value being edited
+	activePlaceholder    int                   // -1 if none active
+	placeholderEditMode  bool                  // true when editing a placeholder
+	placeholderEditValue string                // current value being edited
+	listEditState        *editor.ListEditState // state for list placeholder editing
+	undoStack            *editor.UndoStack     // undo/redo history
+	isReadOnly           bool                  // true when AI is applying suggestion (blocks editing)
+	aiApplying           bool                  // true when AI is actively applying a suggestion
 }
 
 type cursor struct {
@@ -58,6 +63,7 @@ func New(workingDir string) Model {
 		workingDir: workingDir,
 		isDirty:    false,
 		saveStatus: "",
+		undoStack:  editor.NewUndoStack(),
 	}
 }
 
@@ -72,14 +78,51 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		// Handle placeholder edit mode
+		// Block all editing when in read-only mode (AI applying suggestion)
+		if m.isReadOnly {
+			// Only allow cursor navigation in read-only mode
+			switch msg.Type {
+			case tea.KeyUp, tea.KeyDown, tea.KeyLeft, tea.KeyRight:
+				// Allow cursor navigation
+			default:
+				// Block all other keys
+				return m, nil
+			}
+		}
+
+		// Handle list placeholder edit mode
+		if m.listEditState != nil {
+			return m.handleListEdit(msg)
+		}
+
+		// Handle text placeholder edit mode
 		if m.placeholderEditMode {
 			return m.handlePlaceholderEdit(msg)
 		}
 
 		switch msg.Type {
 		case tea.KeyCtrlC:
+			// Check for unsaved changes before quitting
+			if m.isDirty {
+				// In a real implementation, we'd show a confirmation dialog
+				// For now, we'll just save before quitting
+				m.saveToFile()
+			}
 			return m, tea.Quit
+
+		case tea.KeyCtrlZ:
+			// Undo
+			if m.undoStack.CanUndo() {
+				m.undo()
+			}
+			return m, nil
+
+		case tea.KeyCtrlY:
+			// Redo (Ctrl+Y is more common than Ctrl+Shift+Z)
+			if m.undoStack.CanRedo() {
+				m.redo()
+			}
+			return m, nil
 
 		case tea.KeyUp:
 			m.moveCursorUp()
@@ -118,10 +161,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.navigateToPreviousPlaceholder()
 
 		case tea.KeyRunes:
-			// Check for 'i' or 'a' to enter placeholder edit mode
+			// Check for 'i' to enter placeholder edit mode
 			if m.activePlaceholder >= 0 && len(msg.Runes) == 1 {
 				r := msg.Runes[0]
-				if r == 'i' || r == 'a' {
+				if r == 'i' {
 					m.enterPlaceholderEditMode()
 					return m, nil
 				}
@@ -150,6 +193,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.saveStatus = "saved"
 		m.lastSave = time.Now()
 		m.isDirty = false
+		// Note: We don't clear undo history on auto-save to allow undoing after save
+		// This is intentional - users should be able to undo even after auto-save
 		// Clear saved status after 2 seconds
 		return m, tea.Tick(2*time.Second, func(t time.Time) tea.Msg {
 			return clearSaveStatusMsg{}
@@ -180,6 +225,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	if m.width == 0 || m.height == 0 {
 		return "Initializing..."
+	}
+
+	// If in list edit mode, render list editor
+	if m.listEditState != nil {
+		return m.renderListEditor()
 	}
 
 	// Calculate available space (leave room for status bar)
@@ -284,13 +334,19 @@ func (m *Model) backspace() {
 		return
 	}
 
+	// Get cursor position before deletion for undo
+	cursorPos := m.getCursorPosition()
+
 	lines := strings.Split(m.content, "\n")
+
+	var deletedContent string
 
 	if m.cursor.x == 0 {
 		// Delete newline, merge with previous line
 		if m.cursor.y > 0 {
 			prevLine := lines[m.cursor.y-1]
 			currentLine := lines[m.cursor.y]
+			deletedContent = "\n"
 			m.cursor.x = len(prevLine)
 			lines[m.cursor.y-1] = prevLine + currentLine
 			lines = append(lines[:m.cursor.y], lines[m.cursor.y+1:]...)
@@ -301,6 +357,7 @@ func (m *Model) backspace() {
 		if m.cursor.y < len(lines) {
 			line := lines[m.cursor.y]
 			if m.cursor.x <= len(line) {
+				deletedContent = string(line[m.cursor.x-1])
 				lines[m.cursor.y] = line[:m.cursor.x-1] + line[m.cursor.x:]
 				m.cursor.x--
 			}
@@ -309,12 +366,21 @@ func (m *Model) backspace() {
 
 	m.content = strings.Join(lines, "\n")
 
+	// Record undo action
+	if deletedContent != "" {
+		action := editor.CreateBackspaceAction(deletedContent, cursorPos, m.cursor.x, m.cursor.y)
+		m.undoStack.PushAction(action)
+	}
+
 	// Re-parse placeholders after content change
 	m.updatePlaceholders()
 }
 
 // insertNewline inserts a newline at the cursor position
 func (m *Model) insertNewline() {
+	// Get cursor position before insertion for undo
+	cursorPos := m.getCursorPosition()
+
 	lines := strings.Split(m.content, "\n")
 
 	if m.cursor.y < len(lines) {
@@ -332,6 +398,10 @@ func (m *Model) insertNewline() {
 
 	m.content = strings.Join(lines, "\n")
 
+	// Record undo action
+	action := editor.CreateNewlineAction(cursorPos, m.cursor.x, m.cursor.y)
+	m.undoStack.PushAction(action)
+
 	// Re-parse placeholders after content change
 	m.updatePlaceholders()
 }
@@ -343,6 +413,9 @@ func (m *Model) insertTab() {
 
 // insertRune inserts runes at the cursor position
 func (m *Model) insertRune(runes []rune) {
+	// Get cursor position before insertion for undo
+	cursorPos := m.getCursorPosition()
+
 	lines := strings.Split(m.content, "\n")
 
 	if m.cursor.y < len(lines) {
@@ -355,6 +428,10 @@ func (m *Model) insertRune(runes []rune) {
 	}
 
 	m.content = strings.Join(lines, "\n")
+
+	// Record undo action
+	action := editor.CreateInsertAction(string(runes), cursorPos, m.cursor.x, m.cursor.y)
+	m.undoStack.PushAction(action)
 
 	// Re-parse placeholders after content change
 	m.updatePlaceholders()
@@ -546,9 +623,19 @@ func (m *Model) renderStatusBar() string {
 	// Build status message
 	var parts []string
 
+	// AI applying indicator (highest priority)
+	if m.aiApplying {
+		parts = append(parts, "✨ AI is applying...")
+	}
+
 	// Placeholder edit mode indicator
 	if m.placeholderEditMode {
 		parts = append(parts, "[PLACEHOLDER EDIT MODE]")
+	}
+
+	// List edit mode indicator
+	if m.listEditState != nil {
+		parts = append(parts, "[LIST EDIT MODE]")
 	}
 
 	// Auto-save indicator
@@ -558,6 +645,14 @@ func (m *Model) renderStatusBar() string {
 		parts = append(parts, "Saved ✓")
 	} else if m.saveStatus == "error" {
 		parts = append(parts, "Save failed")
+	}
+
+	// Undo/Redo indicators
+	if m.undoStack.CanUndo() {
+		parts = append(parts, "Undo: Ctrl+Z")
+	}
+	if m.undoStack.CanRedo() {
+		parts = append(parts, "Redo: Ctrl+Y")
 	}
 
 	// Character and line counts
@@ -687,17 +782,23 @@ func (m *Model) enterPlaceholderEditMode() {
 
 	ph := &m.placeholders[m.activePlaceholder]
 
-	// Only text placeholders can be edited in this mode
-	if ph.Type != "text" {
+	// Handle list placeholders
+	if ph.Type == "list" {
+		// Enter list edit mode
+		state := editor.NewListEditState(m.activePlaceholder, *ph)
+		m.listEditState = &state
 		return
 	}
 
-	// Initialize edit value with current value or empty string
-	m.placeholderEditMode = true
-	m.placeholderEditValue = ph.CurrentValue
+	// Handle text placeholders
+	if ph.Type == "text" {
+		// Initialize edit value with current value or empty string
+		m.placeholderEditMode = true
+		m.placeholderEditValue = ph.CurrentValue
 
-	// Move cursor to placeholder position
-	m.setCursorToPosition(ph.StartPos)
+		// Move cursor to placeholder position
+		m.setCursorToPosition(ph.StartPos)
+	}
 }
 
 // handlePlaceholderEdit handles key events when in placeholder edit mode
@@ -755,4 +856,409 @@ func (m *Model) exitPlaceholderEditMode() {
 	// Exit edit mode
 	m.placeholderEditMode = false
 	m.placeholderEditValue = ""
+}
+
+// handleListEdit handles key events when in list placeholder edit mode
+func (m Model) handleListEdit(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	if m.listEditState == nil {
+		return m, nil
+	}
+
+	switch msg.Type {
+	case tea.KeyEsc:
+		// Exit list edit mode
+		if m.listEditState.EditMode {
+			// Cancel item edit
+			m.listEditState.CancelEdit()
+		} else {
+			// Exit list edit mode entirely
+			m.exitListEditMode()
+		}
+		return m, nil
+
+	case tea.KeyUp:
+		if m.listEditState.EditMode {
+			// In edit mode, up doesn't do anything
+			return m, nil
+		}
+		m.listEditState.MoveUp()
+		return m, nil
+
+	case tea.KeyDown:
+		if m.listEditState.EditMode {
+			// In edit mode, down doesn't do anything
+			return m, nil
+		}
+		m.listEditState.MoveDown()
+		return m, nil
+
+	case tea.KeyEnter:
+		if m.listEditState.EditMode {
+			// Save current item edit
+			m.listEditState.SaveEdit()
+		} else {
+			// Exit list edit mode and apply changes
+			m.exitListEditMode()
+		}
+		return m, nil
+
+	case tea.KeyRunes:
+		if m.listEditState.EditMode {
+			// Append characters to edit value
+			m.listEditState.EditValue += string(msg.Runes)
+		} else {
+			// Handle hotkeys for list operations
+			if len(msg.Runes) == 1 {
+				r := msg.Runes[0]
+				switch r {
+				case 'e':
+					// Edit selected item
+					m.listEditState.EditItem()
+				case 'd':
+					// Delete selected item
+					m.listEditState.DeleteItem()
+				case 'n', 'o':
+					// Add new item
+					m.listEditState.AddItem()
+				}
+			}
+		}
+		return m, nil
+
+	case tea.KeyBackspace:
+		if m.listEditState.EditMode {
+			// Delete character from edit value
+			if len(m.listEditState.EditValue) > 0 {
+				m.listEditState.EditValue = m.listEditState.EditValue[:len(m.listEditState.EditValue)-1]
+			}
+		}
+		return m, nil
+	}
+
+	return m, nil
+}
+
+// exitListEditMode exits list edit mode and applies the list values
+func (m *Model) exitListEditMode() {
+	if m.listEditState == nil || m.activePlaceholder < 0 || m.activePlaceholder >= len(m.placeholders) {
+		m.listEditState = nil
+		return
+	}
+
+	// Save any pending edit
+	if m.listEditState.EditMode {
+		m.listEditState.SaveEdit()
+	}
+
+	// Get cursor position before replacement for undo
+	cursorPos := m.getCursorPosition()
+
+	// Store old content for undo
+	oldContent := m.content
+
+	// Update placeholder with new list values
+	ph := &m.placeholders[m.activePlaceholder]
+	*ph = m.listEditState.GetPlaceholder(*ph)
+
+	// Replace placeholder in content with the filled list
+	m.content = editor.ReplacePlaceholder(m.content, *ph)
+
+	// Record undo action
+	action := editor.CreatePlaceholderFillAction(oldContent, cursorPos, m.cursor.x, m.cursor.y)
+	m.undoStack.PushAction(action)
+
+	// Re-parse placeholders after replacement
+	m.updatePlaceholders()
+
+	// Mark as dirty and schedule auto-save
+	m.markDirty()
+	m.scheduleAutoSave()
+
+	// Exit list edit mode
+	m.listEditState = nil
+}
+
+// renderListEditor renders the list placeholder editing UI
+func (m Model) renderListEditor() string {
+	if m.listEditState == nil {
+		return ""
+	}
+
+	// Calculate available space (leave room for status bar)
+	availableHeight := m.height - 1
+
+	// Build header
+	header := "List Editor\n"
+	header += strings.Repeat("─", m.width) + "\n\n"
+
+	// Build list items
+	var listItems []string
+	for i, item := range m.listEditState.Items {
+		// Determine if this item is selected
+		isSelected := i == m.listEditState.SelectedItem
+		isEditing := m.listEditState.EditMode && isSelected
+
+		// Build item line
+		var itemLine string
+		if isEditing {
+			// Show edit value with cursor
+			editValue := m.listEditState.EditValue
+			cursorStyle := theme.CursorStyle()
+			if len(editValue) > 0 {
+				itemLine = cursorStyle.Render(string(editValue[len(editValue)-1])) + editValue[:len(editValue)-1]
+			} else {
+				itemLine = cursorStyle.Render(" ")
+			}
+		} else {
+			// Show item value
+			itemLine = item
+		}
+
+		// Add selection indicator
+		if isSelected {
+			indicator := "→ "
+			if isEditing {
+				indicator = "✎ "
+			}
+			itemLine = indicator + itemLine
+		} else {
+			itemLine = "  " + itemLine
+		}
+
+		listItems = append(listItems, itemLine)
+	}
+
+	// If no items, show empty message
+	if len(listItems) == 0 {
+		listItems = append(listItems, "  (empty list)")
+	}
+
+	// Build help text
+	helpText := "\n\n"
+	helpText += "Commands:\n"
+	helpText += "  ↑/↓ - Navigate items\n"
+	helpText += "  i   - Edit selected item\n"
+	helpText += "  n/o - Add new item\n"
+	helpText += "  d   - Delete selected item\n"
+	helpText += "  Enter - Save & Exit\n"
+	helpText += "  Esc  - Cancel/Exit"
+
+	// Combine all parts
+	content := header + strings.Join(listItems, "\n") + helpText
+
+	// Style the editor
+	editorStyle := lipgloss.NewStyle().
+		Width(m.width).
+		Height(availableHeight).
+		Padding(0, 1)
+
+	editorView := editorStyle.Render(content)
+
+	// Render status bar
+	statusBarView := m.renderStatusBar()
+
+	// Combine
+	return lipgloss.JoinVertical(lipgloss.Left, editorView, statusBarView)
+}
+
+// undo performs an undo operation
+func (m *Model) undo() {
+	action, ok := m.undoStack.Undo()
+	if !ok {
+		return
+	}
+
+	// Apply the inverse of the action
+	switch action.Type {
+	case editor.ActionTypeInsert, editor.ActionTypePaste, editor.ActionTypePromptInsert, editor.ActionTypePlaceholderFill, editor.ActionTypeNewline:
+		// Delete the inserted content
+		m.deleteContent(action.Position, len(action.Content))
+
+	case editor.ActionTypeDelete, editor.ActionTypeBackspace:
+		// Re-insert the deleted content
+		m.insertContent(action.Position, action.Content)
+
+	case editor.ActionTypeBatchEdit:
+		// Restore original content for batch edit
+		m.content = action.Content
+	}
+
+	// Restore cursor position
+	m.cursor.x = action.CursorPos.X
+	m.cursor.y = action.CursorPos.Y
+
+	// Re-parse placeholders after undo
+	m.updatePlaceholders()
+
+	// Mark as dirty and schedule auto-save
+	m.markDirty()
+	m.scheduleAutoSave()
+}
+
+// redo performs a redo operation
+func (m *Model) redo() {
+	action, ok := m.undoStack.Redo()
+	if !ok {
+		return
+	}
+
+	// Apply the action
+	switch action.Type {
+	case editor.ActionTypeInsert, editor.ActionTypePaste, editor.ActionTypePromptInsert, editor.ActionTypePlaceholderFill, editor.ActionTypeNewline:
+		// Insert the content
+		m.insertContent(action.Position, action.Content)
+
+	case editor.ActionTypeDelete, editor.ActionTypeBackspace:
+		// Delete the content
+		m.deleteContent(action.Position, len(action.Content))
+
+	case editor.ActionTypeBatchEdit:
+		// Re-apply the batch edits
+		newContent, err := ai.NewDiffGenerator().ApplyEdits(action.Content, action.Edits)
+		if err != nil {
+			// If redo fails, restore original content
+			m.content = action.Content
+		} else {
+			m.content = newContent
+		}
+	}
+
+	// Restore cursor position
+	m.cursor.x = action.CursorPos.X
+	m.cursor.y = action.CursorPos.Y
+
+	// Re-parse placeholders after redo
+	m.updatePlaceholders()
+
+	// Mark as dirty and schedule auto-save
+	m.markDirty()
+	m.scheduleAutoSave()
+}
+
+// insertContent inserts content at a specific position
+func (m *Model) insertContent(position int, content string) {
+	// Convert position to line/column
+	lines := strings.Split(m.content, "\n")
+	currentPos := 0
+	targetLine := 0
+	targetCol := 0
+
+	for i, line := range lines {
+		lineEnd := currentPos + len(line)
+		if position <= lineEnd {
+			targetLine = i
+			targetCol = position - currentPos
+			break
+		}
+		currentPos = lineEnd + 1 // +1 for newline
+	}
+
+	// Insert content at target position
+	if targetLine < len(lines) {
+		line := lines[targetLine]
+		before := line[:targetCol]
+		after := line[targetCol:]
+		lines[targetLine] = before + content + after
+	}
+
+	m.content = strings.Join(lines, "\n")
+}
+
+// deleteContent deletes content at a specific position
+func (m *Model) deleteContent(position int, length int) {
+	// Convert position to line/column
+	lines := strings.Split(m.content, "\n")
+	currentPos := 0
+	targetLine := 0
+	targetCol := 0
+
+	for i, line := range lines {
+		lineEnd := currentPos + len(line)
+		if position <= lineEnd {
+			targetLine = i
+			targetCol = position - currentPos
+			break
+		}
+		currentPos = lineEnd + 1 // +1 for newline
+	}
+
+	// Delete content at target position
+	if targetLine < len(lines) {
+		line := lines[targetLine]
+		if targetCol+length <= len(line) {
+			before := line[:targetCol]
+			after := line[targetCol+length:]
+			lines[targetLine] = before + after
+		}
+	}
+
+	m.content = strings.Join(lines, "\n")
+}
+
+// SetReadOnly sets the read-only state of the workspace
+func (m *Model) SetReadOnly(readOnly bool) {
+	m.isReadOnly = readOnly
+}
+
+// IsReadOnly returns whether the workspace is in read-only mode
+func (m *Model) IsReadOnly() bool {
+	return m.isReadOnly
+}
+
+// SetAIApplying sets the AI applying state
+func (m *Model) SetAIApplying(applying bool) {
+	m.aiApplying = applying
+	// When AI is applying, also set read-only mode
+	m.isReadOnly = applying
+}
+
+// IsAIApplying returns whether AI is currently applying a suggestion
+func (m *Model) IsAIApplying() bool {
+	return m.aiApplying
+}
+
+// SetSize sets the size of the workspace
+func (m *Model) SetSize(width, height int) {
+	m.width = width
+	m.height = height
+}
+
+// GetContent returns the current content of the workspace
+func (m *Model) GetContent() string {
+	return m.content
+}
+
+// SetStatus sets a status message in the status bar
+func (m *Model) SetStatus(message string) {
+	m.statusBar.message = message
+}
+
+// ApplyEditsAsSingleAction applies multiple edits as a single undo action
+// This is used when applying AI suggestions via diff viewer
+func (m *Model) ApplyEditsAsSingleAction(edits []ai.Edit) error {
+	// Store original content for undo
+	originalContent := m.content
+	cursorPos := m.getCursorPosition()
+
+	// Apply all edits to content
+	newContent, err := ai.NewDiffGenerator().ApplyEdits(m.content, edits)
+	if err != nil {
+		return fmt.Errorf("failed to apply edits: %w", err)
+	}
+
+	// Update content
+	m.content = newContent
+
+	// Record as single undo action with edits for redo
+	action := editor.CreateBatchEditAction(originalContent, edits, cursorPos, m.cursor.x, m.cursor.y)
+	m.undoStack.PushAction(action)
+
+	// Re-parse placeholders after content change
+	m.updatePlaceholders()
+
+	// Mark as dirty and schedule auto-save
+	m.markDirty()
+	m.scheduleAutoSave()
+
+	return nil
 }

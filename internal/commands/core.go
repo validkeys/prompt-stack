@@ -107,8 +107,10 @@ func RegisterCoreCommands(registry *Registry) error {
 		Description: "Run validation checks on all prompts in the library",
 		Category:    "Prompts",
 		Handler: func() error {
-			// TODO: Implement library validation
-			return fmt.Errorf("library validation not yet implemented")
+			// This command will be handled by the TUI to show validation modal
+			// The handler returns nil to indicate success, and the TUI will
+			// handle showing the validation results
+			return nil
 		},
 	}); err != nil {
 		return err

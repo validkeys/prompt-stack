@@ -67,6 +67,10 @@ This index provides quick navigation to all issues, patterns, and learnings docu
 - **Placeholder Highlighting in TUI** - Line 1755: Line-by-line rendering with position-based highlighting
 - **Theme Integration for Placeholders** - Line 1806: Centralized style for active placeholder highlighting
 - **Text Placeholder Editing Mode** - Line 1830: Vim-style editing mode with state management and value replacement
+- **Confirmation Dialog Integration for Destructive Operations** - Line 2043: Multi-step confirmation workflow with type assertion for Bubble Tea models
+- **Type Assertion for Bubble Tea Model Updates** - Line 2120: Handling tea.Model interface return type with type assertions
+- **AI Applying Indicator and Read-Only Mode** - Line 2143: State-based UI feedback with editing restrictions during async operations
+- **Diff Viewer Modal Implementation** - Line 2207: Viewport-based modal with unified diff display and color-coded changes
 
 ## Future Considerations
 
@@ -74,6 +78,6 @@ This index provides quick navigation to all issues, patterns, and learnings docu
 
 ---
 
-**Total Sections**: 49
-**Document Length**: 1978 lines
+**Total Sections**: 52
+**Document Length**: 2195 lines
 **Last Updated**: 2026-01-06
