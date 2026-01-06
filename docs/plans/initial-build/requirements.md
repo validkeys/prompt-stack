@@ -73,6 +73,24 @@ Generate documentation for {{text:endpoint_name}} that handles {{list:http_metho
 - List placeholders: Support add/remove/edit operations for multiple items
 - Tab/Shift+Tab navigation between placeholders
 
+**Q&A: Placeholder Editing Interaction Pattern**
+
+**Text Placeholders:**
+- Placeholder starts in "normal mode" (vim-style)
+- Tab to highlight/select placeholder
+- Explicit action (e.g., 'i' or 'a') to enter edit mode
+- Type to replace content
+- Esc to exit edit mode
+
+**List Placeholders:**
+- Tab to highlight/select list placeholder
+- Explicit action to enter list edit mode
+- Up/Down arrows to navigate and highlight individual list items
+- Hotkey to edit highlighted item (opens inline editor)
+- Hotkey to delete highlighted item
+- Hotkey to add new list item
+- Esc to exit list edit mode
+
 **Loading Prompts with Invalid Placeholders:**
 - Validation runs when prompt is loaded from library
 - Invalid placeholders treated as literal text (displayed as `{{...}}`)
@@ -88,9 +106,28 @@ Generate documentation for {{text:endpoint_name}} that handles {{list:http_metho
   - Left: Composition editor
   - Right: AI suggestions panel (toggleable)
 
+**Q&A: Split-Pane Layout Behavior**
+- **AI panel width:** Starts at 40% of screen width, resizable by user (drag divider)
+- **Panel toggle:** When AI panel toggled off, composition editor takes full width immediately (no animation)
+- **Responsive behavior (small terminals):**
+  - On narrow terminals (< 100 columns): Automatically switch to single-pane mode
+  - AI panel becomes overlay modal that can be opened/closed
+  - Overlay maintains its state (suggestions, scroll position, etc.)
+  - User can toggle between composition and AI overlay
+- **Divider position:** Persist user's preferred divider position in memory (reset on app restart)
+
 **Live Saving:**
 - New composition creates timestamped file in `~/.promptstack/data/.history/` (format: `YYYY-MM-DD_HH-MM-SS.md`)
 - Auto-saves changes as user composes
+
+**Q&A: Auto-Save Strategy**
+- **Trigger:** Debounced (save 500ms-1s after user stops typing)
+- **Visibility:** Minimal status indicator in status bar
+  - "Saving..." briefly when save triggered
+  - "Saved" or checkmark icon when complete
+  - Auto-dismiss after 2-3 seconds
+- **Database updates:** Update both markdown file and SQLite on each auto-save
+- **Failure handling:** Show persistent error in status bar if auto-save fails (with retry)
 
 **Vim Bindings:**
 - Optional vim keybindings support
@@ -138,9 +175,14 @@ Generate documentation for {{text:endpoint_name}} that handles {{list:http_metho
 
 **Trigger:** `Space` key
 
+**Q&A: Space Key Behavior**
+- Space triggers command palette ONLY in Normal mode (vim mode) or when not actively editing text
+- In Insert mode or when typing, Space inserts a space character normally
+- This prevents conflict between typing spaces and opening command palette
+
 **Features:**
 - Fuzzy-filterable command list
-- Arrow key navigation
+- Arrow key navigation (or j/k in vim mode)
 
 **Commands:**
 - Toggle AI panel
@@ -161,15 +203,32 @@ Generate documentation for {{text:endpoint_name}} that handles {{list:http_metho
 **Trigger:** Via command palette
 
 **Behavior:**
-- Uses built-in Go fuzzy finder (primary method via library like `go-fuzzyfinder`)
-- Falls back to system `fzf` if available and configured in preferences
+- Uses built-in Go fuzzy finder (via library like `go-fuzzyfinder` or similar)
 - Searches from tool launch directory downward
 - Respects `.gitignore` (walks up to find git root for rules)
 - Supports multiple file selection
 
+**Q&A: Fuzzy Finder UI Approach**
+- Display as TUI overlay modal within the application (keeps user in same interface)
+- NO system fzf fallback - built-in Go fuzzy finder only
+- Library browser and file reference finder use similar minimal styles
+- Only show enough visual information to make it useful
+
 **Workflow:**
-- User selects file(s) via fuzzy finder, provides title for each
+- User selects file(s) via fuzzy finder
+- For each selected file, tool determines title:
+  1. Read file and check for YAML frontmatter with `title` property
+  2. If found, use that as default title
+  3. If not found, use filename as default title
+  4. User can edit title before inserting (optional)
 - Inserts formatted markdown links: `[title](path/to/file)`
+
+**Q&A: File Reference Title Determination**
+- Auto-detect title from YAML frontmatter `title` property if present
+- Fall back to filename if no frontmatter
+- Allow user to edit auto-detected title before insertion
+- For multiple files: batch editor showing all files with editable titles
+- Quick insert option: Accept all auto-detected titles without editing
 
 ### 5. AI Suggestions
 
@@ -204,6 +263,7 @@ When user presses `a` to accept a suggestion:
    - Send composition + selected suggestion to Claude
    - Request specific edits/patches (not full replacement)
    - Claude returns structured changes with location and new content
+   - **Q&A: Format for structured changes?** Use most standard and efficient approach (to be designed in implementation plan)
 
 2. **Composition State:**
    - Composition enters read-only mode
@@ -213,7 +273,7 @@ When user presses `a` to accept a suggestion:
 
 3. **On Success:**
    - Display diff view modal showing changes
-   - Side-by-side or inline diff highlighting additions/deletions
+   - Inline/unified diff format with additions/deletions
    - Options:
      - `Accept` - Apply changes, add to undo history as single action
      - `Reject` - Discard changes, return to normal editing
@@ -228,8 +288,15 @@ When user presses `a` to accept a suggestion:
    - Format: "❌ Failed to apply: [error message] [Retry]"
 
 5. **Diff View:**
-   - Modal showing side-by-side diff with additions (green) and deletions (red)
+   - Modal showing inline/unified diff format (traditional +/- style)
+   - Green highlighting for additions (+), red for deletions (-)
+   - Scrollable if diff is long
    - Accept with Enter, reject with Esc
+
+**Q&A: Diff View Format**
+- Use inline/unified diff format (not side-by-side)
+- Traditional +/- format familiar to developers
+- More compact and works well in narrow terminals
 
 **Note:** See "AI Context Window Management" in Technical Requirements for details on how library prompts are intelligently selected when sending context to Claude.
 
@@ -349,7 +416,6 @@ When user presses `a` to accept a suggestion:
 
 **Available Settings:**
 - **Vim Mode:** Toggle vim keybindings on/off (requires restart to take effect)
-- **Use System fzf:** Prefer system fzf over built-in fuzzy finder if available
 - **Claude API Key:** Edit API key (masked input)
 - **Claude Model:** Select model from dropdown
 
@@ -367,7 +433,23 @@ When user presses `a` to accept a suggestion:
 
 **Purpose:** Validate all prompt files in library for errors and issues
 
-**Trigger:** "Validate library" command in command palette
+**Trigger:**
+- Automatically on startup (silent unless errors found)
+- Manually via "Validate library" command in command palette
+
+**Q&A: Validation Trigger Strategy**
+- Run automatically on startup:
+  - Silent if no errors found
+  - Show non-intrusive notification if errors/warnings found (e.g., "⚠ 3 library validation warnings. Press 'i' for details")
+  - Don't block startup - validation runs in background if needed
+- Manual trigger via command palette always shows full results modal
+
+**Q&A: Handling Invalid Prompts**
+- Load prompts with validation errors into library (don't exclude them)
+- Show visual indicator in library browser (⚠️ icon next to invalid prompts)
+- Prevent insertion of invalid prompts (show error message on attempt)
+- Error message suggests running "Validate library" command to see details
+- Prompts with warnings only (not errors) can still be inserted, but show indicator
 
 **Validation Checks:**
 1. **Placeholder syntax:**
@@ -436,34 +518,60 @@ Total: 2 errors, 1 warning in 3 files
 - `claude_api_key` (required) - Claude API key
 - `model` (required) - Claude model selection (e.g., "claude-3-sonnet")
 - `vim_mode` (default: `false`) - Enable vim keybindings
-- `use_system_fzf` (default: `false`) - Prefer system fzf over built-in fuzzy finder
+- `version` (auto-managed) - Last run app version for tracking starter prompt updates
 
 ### Initialization
-On first launch:
+
+**First Launch (Fresh Install):**
 1. Check for global config
 2. If missing, run interactive setup
 3. Create `~/.promptstack/data/` directory
-4. Extract bundled starter prompts from binary to data directory
+4. Extract ALL bundled starter prompts from binary to data directory
 5. Create `.history/` subfolder
 6. Initialize SQLite database (`history.db`) with schema
+7. Set `version` in config to current app version
 
-**Subsequent Launches:**
-- Existing library files are never overwritten by bundled prompts
-- User modifications and additions persist across updates
-- Only extract bundled prompts if data directory is empty or missing
+**Subsequent Launches (Version-Aware Updates):**
+1. Check `version` in config against current app version
+2. If versions match: Continue normally
+3. If config version < app version (upgrade detected):
+   - Compare bundled starter prompts with existing library
+   - Extract only NEW prompts that don't exist in user's library (by filename)
+   - NEVER overwrite existing files
+   - Update `version` in config to current app version
+4. User modifications and deletions always persist across updates
+
+**Q&A: Starter Prompt Update Strategy**
+- First install: Extract all starter prompts automatically
+- App upgrades: Version-aware - only add NEW starter prompts
+- Deletion: If user deletes a starter prompt, it stays deleted
+- Modification: If user modifies a starter prompt, it's never overwritten
+- Version tracking: `version` field in config.yaml tracks last run app version
 
 ## User Interface
 
 ### Vim Support
 - Optional vim keybindings (configured via `vim_mode` in config file or Settings panel)
 - Requires restart to take effect after toggling
-- **Scope:** Applies to composition editor only (not modals or other inputs)
-- **Mode indicator:** Display current mode in status bar (INSERT/NORMAL/VISUAL)
+- **Scope:** Applies universally to ALL components when enabled
+- **Mode indicator:** Display current mode in status bar (INSERT/NORMAL/VISUAL) for text editing contexts
 - **Supported modes:**
   - Normal mode: Navigation and commands
   - Insert mode: Text editing
   - Visual mode: Text selection
 - Vim-style navigation with standard keybindings (h/j/k/l, w/b, etc.)
+
+**Q&A: Universal Vim Mode Support**
+When vim mode is enabled, vim keybindings apply to:
+- Composition workspace (full Normal/Insert/Visual mode support)
+- Library browser modal (j/k navigation, / for search, etc.)
+- Command palette (j/k navigation)
+- AI suggestions panel (j/k navigation, as already specified)
+- Prompt editing (full vim support matching composition workspace)
+- History browser (j/k navigation)
+- Settings panel (j/k navigation between fields)
+- Text input fields (vim editing where applicable)
+- All lists and modals (vim navigation)
 
 ### Hotkeys
 
@@ -493,8 +601,10 @@ On first launch:
 
 ### Status Bar
 Located at bottom of screen, displays:
+- **Auto-save indicator** ("Saving...", "Saved ✓", auto-dismissing)
 - **Character count** (e.g., "1,234 chars")
 - **Line count** (e.g., "45 lines")
+- **Token estimate** (when AI panel is open, e.g., "~2.5K tokens")
 - **Edit/Preview mode indicator** (when editing prompts: "EDIT" or "PREVIEW")
 - **Vim mode indicator** (when vim mode enabled: "INSERT", "NORMAL", "VISUAL")
 - **Notifications/warnings** (temporary messages, dismissible)
@@ -503,13 +613,53 @@ Located at bottom of screen, displays:
 
 ### Technology Stack
 - **Language:** Go
-- **TUI Framework:** Bubble Tea
-- **Markdown Rendering:** Glamour (library used by `glow`) or similar for rich markdown rendering in TUI
-- **File Selection:** Go fuzzy finder library (e.g., `go-fuzzyfinder`) with optional system fzf integration
-- **AI Integration:** Claude API
-- **Database:** SQLite for history metadata and indexing
-- **Embedding:** Go embed (`//go:embed`) for bundling starter prompts in binary
 - **Platform Support:** macOS only (primary development and testing platform)
+
+**Core TUI Stack:**
+- `github.com/charmbracelet/bubbletea` - TUI framework
+- `github.com/charmbracelet/lipgloss` - Styling (pairs with Bubble Tea)
+- `github.com/charmbracelet/bubbles` - Pre-built components (viewport, textinput, spinner, etc.)
+- `github.com/charmbracelet/glamour` - Markdown rendering
+
+**Data & Storage:**
+- `modernc.org/sqlite` - SQLite database (pure Go, no CGO)
+  - Alternative: `github.com/mattn/go-sqlite3` if max performance needed (requires CGO)
+- `gopkg.in/yaml.v3` - YAML frontmatter parsing
+
+**Fuzzy Finding & Search:**
+- `github.com/sahilm/fuzzy` - Lightweight fuzzy matching algorithm
+  - Use for: library browser, history browser, command palette
+- SQLite FTS5 - Full-text search for history
+
+**File & Git Operations:**
+- `github.com/sabhiram/go-gitignore` - Lightweight .gitignore parsing
+  - Alternative: `github.com/go-git/go-git/v5` if full git operations needed
+- `github.com/mitchellh/go-homedir` - Cross-platform home directory handling
+
+**Diff & Text Processing:**
+- `github.com/sergi/go-diff` - Diff generation for AI suggestion previews
+- `golang.org/x/text/encoding` - File encoding detection (stdlib extended)
+
+**API Integration:**
+- `github.com/anthropics/anthropic-sdk-go` - Official Claude API SDK
+
+**Additional Utilities:**
+- Standard library `embed` - Bundling starter prompts in binary
+- `go.uber.org/zap` - Structured logging for development and debugging
+
+**Logging Configuration:**
+- **Destination:** File-based logging to `~/.promptstack/debug.log`
+- **Log Levels:** Support DEBUG, INFO, WARN, ERROR levels
+- **Level Control:** Configurable via environment variable `PROMPTSTACK_LOG_LEVEL` (default: INFO)
+- **Format:** JSON structured logs for easy parsing
+- **Rotation:** Auto-rotate when log file exceeds 10MB, keep last 3 logs
+- **TUI Integration:** Hotkey (e.g., Ctrl+L) to view recent logs in modal overlay
+- **Development Mode:** ENV var `PROMPTSTACK_DEBUG=1` enables DEBUG level and verbose output
+
+**Custom Implementations:**
+- Vim keybindings: Custom using Bubble Tea's event handling (track mode state, keybinding mappings)
+- Keyword extraction: Simple algorithm with `strings.Fields()` + stopword filtering, optional TF-IDF scoring
+- File fuzzy finder: Custom TUI modal using `sahilm/fuzzy` library (no system fzf fallback)
 
 ### File Operations
 - Read/write markdown files
@@ -555,6 +705,22 @@ To prevent exceeding Claude's context limits, the tool maintains an index and in
 - Token estimation: ~4 characters ≈ 1 token
 - Dynamically adjust based on composition size
 
+**Q&A: Conservative AI Token Usage Strategy**
+- **Dynamically detect context limit** per model (200K for Claude 3 models)
+- **Be extremely conservative** with context window usage - this tool should NOT be a token hog
+- **Revised context allocation:**
+  - Composition content: Max 20-25% of context window
+  - Library prompts: Max 10-15% of context window (only most relevant)
+  - Reserve remaining ~60-65% for system prompts, AI response, and safety margin
+- **Warnings and limits:**
+  - Show warning in status bar when composition exceeds 15% of context budget
+  - Block AI suggestions if composition exceeds 25% of context budget
+  - Display token count estimate in status bar when AI panel is open
+- **Smart pruning:**
+  - Only send top 3-5 most relevant library prompts (not dozens)
+  - Truncate very long library prompts if needed
+  - Summarize repetitive content before sending
+
 **Index Storage & Updates:**
 - Built on library load (startup)
 - Incrementally updated when prompts are used/created/edited
@@ -596,6 +762,12 @@ CREATE INDEX idx_content_fts ON compositions(content);  -- For full-text search
 - On startup, verify SQLite matches filesystem
 - If mismatch detected, rebuild SQLite from markdown files
 - Support manual "Rebuild history index" command
+
+**Q&A: Database Rebuild Process**
+- Always prompt user to confirm before rebuilding ("History index out of sync. Rebuild now?")
+- Create backup of existing database before rebuilding (e.g., `history.db.backup-TIMESTAMP`)
+- Show progress during rebuild if it takes more than a few seconds
+- On auto-save SQLite failure (when markdown succeeds): Retry silently, mark index as dirty if retry fails, suggest rebuild in status bar
 
 ## Error Handling
 
