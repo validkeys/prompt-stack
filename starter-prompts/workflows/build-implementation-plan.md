@@ -82,11 +82,77 @@ Create `tracking.md` with:
 - Tasks should be specific and actionable
 - Order milestones logically (foundation → core → polish)
 
+**Phase 7: Key Learnings Documents**
+Create two documents to capture learnings throughout implementation:
+
+**key-learnings.md** - A living document that captures:
+- New information discovered during implementation
+- Patterns and conventions found in the codebase
+- Architectural decisions and their rationale
+- Common pitfalls and how to avoid them
+- Integration points and dependencies
+- Performance considerations discovered
+- Testing strategies that work well
+- Format:
+  ```markdown
+  # Key Learnings
+
+  ## Architecture & Patterns
+  - Learning 1 with details
+  - Learning 2 with details
+
+  ## Code Conventions
+  - Convention 1 with details
+  - Convention 2 with details
+
+  ## Integration Points
+  - Integration 1 with details
+  - Integration 2 with details
+
+  ## Common Pitfalls
+  - Pitfall 1 with details
+  - Pitfall 2 with details
+  ```
+
+**key-learnings-index.md** - A highly optimized index for quick reference:
+- Bullet list format: `[issue/topic] - [line numbers in key-learnings.md]`
+- Organized by category
+- Updated whenever key-learnings.md is modified
+- Format:
+  ```markdown
+  # Key Learnings Index
+
+  ## Architecture & Patterns
+  - [Pattern name] - Lines 5-12
+  - [Another pattern] - Lines 13-20
+
+  ## Code Conventions
+  - [Convention name] - Lines 25-30
+  - [Another convention] - Lines 31-35
+
+  ## Integration Points
+  - [Integration name] - Lines 40-45
+  - [Another integration] - Lines 46-50
+
+  ## Common Pitfalls
+  - [Pitfall name] - Lines 55-60
+  - [Another pitfall] - Lines 61-65
+  ```
+
+**Ongoing Maintenance:**
+After completing each task in the tracking document:
+1. Review what was learned during the task
+2. Update `key-learnings.md` with new findings, patterns, or insights
+3. Update `key-learnings-index.md` with the new entries and their line numbers
+4. Use these learnings to inform subsequent tasks
+
 **Final Deliverables:**
 - `requirements.md` - Fully clarified requirements with Q&A
 - `implementation-plan.md` - AI-optimized implementation plan
 - `code-samples/` - Folder with numbered code sample files
 - `tracking.md` - Milestone-based task tracking
+- `key-learnings.md` - Living document of learnings and patterns
+- `key-learnings-index.md` - Optimized index with line number references
 
 Wait for my initial requirements to begin Phase 1.
 ```
@@ -110,6 +176,8 @@ project-or-feature-folder/
 ├── requirements.md           # Clarified requirements with Q&A
 ├── implementation-plan.md    # AI-optimized plan document
 ├── tracking.md               # Milestone-based task list
+├── key-learnings.md          # Living document of learnings and patterns
+├── key-learnings-index.md    # Optimized index with line number references
 └── code-samples/
     ├── 001-component-example.sample.tsx
     ├── 002-api-endpoint.sample.ts
@@ -129,3 +197,5 @@ project-or-feature-folder/
 - **Copy tracking.md**: The tracking document can be copied into your project management tool or GitHub issues
 - **Version control**: Commit all planning documents - they're valuable context for future changes
 - **Update as you learn**: As implementation reveals new requirements, update the planning documents
+- **Maintain key learnings**: After each completed task, update key-learnings.md with new patterns, insights, and discoveries, then update key-learnings-index.md with line number references
+- **Use learnings proactively**: Before starting each new task, review key-learnings-index.md to quickly find relevant patterns and insights from previous work
