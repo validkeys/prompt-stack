@@ -372,7 +372,7 @@ ORDER BY date DESC;
 
 ### Version Management
 
-The database schema includes a `schema_version` table to track migrations:
+Track schema version in database:
 
 ```sql
 CREATE TABLE schema_version (
@@ -380,38 +380,494 @@ CREATE TABLE schema_version (
     applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     description TEXT
 );
+
+-- Insert initial version
+INSERT INTO schema_version (version, applied_at, description)
+VALUES (1, CURRENT_TIMESTAMP, 'Initial schema with compositions and tags');
 ```
 
 ### Migration Process
 
-1. **Check Current Version**
-   ```sql
-   SELECT MAX(version) FROM schema_version;
-   ```
+1. Check current schema version
+2. Apply migrations in order
+3. Update schema version
+4. Verify migration success
 
-2. **Apply Migrations Sequentially**
-   - Each migration is a SQL file named `migration_001.sql`, `migration_002.sql`, etc.
-   - Migrations are applied in order
-   - Each migration updates the `schema_version` table
+### Migration Files
 
-3. **Migration Example**
-   ```sql
-   -- migration_002_add_index.sql
-   BEGIN TRANSACTION;
-   
-   CREATE INDEX idx_compositions_token_count ON compositions(token_count);
-   
-   INSERT INTO schema_version (version, description)
-   VALUES (2, 'Add index on token_count');
-   
-   COMMIT;
-   ```
+Store migrations in `internal/storage/migrations/`:
 
-### Rollback Strategy
+```
+migrations/
+├── 001_initial_schema.sql
+├── 001_initial_schema_rollback.sql
+├── 002_add_indexes.sql
+├── 002_add_indexes_rollback.sql
+├── 003_add_fts5.sql
+├── 003_add_fts5_rollback.sql
+└── 004_add_composition_tags.sql
+```
 
-- Keep rollback scripts for each migration
-- Test rollback procedures before deployment
-- Document breaking changes clearly
+### Rollback Support
+
+Each migration should have rollback:
+
+```sql
+-- 001_initial_schema.sql
+CREATE TABLE compositions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uuid TEXT UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    working_directory TEXT,
+    prompt_count INTEGER DEFAULT 0,
+    token_count INTEGER DEFAULT 0
+);
+
+-- 001_initial_schema_rollback.sql
+DROP TABLE IF EXISTS compositions;
+```
+
+### Migration Implementation
+
+The migration system uses a Go migrator to apply changes:
+
+```go
+// internal/storage/migrations/migrator.go
+package migrations
+
+import (
+    "database/sql"
+    "fmt"
+)
+
+type Migrator struct {
+    db *sql.DB
+}
+
+func NewMigrator(db *sql.DB) *Migrator {
+    return &Migrator{db: db}
+}
+
+func (m *Migrator) Migrate() error {
+    // Create schema_version table if not exists
+    if err := m.createSchemaVersionTable(); err != nil {
+        return fmt.Errorf("failed to create schema_version table: %w", err)
+    }
+    
+    // Get current version
+    currentVersion, err := m.getCurrentVersion()
+    if err != nil {
+        return fmt.Errorf("failed to get current version: %w", err)
+    }
+    
+    // Get available migrations
+    migrations, err := m.getAvailableMigrations()
+    if err != nil {
+        return fmt.Errorf("failed to get available migrations: %w", err)
+    }
+    
+    // Apply pending migrations
+    for _, migration := range migrations {
+        if migration.Version > currentVersion {
+            if err := m.applyMigration(migration); err != nil {
+                return fmt.Errorf("failed to apply migration %d: %w", migration.Version, err)
+            }
+        }
+    }
+    
+    return nil
+}
+
+func (m *Migrator) createSchemaVersionTable() error {
+    _, err := m.db.Exec(`
+        CREATE TABLE IF NOT EXISTS schema_version (
+            version INTEGER PRIMARY KEY,
+            applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            description TEXT
+        )
+    `)
+    return err
+}
+
+func (m *Migrator) getCurrentVersion() (int, error) {
+    var version int
+    err := m.db.QueryRow("SELECT COALESCE(MAX(version), 0) FROM schema_version").Scan(&version)
+    return version, err
+}
+
+func (m *Migrator) applyMigration(migration Migration) error {
+    // Start transaction
+    tx, err := m.db.Begin()
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback()
+    
+    // Execute migration SQL
+    if _, err := tx.Exec(migration.SQL); err != nil {
+        return fmt.Errorf("failed to execute migration: %w", err)
+    }
+    
+    // Update schema version
+    if _, err := tx.Exec(
+        "INSERT INTO schema_version (version, applied_at, description) VALUES (?, CURRENT_TIMESTAMP, ?)",
+        migration.Version,
+        migration.Description,
+    ); err != nil {
+        return fmt.Errorf("failed to update schema version: %w", err)
+    }
+    
+    // Commit transaction
+    if err := tx.Commit(); err != nil {
+        return err
+    }
+    
+    return nil
+}
+
+type Migration struct {
+    Version     int
+    SQL         string
+    Name        string
+    Description string
+}
+```
+
+### Migration Files
+
+#### 001_initial_schema.sql
+
+```sql
+-- Create compositions table
+CREATE TABLE compositions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uuid TEXT UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    working_directory TEXT,
+    prompt_count INTEGER DEFAULT 0,
+    token_count INTEGER DEFAULT 0
+);
+
+-- Create indexes
+CREATE INDEX idx_compositions_created_at ON compositions(created_at DESC);
+CREATE INDEX idx_compositions_working_directory ON compositions(working_directory);
+CREATE INDEX idx_compositions_uuid ON compositions(uuid);
+
+-- Insert initial schema version
+INSERT INTO schema_version (version, applied_at, description)
+VALUES (1, CURRENT_TIMESTAMP, 'Initial schema with compositions table');
+```
+
+#### 001_initial_schema_rollback.sql
+
+```sql
+DROP INDEX IF EXISTS idx_compositions_uuid;
+DROP INDEX IF EXISTS idx_compositions_working_directory;
+DROP INDEX IF EXISTS idx_compositions_created_at;
+DROP TABLE IF EXISTS compositions;
+```
+
+#### 002_add_fts5.sql
+
+```sql
+-- Create FTS5 virtual table for full-text search
+CREATE VIRTUAL TABLE compositions_fts USING fts5(
+    content,
+    content=compositions,
+    content_rowid=rowid
+);
+
+-- Populate FTS5 table
+INSERT INTO compositions_fts(rowid, content)
+SELECT rowid, content FROM compositions;
+
+-- Create triggers to keep FTS5 in sync
+CREATE TRIGGER compositions_fts_insert AFTER INSERT ON compositions BEGIN
+    INSERT INTO compositions_fts(rowid, content)
+    VALUES (NEW.id, NEW.content);
+END;
+
+CREATE TRIGGER compositions_fts_delete AFTER DELETE ON compositions BEGIN
+    DELETE FROM compositions_fts WHERE rowid = OLD.id;
+END;
+
+CREATE TRIGGER compositions_fts_update AFTER UPDATE ON compositions BEGIN
+    UPDATE compositions_fts SET content = NEW.content WHERE rowid = NEW.id;
+END;
+
+-- Update schema version
+INSERT INTO schema_version (version, applied_at, description)
+VALUES (2, CURRENT_TIMESTAMP, 'Add FTS5 full-text search support');
+```
+
+#### 002_add_fts5_rollback.sql
+
+```sql
+DROP TRIGGER IF EXISTS compositions_fts_update;
+DROP TRIGGER IF EXISTS compositions_fts_delete;
+DROP TRIGGER IF EXISTS compositions_fts_insert;
+DROP TABLE IF EXISTS compositions_fts;
+```
+
+#### 003_add_composition_tags.sql
+
+```sql
+-- Create composition_tags table
+CREATE TABLE composition_tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    composition_id INTEGER NOT NULL,
+    tag TEXT NOT NULL,
+    FOREIGN KEY (composition_id) REFERENCES compositions(id) ON DELETE CASCADE
+);
+
+-- Create indexes
+CREATE INDEX idx_composition_tags_composition_id ON composition_tags(composition_id);
+CREATE INDEX idx_composition_tags_tag ON composition_tags(tag);
+
+-- Update schema version
+INSERT INTO schema_version (version, applied_at, description)
+VALUES (3, CURRENT_TIMESTAMP, 'Add composition tags support');
+```
+
+#### 003_add_composition_tags_rollback.sql
+
+```sql
+DROP INDEX IF EXISTS idx_composition_tags_tag;
+DROP INDEX IF EXISTS idx_composition_tags_composition_id;
+DROP TABLE IF EXISTS composition_tags;
+```
+
+### Cross-Database Migration
+
+#### SQLite to PostgreSQL
+
+For future scalability, support migration from SQLite to PostgreSQL:
+
+```go
+// internal/storage/migrations/sqlite_to_postgres.go
+package migrations
+
+import (
+    "database/sql"
+    "fmt"
+)
+
+type SQLiteToPostgresMigrator struct {
+    sqliteDB    *sql.DB
+    postgresDB  *sql.DB
+}
+
+func NewSQLiteToPostgresMigrator(sqliteDB, postgresDB *sql.DB) *SQLiteToPostgresMigrator {
+    return &SQLiteToPostgresMigrator{
+        sqliteDB:   sqliteDB,
+        postgresDB: postgresDB,
+    }
+}
+
+func (m *SQLiteToPostgresMigrator) Migrate() error {
+    // Create PostgreSQL schema
+    if err := m.createPostgreSQLSchema(); err != nil {
+        return fmt.Errorf("failed to create PostgreSQL schema: %w", err)
+    }
+    
+    // Migrate compositions
+    if err := m.migrateCompositions(); err != nil {
+        return fmt.Errorf("failed to migrate compositions: %w", err)
+    }
+    
+    // Migrate tags
+    if err := m.migrateTags(); err != nil {
+        return fmt.Errorf("failed to migrate tags: %w", err)
+    }
+    
+    return nil
+}
+
+func (m *SQLiteToPostgresMigrator) createPostgreSQLSchema() error {
+    // Create PostgreSQL schema
+    schema := `
+        CREATE TABLE IF NOT EXISTS compositions (
+            id SERIAL PRIMARY KEY,
+            uuid TEXT UNIQUE NOT NULL,
+            content TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            working_directory TEXT,
+            prompt_count INTEGER DEFAULT 0,
+            token_count INTEGER DEFAULT 0
+        );
+        
+        CREATE INDEX IF NOT EXISTS idx_compositions_created_at ON compositions(created_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_compositions_working_directory ON compositions(working_directory);
+        CREATE INDEX IF NOT EXISTS idx_compositions_uuid ON compositions(uuid);
+        
+        CREATE TABLE IF NOT EXISTS composition_tags (
+            id SERIAL PRIMARY KEY,
+            composition_id INTEGER NOT NULL,
+            tag TEXT NOT NULL,
+            FOREIGN KEY (composition_id) REFERENCES compositions(id) ON DELETE CASCADE
+        );
+        
+        CREATE INDEX IF NOT EXISTS idx_composition_tags_composition_id ON composition_tags(composition_id);
+        CREATE INDEX IF NOT EXISTS idx_composition_tags_tag ON composition_tags(tag);
+    `
+    
+    _, err := m.postgresDB.Exec(schema)
+    return err
+}
+
+func (m *SQLiteToPostgresMigrator) migrateCompositions() error {
+    rows, err := m.sqliteDB.Query(`
+        SELECT id, uuid, content, created_at, updated_at, working_directory,
+               prompt_count, token_count
+        FROM compositions
+    `)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+    
+    stmt, err := m.postgresDB.Prepare(`
+        INSERT INTO compositions (id, uuid, content, created_at, updated_at,
+                                working_directory, prompt_count, token_count)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `)
+    if err != nil {
+        return err
+    }
+    defer stmt.Close()
+    
+    for rows.Next() {
+        var comp struct {
+            ID               int
+            UUID             string
+            Content          string
+            CreatedAt        string
+            UpdatedAt        string
+            WorkingDirectory string
+            PromptCount      int
+            TokenCount       int
+        }
+        
+        if err := rows.Scan(
+            &comp.ID, &comp.UUID, &comp.Content, &comp.CreatedAt, &comp.UpdatedAt,
+            &comp.WorkingDirectory, &comp.PromptCount, &comp.TokenCount,
+        ); err != nil {
+            return err
+        }
+        
+        if _, err := stmt.Exec(
+            comp.ID, comp.UUID, comp.Content, comp.CreatedAt, comp.UpdatedAt,
+            comp.WorkingDirectory, comp.PromptCount, comp.TokenCount,
+        ); err != nil {
+            return err
+        }
+    }
+    
+    return nil
+}
+
+func (m *SQLiteToPostgresMigrator) migrateTags() error {
+    // Similar implementation for tags
+    return nil
+}
+```
+
+### Migration Testing
+
+#### Unit Tests
+
+```go
+func TestMigrator(t *testing.T) {
+    db := setupTestDB(t)
+    migrator := NewMigrator(db)
+    
+    // Test initial migration
+    if err := migrator.Migrate(); err != nil {
+        t.Fatalf("Migrate() error = %v", err)
+    }
+    
+    // Verify schema version
+    var version int
+    err := db.QueryRow("SELECT MAX(version) FROM schema_version").Scan(&version)
+    if err != nil {
+        t.Fatalf("Failed to get schema version: %v", err)
+    }
+    
+    if version != 1 {
+        t.Errorf("Expected schema version 1, got %d", version)
+    }
+    
+    // Verify tables exist
+    var tableName string
+    err = db.QueryRow(`
+        SELECT name FROM sqlite_master
+        WHERE type='table' AND name='compositions'
+    `).Scan(&tableName)
+    if err != nil {
+        t.Errorf("compositions table not created: %v", err)
+    }
+}
+```
+
+#### Integration Tests
+
+```go
+func TestSQLiteToPostgresMigrator(t *testing.T) {
+    sqliteDB := setupSQLiteTestDB(t)
+    postgresDB := setupPostgreSQLTestDB(t)
+    
+    // Insert test data into SQLite
+    insertTestData(t, sqliteDB)
+    
+    // Migrate to PostgreSQL
+    migrator := NewSQLiteToPostgresMigrator(sqliteDB, postgresDB)
+    if err := migrator.Migrate(); err != nil {
+        t.Fatalf("Migrate() error = %v", err)
+    }
+    
+    // Verify data in PostgreSQL
+    var count int
+    err := postgresDB.QueryRow("SELECT COUNT(*) FROM compositions").Scan(&count)
+    if err != nil {
+        t.Fatalf("Failed to count compositions: %v", err)
+    }
+    
+    if count != 10 {
+        t.Errorf("Expected 10 compositions, got %d", count)
+    }
+}
+```
+
+### Migration Best Practices
+
+#### Guidelines
+
+1. **Always use transactions**: Wrap migrations in transactions for atomicity
+2. **Test rollbacks**: Ensure rollback scripts work correctly
+3. **Version sequentially**: Use sequential version numbers
+4. **Document changes**: Add comments explaining what each migration does
+5. **Test thoroughly**: Test migrations on sample data before production
+6. **Backup first**: Always backup database before migration
+7. **Monitor performance**: Watch for slow migrations on large datasets
+8. **Handle errors gracefully**: Provide clear error messages for failures
+
+#### Checklist
+
+- [ ] Migration file follows naming convention (XXX_description.sql)
+- [ ] Rollback file exists for each migration
+- [ ] Migration is tested on sample data
+- [ ] Migration is tested on empty database
+- [ ] Migration is tested on populated database
+- [ ] Rollback is tested
+- [ ] Performance is acceptable on expected data size
+- [ ] Documentation is updated
+- [ ] Schema version is updated
+- [ ] Backup is created before migration
 
 ### Schema Changes
 

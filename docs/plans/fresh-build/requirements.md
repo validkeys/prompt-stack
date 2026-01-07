@@ -12,7 +12,23 @@
 ## Core Concepts
 
 ### Prompt Library
-- **Location**: Global library at `~/.promptstack/data`
+
+**Source Abstraction:**
+PromptStack uses a prompt source interface to support multiple prompt sources:
+- **Filesystem** (current): Local markdown files
+- **MCP Specialist** (future): Prompts from specialist servers
+- **Remote Repository** (future): Prompts from remote repositories
+
+**Source Selection:**
+Currently filesystem-only, extensible to multiple sources in future.
+
+**Caching:**
+In-memory cache for remote sources:
+- Cache hits: <1ms
+- Cache misses: Load from source
+- Cache invalidation: On prompt changes
+
+**Location**: Global library at `~/.promptstack/data`
 - **Initial Setup**: Bundled starter prompts embedded in binary at build time
 - **Structure**: Maintains existing folder organization:
   - `/workflows` - Multi-step processes
@@ -232,6 +248,32 @@ Generate documentation for {{text:endpoint_name}} that handles {{list:http_metho
 
 ### 5. AI Suggestions
 
+**AI Integration:**
+
+**Provider Abstraction:**
+PromptStack uses an AI provider interface to support multiple AI providers:
+- **Claude** (current): Direct API integration
+- **MCP** (future): Model Context Protocol for specialist servers
+- **OpenAI** (future): GPT models
+
+**Provider Selection:**
+Configured via `ai_provider` field in config.yaml:
+```yaml
+ai_provider: "claude"  # Options: "claude", "mcp", "openai"
+```
+
+**Context Selection:**
+Pluggable context selection algorithm:
+- Default selector uses scoring algorithm
+- Can be replaced with custom selectors
+- Respects token budget (20-25% of context window)
+
+**Middleware Support:**
+Cross-cutting concerns via middleware pattern:
+- Logging: Log all AI provider calls
+- Caching: Cache suggestions to reduce API calls
+- Metrics: Collect performance metrics
+
 **Provider:** Claude API only (initially)
 
 **Trigger:** Manual via command palette (not real-time)
@@ -342,6 +384,33 @@ When user presses `a` to accept a suggestion:
 - Matches overall TUI color scheme
 
 ### 8. History Browser
+
+**History Management:**
+
+**Storage Abstraction:**
+PromptStack uses a repository pattern to support multiple storage backends:
+- **SQLite** (current): Local file-based database
+- **PostgreSQL** (future): Team collaboration
+- **Neo4j** (future): Graph-based knowledge management
+
+**Storage Selection:**
+Configured via `storage` field in config.yaml:
+```yaml
+storage: "sqlite"  # Options: "sqlite", "postgres", "graph"
+```
+
+**Repository Interface:**
+Standard CRUD operations:
+- Save composition
+- Load composition by ID
+- Search compositions
+- Delete composition
+- List compositions with options
+
+**Dual Storage:**
+Markdown files as source of truth
+Database as index for fast searching
+Sync verification on startup
 
 **Purpose:** View and load previous compositions from history
 
@@ -505,6 +574,27 @@ Total: 2 errors, 1 warning in 3 files
 - Arrow keys to navigate between errors
 - Esc: Close modal
 
+## Domain Events
+
+**Event Types:**
+- CompositionSaved: Emitted when composition is saved
+- PromptUsed: Emitted when prompt is used in composition
+- SuggestionAccepted: Emitted when AI suggestion is accepted
+
+**Event Dispatcher:**
+Pub/sub pattern for decoupling:
+- Subscribe handlers to event types
+- Publish events to all handlers
+- Async event handling
+
+**Use Cases:**
+- Analytics: Track usage patterns
+- Audit logging: Log all actions
+- Notifications: Trigger external systems
+- Caching: Invalidate caches on changes
+
+---
+
 ## Configuration
 
 ### Global Config
@@ -608,6 +698,33 @@ Located at bottom of screen, displays:
 - **Edit/Preview mode indicator** (when editing prompts: "EDIT" or "PREVIEW")
 - **Vim mode indicator** (when vim mode enabled: "INSERT", "NORMAL", "VISUAL")
 - **Notifications/warnings** (temporary messages, dismissible)
+
+## Scalability Requirements
+
+### Extensibility
+- Support multiple AI providers through interface abstraction
+- Support multiple storage backends through repository pattern
+- Support multiple prompt sources through source abstraction
+- Support custom context selectors through interface
+- Support middleware for cross-cutting concerns
+- Support plugin system for third-party extensions (future)
+
+### Performance
+- Context selection <200ms for 1000 prompts
+- Database operations <50ms for typical queries
+- Library loading <2s for 1000 prompts
+- Cache hit time <1ms
+- Event handling <10ms per handler
+- Middleware overhead <1ms per call
+
+### Maintainability
+- Clear separation of concerns through interfaces
+- Testable components through dependency injection
+- Well-documented interfaces and implementations
+- Consistent patterns across domains
+- Easy to add new providers, sources, and backends
+
+---
 
 ## Technical Requirements
 
@@ -891,6 +1008,38 @@ starter-prompts/
 - Existing `~/.promptstack/` directory and user data preserved
 - Config file format version checked on startup (future-proofing)
 
+## Testing Requirements
+
+### Unit Testing Requirements
+
+#### Interface Testing
+- Test AIProvider interface with mock implementations
+- Test ContextSelector interface with mock implementations
+- Test CompositionRepository interface with mock implementations
+- Test PromptSource interface with mock implementations
+- Test PromptCache interface with mock implementations
+- Test Event interface with mock implementations
+
+#### Implementation Testing
+- Test ClaudeProvider with real API (integration)
+- Test DefaultSelector with sample library
+- Test SQLiteRepository with test database
+- Test FilesystemSource with test directory
+- Test MemoryCache with sample prompts
+- Test EventDispatcher with multiple handlers
+
+### Integration Testing Requirements
+
+#### Component Integration
+- Test provider factory with config system
+- Test repository factory with config system
+- Test context selection with library loader
+- Test event publishing with component integration
+- Test middleware chain with provider
+- Test cache with prompt source
+
+---
+
 ## Feature Priority
 
 ### MVP (Minimum Viable Product)
@@ -918,6 +1067,11 @@ Not in scope for initial versions:
 - Multiple AI provider support (beyond Claude)
 - Local per-repo libraries
 - Export functionality (PDF, HTML, etc.)
+- PostgreSQL storage backend
+- Neo4j graph storage backend
+- MCP specialist servers
+- Remote prompt repositories
+- Plugin system for third-party extensions
 
 ## Open Questions
 1. Should there be additional keyboard shortcuts for common commands beyond Space for palette?

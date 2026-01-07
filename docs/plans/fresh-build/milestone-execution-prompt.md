@@ -9,6 +9,7 @@
 - **TESTING**: go-testing-guide.md
 - **STRUCT**: project-structure.md
 - **TEMPLATE**: milestones/ENHANCED-TEST-CRITERIA-TEMPLATE.md
+- **LEARNINGS**: learnings/ (key learnings directory)
 
 ---
 
@@ -31,9 +32,10 @@ You are a focused Go developer implementing PromptStack using Test-Driven Develo
 2. **Consult [`MATRIX`](DOCUMENT-REFERENCE-MATRIX.md)** to list required documents
 3. **Read core planning documents** (EXEC, MILESTONES, STYLE, TESTING, STRUCT)
 4. **Read context-specific documents** (2-4 documents, milestone-dependent)
-5. **Extract and organize information** from all documents
-6. **Create implementation plan** using gathered information
-7. **Verify completeness** before proceeding
+5. **Read key learnings** (1-2 documents from [`LEARNINGS`](learnings/), domain-specific)
+6. **Extract and organize information** from all documents
+7. **Create implementation plan** using gathered information
+8. **Verify completeness** before proceeding
 
 ### 2.2 Batch Reading Strategy
 
@@ -92,6 +94,9 @@ Then read context-specific documents in a second batch.
 - [ ] Testing guide from [`MATRIX`](DOCUMENT-REFERENCE-MATRIX.md) is referenced
 - [ ] Acceptance criteria document is referenced (if applicable)
 - [ ] Enhanced test criteria template is used for acceptance criteria structure
+- [ ] Key learnings from [`LEARNINGS`](learnings/) are referenced
+- [ ] Key learnings are applied to implementation plan
+- [ ] Deviations from key learnings are documented with justification
 
 **⚠️ DO NOT PROCEED until all checks pass.**
 
@@ -162,11 +167,16 @@ Create TWO documents:
 **Required Sections**:
 - **Architecture Context**: Domain overview, package structure, dependencies
 - **Style Guide References**: Relevant patterns from [`STYLE`](go-style-guide.md) with examples, common pitfalls
-- **Testing Guide References**: 
+- **Testing Guide References**:
   - Specific testing guide for this milestone group from [`MATRIX`](DOCUMENT-REFERENCE-MATRIX.md)
   - Test patterns from [`TESTING`](go-testing-guide.md)
   - Concrete test examples for this milestone
   - Acceptance criteria verification (if detailed document exists)
+- **Key Learnings References**:
+  - Relevant learnings from [`LEARNINGS`](learnings/) directory
+  - Specific patterns to apply
+  - Common pitfalls to avoid
+  - Implementation examples from previous attempts
 - **Implementation Notes**: For each task:
   - Code examples (Go structure)
   - Test examples (Go structure)

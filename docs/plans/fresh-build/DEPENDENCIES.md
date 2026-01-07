@@ -189,6 +189,145 @@ These dependencies are only required for testing and development.
 
 ---
 
+## Future Dependencies
+
+These dependencies are planned for future phases to support scalability features.
+
+### Storage Backends
+
+| Package | Version | Purpose | License | Phase |
+|---------|---------|---------|---------|-------|
+| `github.com/lib/pq` | v1.10.9 | PostgreSQL driver for team collaboration features | MIT | Phase 4 |
+| `github.com/neo4j/neo4j-go-driver/v4` | v4.4.1 | Neo4j driver for graph-based knowledge management | Apache-2.0 | Phase 4 |
+
+**Rationale**:
+- PostgreSQL provides robust multi-user support for team collaboration scenarios
+- Neo4j enables graph-based knowledge management and relationship tracking
+
+**PostgreSQL Usage Example**:
+```go
+import (
+    "database/sql"
+    _ "github.com/lib/pq"
+)
+
+func NewPostgreSQLRepository(connStr string) (*PostgreSQLRepository, error) {
+    db, err := sql.Open("postgres", connStr)
+    if err != nil {
+        return nil, err
+    }
+    return &PostgreSQLRepository{db: db}, nil
+}
+```
+
+**Configuration**:
+```yaml
+storage: "postgres"
+postgres_url: "postgres://user:password@localhost:5432/promptstack?sslmode=disable"
+```
+
+**Neo4j Usage Example**:
+```go
+import (
+    "github.com/neo4j/neo4j-go-driver/v4/neo4j"
+)
+
+func NewGraphRepository(uri, username, password string) (*GraphRepository, error) {
+    driver, err := neo4j.NewDriver(uri, neo4j.BasicAuth(username, password, ""))
+    if err != nil {
+        return nil, err
+    }
+    return &GraphRepository{driver: driver}, nil
+}
+```
+
+**Configuration**:
+```yaml
+storage: "graph"
+neo4j_url: "bolt://localhost:7687"
+```
+
+### AI Providers
+
+| Package | Version | Purpose | License | Phase |
+|---------|---------|---------|---------|-------|
+| `github.com/modelcontextprotocol/sdk-go` | TBD | Model Context Protocol integration for specialist servers | TBD | Phase 5 |
+| `github.com/sashabaranov/go-openai` | v1.20.4 | OpenAI client for additional AI provider support | MIT | Phase 5 |
+
+**Rationale**:
+- MCP enables integration with specialist AI servers for domain-specific tasks
+- OpenAI provides alternative AI provider for flexibility
+
+**MCP Usage Example**:
+```go
+import (
+    "github.com/modelcontextprotocol/sdk-go"
+)
+
+func NewMCPProvider(host string) (*MCPProvider, error) {
+    client := mcp.NewClient(host)
+    return &MCPProvider{client: client}, nil
+}
+```
+
+**Configuration**:
+```yaml
+ai_provider: "mcp"
+mcp_host: "localhost:8080"
+specialists:
+  - "code-review"
+  - "documentation"
+```
+
+### Plugin System
+
+| Package | Version | Purpose | License | Phase |
+|---------|---------|---------|---------|-------|
+| `github.com/hashicorp/go-plugin` | v1.5.5 | Plugin system for third-party specialist servers | MPL-2.0 | Phase 3 |
+
+**Rationale**: Enables extensible architecture for third-party specialist servers and custom integrations.
+
+**Plugin Usage Example**:
+```go
+import (
+    "github.com/hashicorp/go-plugin"
+)
+
+func LoadPlugin(pluginPath string) (Specialist, error) {
+    client := plugin.NewClient(&plugin.ClientConfig{
+        HandshakeConfig: plugin.HandshakeConfig{
+            ProtocolVersion:  1,
+            MagicCookieKey:   "BASIC_PLUGIN",
+            MagicCookieValue: "hello",
+        },
+        Plugins: map[string]plugin.Plugin{
+            "specialist": &SpecialistPlugin{},
+        },
+        Cmd: exec.Command(pluginPath),
+    }
+    
+    rpcClient, err := client.Client()
+    if err != nil {
+        return nil, err
+    }
+    
+    raw, err := rpcClient.Dispense("specialist")
+    if err != nil {
+        return nil, err
+    }
+    
+    return raw.(Specialist), nil
+}
+```
+
+**Configuration**:
+```yaml
+enable_plugins: true
+plugin_dir: "~/.promptstack/plugins"
+```
+
+---
+
 ## Dependency Categories
 
 ### By Layer

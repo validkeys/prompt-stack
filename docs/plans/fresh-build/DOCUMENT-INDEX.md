@@ -10,6 +10,7 @@
 - [Planning Documents](#planning-documents)
 - [Implementation Guides](#implementation-guides)
 - [Technical Specifications](#technical-specifications)
+- [Key Learnings](#key-learnings)
 - [Supporting Documents](#supporting-documents)
 
 ### By Milestone Phase
@@ -22,6 +23,7 @@
 - [AI Integration (M27-M33)](#ai-integration-milestones-m27-m33)
 - [Vim Mode (M34-M35)](#vim-mode-milestones-m34-m35)
 - [Polish (M36-M38)](#polish-milestones-m36-m38)
+- [Scalability (M39-M41)](#scalability-milestones-m39-m41)
 
 ### By Domain
 - [Editor Domain](#editor-domain)
@@ -32,6 +34,8 @@
 - [Platform Domain](#platform-domain)
 - [Vim Domain](#vim-domain)
 - [Commands Domain](#commands-domain)
+- [Storage Domain](#storage-domain)
+- [Events Domain](#events-domain)
 
 ---
 
@@ -51,12 +55,12 @@
 **When to Use**: Always - before starting any milestone
 
 ### milestones.md
-**Purpose**: Complete list of all 38 milestones with goals, deliverables, and test criteria
+**Purpose**: Complete list of all 41 milestones with goals, deliverables, and test criteria
 **Key Sections**:
 - Milestone 1: Bootstrap & Config
 - Milestone 2: Basic TUI Shell
 - Milestone 3: File I/O Foundation
-- ... (all 38 milestones)
+- ... (all 41 milestones)
 
 **When to Use**: Always - to understand specific milestone requirements
 
@@ -430,6 +434,127 @@
 - Test cases with Go code examples
 
 **When to Use**: M38 (Error Handling & Log Viewer)
+
+## Key Learnings
+
+### learnings/README.md
+**Purpose**: Index and navigation guide for all key learning documents
+**Key Sections**:
+- Overview of key learnings organization
+- Links to all domain-specific learning documents
+- Quick reference by domain
+- How to use key learnings during milestone planning
+
+**When to Use**: Always - to find relevant key learnings for any milestone
+
+### learnings/go-fundamentals.md
+**Purpose**: Go-specific patterns and pitfalls from previous implementation
+**Key Sections**:
+- Go embed limitations
+- Zap logger structured fields
+- Regex matching in Go
+- SQLite driver selection
+- Go version requirements
+- Project structure organization
+- Error handling patterns
+- Frontmatter parsing strategy
+
+**When to Use**: M1-M6 (Foundation), M15 (SQLite Setup), all milestones requiring Go-specific patterns
+
+### learnings/editor-domain.md
+**Purpose**: Editor implementation patterns and learnings
+**Key Sections**:
+- Placeholder parsing
+- Index scoring algorithm
+- Validation strategy
+- Placeholder system implementation
+- Cursor position management
+- Placeholder highlighting in TUI
+- Theme integration for placeholders
+- Text placeholder editing mode
+- Text editor cursor positioning
+- File path management for history
+- Lipgloss styling
+
+**When to Use**: M4, M5, M6, M11, M12, M13, M14 (Editor milestones)
+
+### learnings/ui-domain.md
+**Purpose**: UI/TUI implementation patterns and learnings
+**Key Sections**:
+- Bubble Tea model implementation
+- Cursor and viewport management
+- Auto-save debouncing with Bubble Tea
+- Custom message types
+- Status bar state management
+- Centralized theme system
+- Library browser implementation
+- Modal overlay pattern
+- Fuzzy matching integration
+- Split-pane layout with Lipgloss
+- Keyboard navigation with Vim mode
+- Message-based command execution
+- Command palette implementation
+- Command categorization
+- Placeholder command handlers
+
+**When to Use**: M2, M8, M19, M24, M25, M26, M31, M36, M37 (UI/TUI milestones)
+
+### learnings/error-handling.md
+**Purpose**: Error handling patterns and architecture
+**Key Sections**:
+- Error handling architecture
+- Status bar component design
+- Modal component pattern
+- Error handler integration
+- Import cycle prevention
+- Error recovery strategies
+- Graceful file read error handling
+- Error logging integration
+
+**When to Use**: M1-M38 (All milestones - error handling is universal)
+
+### learnings/ai-domain.md
+**Purpose**: AI integration patterns and learnings
+**Key Sections**:
+- AI applying indicator and read-only mode
+- Diff viewer modal implementation
+- AI message-based workflow
+- Token budget enforcement
+- Context selection algorithm
+- Command palette integration for AI features
+
+**When to Use**: M27, M28, M29, M30, M31, M32, M33 (AI Integration milestones)
+
+### learnings/vim-domain.md
+**Purpose**: Vim mode patterns and learnings
+**Key Sections**:
+- Vim mode transition logic
+- Read-only mode during async operations
+
+**When to Use**: M34, M35 (Vim Mode milestones)
+
+### learnings/history-domain.md
+**Purpose**: History management patterns and learnings
+**Key Sections**:
+- History browser integration
+- History manager initialization in bootstrap
+
+**When to Use**: M15, M16, M17 (History milestones)
+
+### learnings/architecture-patterns.md
+**Purpose**: Architecture and design patterns from previous implementation
+**Key Sections**:
+- Database schema design
+- Configuration management
+- Starter prompt extraction
+- Logging strategy
+- Command registry pattern
+- Confirmation dialog integration for destructive operations
+- Type assertion for Bubble Tea model updates
+
+**When to Use**: M1-M38 (All milestones - architecture patterns apply broadly)
+
+---
 
 ## Supporting Documents
 
@@ -825,6 +950,116 @@
 
 ---
 
+## Scalability Milestones (M39-M41)
+
+### M39: Context Selector Interface
+**Documents**: Core Planning + project-structure.md (ai domain) + scalability-milestones-updates.md
+**Key Information**:
+- ContextSelector interface in internal/ai/selector.go
+- DefaultSelector implementation
+- Scoring algorithm implementation
+- Token budget enforcement
+- Related to scalability-review.md (AI domain analysis)
+
+### M40: Domain Events System
+**Documents**: Core Planning + project-structure.md (events domain) + scalability-milestones-updates.md
+**Key Information**:
+- Event interface in internal/events/events.go
+- Event types (CompositionSaved, PromptUsed, SuggestionAccepted)
+- Event dispatcher in internal/events/dispatcher.go
+- Subscribe/Publish pattern
+- Async event handling
+- Related to scalability-review.md (Domain Events section)
+
+### M41: AI Provider Middleware
+**Documents**: Core Planning + project-structure.md (ai domain) + scalability-milestones-updates.md
+**Key Information**:
+- ProviderMiddleware type in internal/ai/middleware.go
+- WithLogging middleware
+- WithCaching middleware
+- WithMetrics middleware
+- Middleware chaining support
+- Related to scalability-review.md (AI domain analysis)
+
+---
+
+## Scalability Implementation Plan
+
+### Overview
+**Purpose**: Update existing planning documents to incorporate Phase 1 scalability abstractions before implementation begins.
+
+**Documents**:
+- scalability-implementation-summary.md - Executive summary and overview
+- scalability-project-structure-updates.md - Project structure changes
+- scalability-config-schema-updates.md - Configuration schema changes
+- scalability-milestones-updates.md - Milestone updates
+- scalability-requirements-updates.md - Requirements updates
+- scalability-go-style-guide-updates.md - Style guide updates
+- scalability-dependencies-updates.md - Dependencies updates
+- scalability-database-schema-updates.md - Database schema updates
+- scalability-document-index-updates.md - Document index updates
+- scalability-implementation-order.md - Implementation order
+- scalability-architecture-evolution.md - Architecture evolution
+- scalability-implementation-plan-index.md - Master index
+
+### Phase 1 Critical Abstractions
+1. **AI Provider Interface** - Support multiple AI providers (Claude, MCP, OpenAI)
+2. **Context Selector Interface** - Pluggable context selection algorithms
+3. **Composition Repository Interface** - Support multiple storage backends (SQLite, PostgreSQL, Neo4j)
+4. **Prompt Source Interface** - Support multiple prompt sources (filesystem, MCP, remote)
+5. **Domain Events System** - Decouple components via pub/sub pattern
+6. **Extended Config Structure** - Configuration for new abstractions
+
+### Configuration Schema Updates
+**Document**: CONFIG-SCHEMA.md
+
+**New Fields**:
+- ai_provider - AI provider selection (claude, mcp, openai)
+- storage - Storage backend selection (sqlite, postgres, graph)
+- database_path - SQLite database path
+- postgres_url - PostgreSQL connection string (future)
+- neo4j_url - Neo4j connection URL (future)
+- mcp_host - MCP orchestrator address (future)
+- specialists - Enabled specialist servers (future)
+- enable_plugins - Enable external plugins (future)
+- plugin_dir - Plugin directory (future)
+
+### Design Pattern Updates
+**Document**: go-style-guide.md
+
+**New Patterns**:
+- Interface Design - Define interfaces where used
+- Factory Pattern - Create objects based on configuration
+- Middleware Pattern - Wrap objects with cross-cutting concerns
+- Event Pattern - Pub/sub pattern for domain events
+- Repository Pattern - Abstract data access logic
+
+### Testing Updates
+**Updated for Scalability**:
+- milestones/FOUNDATION-TESTING-GUIDE.md - Updated with interface testing
+- milestones/AI-INTEGRATION-TESTING-GUIDE.md - Updated with provider testing
+- milestones/HISTORY-TESTING-GUIDE.md - Updated with repository testing
+- milestones/LIBRARY-INTEGRATION-TESTING-GUIDE.md - Updated with source testing
+
+**New Testing Requirements**:
+- Interface testing with mocks
+- Factory testing with different configurations
+- Middleware testing with chaining
+- Event testing with async handlers
+- Repository testing with different backends
+
+### Database Migration Updates
+**Document**: DATABASE-SCHEMA.md
+
+**New Sections**:
+- Migration Strategy
+- Version Management
+- Migration Files
+- Rollback Support
+- Cross-Database Migration (SQLite → PostgreSQL)
+
+---
+
 ## Domain Reference
 
 ### Editor Domain
@@ -834,30 +1069,97 @@
 - go-style-guide.md (type design, error handling)
 - go-testing-guide.md (domain testing)
 - requirements.md (Editor features)
+- learnings/editor-domain.md (Editor implementation patterns)
+- learnings/editor-domain.md (Editor implementation patterns)
 
 ### Library Domain
 **Milestones**: M7, M8, M9, M10, M23, M24, M25, M26
 **Key Documents**:
-- project-structure.md (library section)
-- requirements.md (Library section)
+- project-structure.md (library section - updated with source interface)
+- requirements.md (Library section - updated with source abstraction)
 - DEPENDENCIES.md (sahilm/fuzzy, yaml.v3)
-- go-style-guide.md (package organization)
+- go-style-guide.md (interface design - NEW)
+- scalability-review.md (Library domain analysis - NEW)
+- learnings/architecture-patterns.md (Architecture and design patterns)
+- learnings/architecture-patterns.md (Architecture and design patterns)
+
+**New Packages**:
+- internal/library/source.go - PromptSource interface
+- internal/library/filesystem.go - Filesystem implementation
+- internal/library/cache.go - Prompt cache
+
+**Refactored Packages**:
+- internal/library/library.go - Use PromptSource
+- internal/library/loader.go - Deprecated, moved to filesystem.go
 
 ### History Domain
 **Milestones**: M15, M16, M17
 **Key Documents**:
-- project-structure.md (history section)
-- DATABASE-SCHEMA.md (all sections)
-- requirements.md (History section)
-- DEPENDENCIES.md (modernc.org/sqlite)
+- project-structure.md (history section - refactored to use repository pattern)
+- DATABASE-SCHEMA.md (all sections - updated with migration strategy)
+- requirements.md (History section - updated with storage abstraction)
+- DEPENDENCIES.md (modernc.org/sqlite, lib/pq, neo4j-go-driver - updated)
+- go-style-guide.md (factory pattern - NEW)
+- scalability-review.md (Storage domain analysis - NEW)
+- learnings/history-domain.md (History management patterns)
+- learnings/history-domain.md (History management patterns)
+
+**Refactored Packages**:
+- internal/history/manager.go - Use repository pattern
+- internal/history/database.go - Deprecated, moved to storage/sqlite.go
+- internal/history/storage.go - Deprecated, moved to storage/sqlite.go
+- internal/history/sync.go - Use repository pattern
+- internal/history/search.go - Use repository pattern
+- internal/history/cleanup.go - Use repository pattern
+- internal/history/listing.go - Use repository pattern
+
+### Storage Domain (NEW)
+**Milestones**: M15, M16, M17
+**Key Documents**:
+- project-structure.md (storage domain - NEW)
+- DATABASE-SCHEMA.md (all sections - updated with migration strategy)
+- requirements.md (History section - updated with storage abstraction)
+- DEPENDENCIES.md (modernc.org/sqlite, lib/pq, neo4j-go-driver - updated)
+- go-style-guide.md (factory pattern - NEW)
+- scalability-review.md (Storage domain analysis - NEW)
+
+**New Packages**:
+- internal/storage/repository.go - CompositionRepository interface
+- internal/storage/sqlite.go - SQLite implementation
+- internal/storage/factory.go - Repository factory
+- internal/storage/postgres.go - PostgreSQL implementation (future)
+- internal/storage/graph.go - Neo4j implementation (future)
 
 ### AI Domain
-**Milestones**: M27, M28, M29, M30, M31, M32, M33
+**Milestones**: M27, M28, M29, M30, M31, M32, M33, M39, M41
 **Key Documents**:
-- project-structure.md (ai domain)
-- requirements.md (AI sections)
+- project-structure.md (ai domain - updated with provider interface)
+- requirements.md (AI sections - updated with provider abstraction)
 - DEPENDENCIES.md (anthropic-sdk-go, tidwall/*, sergi/go-diff)
-- go-style-guide.md (error handling, concurrency)
+- go-style-guide.md (interface design, factory pattern, middleware pattern - NEW)
+- scalability-review.md (AI domain analysis - NEW)
+- learnings/ai-domain.md (AI integration patterns)
+- learnings/ai-domain.md (AI integration patterns)
+
+**New Packages**:
+- internal/ai/provider.go - AIProvider interface
+- internal/ai/claude.go - Claude implementation
+- internal/ai/selector.go - ContextSelector interface
+- internal/ai/middleware.go - ProviderMiddleware type
+
+**Updated Packages**:
+- internal/ai/context.go - Refactored to implement ContextSelector
+
+### Events Domain (NEW)
+**Milestones**: M40
+**Key Documents**:
+- project-structure.md (events domain - NEW)
+- go-style-guide.md (event patterns - NEW)
+- scalability-review.md (Domain Events section - NEW)
+
+**New Packages**:
+- internal/events/events.go - Event types
+- internal/events/dispatcher.go - Event dispatcher
 
 ### UI Domain
 **Milestones**: M2, M8, M19, M24, M25, M26, M31, M36, M37
@@ -866,6 +1168,8 @@
 - go-testing-guide.md (Bubble Tea patterns)
 - requirements.md (UI features)
 - project-structure.md (theme system)
+- learnings/ui-domain.md (UI/TUI implementation patterns)
+- learnings/ui-domain.md (UI/TUI implementation patterns)
 
 ### Platform Domain
 **Milestones**: M1, M3, M15, M20, M21, M38
@@ -874,6 +1178,8 @@
 - CONFIG-SCHEMA.md (config, logging)
 - DATABASE-SCHEMA.md (database)
 - DEPENDENCIES.md (zap, go-homedir)
+- learnings/go-fundamentals.md (Go-specific patterns)
+- learnings/go-fundamentals.md (Go-specific patterns)
 
 ### Vim Domain
 **Milestones**: M34, M35
@@ -882,6 +1188,8 @@
 - keybinding-system.md (all sections)
 - CONFIG-SCHEMA.md (vim_mode)
 - requirements.md (Vim support)
+- learnings/vim-domain.md (Vim mode patterns)
+- learnings/vim-domain.md (Vim mode patterns)
 
 ### Commands Domain
 **Milestones**: M18, M19
@@ -889,6 +1197,8 @@
 - project-structure.md (commands domain)
 - go-style-guide.md (interface design)
 - requirements.md (Command palette)
+- learnings/architecture-patterns.md (Architecture and design patterns)
+- learnings/architecture-patterns.md (Architecture and design patterns)
 
 ---
 
@@ -1006,5 +1316,19 @@ keybinding-system.md, CONFIG-SCHEMA.md (vim_mode)
 
 ---
 
-**Last Updated**: 2026-01-07  
+**Last Updated**: 2026-01-07
 **Status**: Active - Use this index for quick reference
+
+---
+
+## Scalability Implementation Status
+
+### Documents Updated
+1. **project-structure.md** - Added 6 new packages, refactored 3 existing ✓
+2. **CONFIG-SCHEMA.md** - Added 8 new config fields ✓
+3. **milestones.md** - Updated 3 milestones, added 3 new milestones ✓
+4. **requirements.md** - Updated AI, Storage, Library sections, added Domain Events ✓
+5. **go-style-guide.md** - Added interface, factory, middleware, event patterns ✓
+6. **DEPENDENCIES.md** - Added future dependencies (PostgreSQL, Neo4j, MCP) ✓
+7. **DATABASE-SCHEMA.md** - Added migration strategy section ✓
+8. **DOCUMENT-INDEX.md** - Updated references ✓

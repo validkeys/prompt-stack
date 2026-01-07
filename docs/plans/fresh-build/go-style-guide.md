@@ -152,6 +152,53 @@ func (e *ValidationError) Error() string {
 }
 ```
 
+### Error Wrapping with Context
+```go
+// ✅ GOOD: Wrap errors with context
+func (r *SQLiteRepository) Load(ctx context.Context, id string) (Composition, error) {
+    var comp Composition
+    err := r.db.QueryRowContext(ctx,
+        "SELECT id, file_path, content FROM compositions WHERE id = ?", id).
+        Scan(&comp.ID, &comp.FilePath, &comp.Content)
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return Composition{}, fmt.Errorf("composition not found: %w", err)
+        }
+        return Composition{}, fmt.Errorf("failed to load composition: %w", err)
+    }
+    return comp, nil
+}
+```
+
+### Error Types for Validation
+```go
+// ✅ GOOD: Use custom error types for validation
+type ValidationError struct {
+    Field   string
+    Message string
+}
+
+func (e *ValidationError) Error() string {
+    return fmt.Sprintf("validation error on %s: %s", e.Field, e.Message)
+}
+
+// Usage
+if cfg.AIProvider == "" {
+    return &ValidationError{Field: "ai_provider", Message: "required"}
+}
+```
+
+### Error Wrapping in Factories
+```go
+// ✅ GOOD: Wrap errors in factory functions
+func NewProvider(cfg *config.Config) (AIProvider, error) {
+    if cfg.ClaudeAPIKey == "" {
+        return nil, fmt.Errorf("missing API key: %w", ErrMissingConfig)
+    }
+    // ...
+}
+```
+
 ---
 
 ## Interfaces
@@ -181,7 +228,7 @@ type LibrarySearcher interface { ... }  // wrong location
 
 ### Interface Size
 ```go
-// ✅ GOOD: Small, focused interfaces
+// ✅ GOOD: Small, focused interfaces (3-5 methods maximum)
 type Reader interface {
     Read(p []byte) (n int, err error)
 }
@@ -198,6 +245,64 @@ type LibraryManager interface {
     Index() error
     Save() error
     // ... 10 more methods
+}
+```
+
+### Interface Naming
+```go
+// ✅ GOOD: Descriptive, domain-specific names
+type AIProvider interface { ... }
+type PromptSource interface { ... }
+type CompositionRepository interface { ... }
+
+// ❌ BAD: Generic names
+type Provider interface { ... }
+type Source interface { ... }
+type Repository interface { ... }
+```
+
+### Interface Composition
+```go
+// ✅ GOOD: Compose small interfaces into larger ones
+type Reader interface {
+    Read(ctx context.Context, id string) (Data, error)
+}
+
+type Writer interface {
+    Write(ctx context.Context, data Data) error
+}
+
+// Composed interface
+type Store interface {
+    Reader
+    Writer
+}
+
+// Usage
+func NewService(store Store) *Service {
+    // Can use any type that implements both Reader and Writer
+}
+```
+
+### Interface Testing
+```go
+// ✅ GOOD: Use interfaces for testing with mocks
+type MockProvider struct {
+    suggestions []Suggestion
+    err         error
+}
+
+func (m *MockProvider) GetSuggestions(ctx context.Context, prompt string) ([]Suggestion, error) {
+    return m.suggestions, m.err
+}
+
+// In tests
+func TestService(t *testing.T) {
+    mock := &MockProvider{
+        suggestions: []Suggestion{{Text: "test"}},
+    }
+    service := NewService(mock)
+    // test with mock
 }
 ```
 
@@ -361,6 +466,59 @@ func TestWorkspace(t *testing.T) {
 }
 ```
 
+### Mock Interfaces for Testing
+```go
+// ✅ GOOD: Mock repository for testing
+type MockRepository struct {
+    compositions map[string]Composition
+    err          error
+}
+
+func (m *MockRepository) Save(ctx context.Context, comp Composition) error {
+    if m.err != nil {
+        return m.err
+    }
+    m.compositions[comp.ID] = comp
+    return nil
+}
+
+func (m *MockRepository) Load(ctx context.Context, id string) (Composition, error) {
+    if m.err != nil {
+        return Composition{}, m.err
+    }
+    comp, ok := m.compositions[id]
+    if !ok {
+        return Composition{}, sql.ErrNoRows
+    }
+    return comp, nil
+}
+```
+
+### Test Helpers
+```go
+// ✅ GOOD: Reusable test helpers
+func setupTestDB(t *testing.T) *sql.DB {
+    db, err := sql.Open("sqlite", ":memory:")
+    if err != nil {
+        t.Fatal(err)
+    }
+    
+    // Create schema
+    _, err = db.Exec(`
+        CREATE TABLE compositions (
+            id TEXT PRIMARY KEY,
+            file_path TEXT NOT NULL,
+            content TEXT NOT NULL
+        )
+    `)
+    if err != nil {
+        t.Fatal(err)
+    }
+    
+    return db
+}
+```
+
 ---
 
 ## Code Organization
@@ -489,6 +647,330 @@ func (c *Client) SendMessage(ctx context.Context, req Request) (*Response, error
 // ❌ BAD: Context not first parameter
 func (c *Client) SendMessage(req Request, ctx context.Context) (*Response, error) {
 ```
+
+---
+
+## Factory Pattern
+
+### Purpose
+Create objects based on configuration without exposing creation logic.
+
+### Basic Factory
+```go
+// ✅ GOOD: Simple factory for provider selection
+// internal/ai/factory.go
+package ai
+
+import "github.com/yourorg/promptstack/internal/config"
+
+func NewProvider(cfg *config.Config) (AIProvider, error) {
+    switch cfg.AIProvider {
+    case "claude":
+        return NewClaudeProvider(cfg.ClaudeAPIKey, cfg.Model)
+    case "mcp":
+        return NewMCPProvider(cfg.MCPHost)
+    case "openai":
+        return NewOpenAIProvider(cfg.OpenAIAPIKey, cfg.Model)
+    default:
+        return NewClaudeProvider(cfg.ClaudeAPIKey, cfg.Model)
+    }
+}
+```
+
+### Benefits
+- Decouples creation from usage
+- Easy to add new providers
+- Configuration-driven instantiation
+- Testable with mocks
+
+### Usage
+```go
+// cmd/promptstack/main.go
+provider, err := ai.NewProvider(cfg)
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+### Factory with Options
+```go
+// ✅ GOOD: Functional options for complex factories
+type ProviderOption func(*providerConfig)
+
+type providerConfig struct {
+    timeout time.Duration
+    retries int
+}
+
+func WithTimeout(timeout time.Duration) ProviderOption {
+    return func(cfg *providerConfig) {
+        cfg.timeout = timeout
+    }
+}
+
+func WithRetries(retries int) ProviderOption {
+    return func(cfg *providerConfig) {
+        cfg.retries = retries
+    }
+}
+
+func NewProvider(cfg *config.Config, opts ...ProviderOption) (AIProvider, error) {
+    pc := &providerConfig{
+        timeout: 30 * time.Second,
+        retries: 3,
+    }
+    
+    for _, opt := range opts {
+        opt(pc)
+    }
+    
+    // Create provider with config...
+}
+```
+
+### Repository Factory
+```go
+// ✅ GOOD: Factory for storage backends
+// internal/storage/factory.go
+package storage
+
+import "github.com/yourorg/promptstack/internal/config"
+
+func NewRepository(cfg *config.Config) (CompositionRepository, error) {
+    switch cfg.Storage {
+    case "sqlite":
+        return NewSQLiteRepository(cfg.DatabasePath)
+    case "postgres":
+        return NewPostgreSQLRepository(cfg.PostgresURL)
+    case "graph":
+        return NewGraphRepository(cfg.Neo4jURL)
+    default:
+        return NewSQLiteRepository(cfg.DatabasePath)
+    }
+}
+```
+
+---
+
+## Middleware Pattern
+
+### Purpose
+Wrap objects with cross-cutting concerns (logging, caching, metrics).
+
+### Middleware Definition
+```go
+// ✅ GOOD: Middleware as a function type
+// internal/ai/middleware.go
+package ai
+
+type ProviderMiddleware func(AIProvider) AIProvider
+
+func WithLogging(logger Logger) ProviderMiddleware {
+    return func(provider AIProvider) AIProvider {
+        return &loggingProvider{
+            provider: provider,
+            logger:   logger,
+        }
+    }
+}
+
+func WithCaching(cache Cache) ProviderMiddleware {
+    return func(provider AIProvider) AIProvider {
+        return &cachingProvider{
+            provider: provider,
+            cache:    cache,
+        }
+    }
+}
+```
+
+### Usage
+```go
+// cmd/promptstack/main.go
+provider, _ := ai.NewProvider(cfg)
+
+// Apply middleware
+provider = ai.WithLogging(logger)(provider)
+provider = ai.WithCaching(cache)(provider)
+provider = ai.WithMetrics(metrics)(provider)
+```
+
+### Benefits
+- Composable behavior
+- Separation of concerns
+- Easy to add/remove middleware
+- Testable in isolation
+
+### Middleware Implementation
+```go
+// ✅ GOOD: Implement middleware with struct embedding
+type loggingProvider struct {
+    provider AIProvider
+    logger   Logger
+}
+
+func (l *loggingProvider) GetSuggestions(ctx context.Context, prompt string) ([]Suggestion, error) {
+    l.logger.Printf("Getting suggestions for prompt: %s", prompt)
+    suggestions, err := l.provider.GetSuggestions(ctx, prompt)
+    if err != nil {
+        l.logger.Printf("Error getting suggestions: %v", err)
+    } else {
+        l.logger.Printf("Got %d suggestions", len(suggestions))
+    }
+    return suggestions, err
+}
+
+type cachingProvider struct {
+    provider AIProvider
+    cache    Cache
+}
+
+func (c *cachingProvider) GetSuggestions(ctx context.Context, prompt string) ([]Suggestion, error) {
+    // Check cache
+    if cached, ok := c.cache.Get(prompt); ok {
+        return cached, nil
+    }
+    
+    // Call provider
+    suggestions, err := c.provider.GetSuggestions(ctx, prompt)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Cache result
+    c.cache.Set(prompt, suggestions)
+    return suggestions, nil
+}
+```
+
+### Middleware Chaining
+```go
+// ✅ GOOD: Helper function for chaining middleware
+func ApplyMiddleware(provider AIProvider, middlewares ...ProviderMiddleware) AIProvider {
+    for _, mw := range middlewares {
+        provider = mw(provider)
+    }
+    return provider
+}
+
+// Usage
+provider := ApplyMiddleware(
+    ai.NewProvider(cfg),
+    ai.WithLogging(logger),
+    ai.WithCaching(cache),
+    ai.WithMetrics(metrics),
+)
+```
+
+---
+
+## Event Pattern
+
+### Purpose
+Decouple components using publish-subscribe pattern for domain events.
+
+### Event Interface
+```go
+// ✅ GOOD: Define event interface
+type Event interface {
+    Type() string
+    Timestamp() time.Time
+    Payload() map[string]interface{}
+}
+```
+
+### Event Dispatcher
+```go
+// ✅ GOOD: Simple event dispatcher
+type Dispatcher struct {
+    mu       sync.RWMutex
+    handlers map[string][]EventHandler
+}
+
+type EventHandler func(Event)
+
+func (d *Dispatcher) Subscribe(eventType string, handler EventHandler) {
+    d.mu.Lock()
+    defer d.mu.Unlock()
+    d.handlers[eventType] = append(d.handlers[eventType], handler)
+}
+
+func (d *Dispatcher) Publish(event Event) {
+    d.mu.RLock()
+    handlers := d.handlers[event.Type()]
+    d.mu.RUnlock()
+    
+    for _, handler := range handlers {
+        go handler(event) // Async handling
+    }
+}
+```
+
+### Usage
+```go
+// ✅ GOOD: Subscribe to events
+dispatcher.Subscribe("composition.saved", func(e Event) {
+    log.Printf("Composition saved: %v", e.Payload())
+})
+
+// ✅ GOOD: Publish events
+dispatcher.Publish(&CompositionSavedEvent{
+    BaseEvent: BaseEvent{
+        eventType: "composition.saved",
+        timestamp: time.Now(),
+        payload:   map[string]interface{}{"id": "123"},
+    },
+    CompositionID: "123",
+    FilePath:     "/path/to/file.md",
+})
+```
+
+---
+
+## Repository Pattern
+
+### Purpose
+Abstract data access logic behind an interface.
+
+### Repository Interface
+```go
+// ✅ GOOD: Define repository interface
+type CompositionRepository interface {
+    Save(ctx context.Context, comp Composition) error
+    Load(ctx context.Context, id string) (Composition, error)
+    Search(ctx context.Context, query string) ([]Composition, error)
+    Delete(ctx context.Context, id string) error
+    List(ctx context.Context, opts ListOptions) ([]Composition, error)
+}
+```
+
+### Implementation
+```go
+// ✅ GOOD: SQLite implementation
+type SQLiteRepository struct {
+    db *sql.DB
+}
+
+func (r *SQLiteRepository) Save(ctx context.Context, comp Composition) error {
+    _, err := r.db.ExecContext(ctx,
+        "INSERT INTO compositions (id, file_path, content) VALUES (?, ?, ?)",
+        comp.ID, comp.FilePath, comp.Content)
+    return err
+}
+```
+
+### Usage
+```go
+// ✅ GOOD: Use repository through interface
+repo, _ := storage.NewRepository(cfg)
+err := repo.Save(ctx, composition)
+```
+
+### Benefits
+- Swappable implementations
+- Testable with mocks
+- Centralized data access logic
+- Easy to add caching, logging, etc.
 
 ---
 

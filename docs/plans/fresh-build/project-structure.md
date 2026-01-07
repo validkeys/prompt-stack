@@ -18,25 +18,35 @@ Everything related to prompt templates and placeholders.
 - Prompt file I/O with YAML frontmatter
 
 ### 3. **Library Domain**
-Managing collections of prompts.
+Managing collections of prompts with source abstraction.
+- PromptSource interface for multiple prompt sources
+- Filesystem implementation (current)
+- MCP specialist source (future)
+- Remote repository source (future)
+- Prompt caching layer
 - Prompt indexing and scoring
 - Fuzzy search
 - Library validation
 - Usage tracking
 
 ### 4. **History Domain**
-Composition persistence and retrieval.
-- SQLite database operations
+Composition persistence and retrieval using repository pattern.
+- CompositionRepository interface for multiple storage backends
+- SQLite implementation (current)
+- PostgreSQL implementation (future)
+- Neo4j implementation (future)
 - Markdown file storage
 - Full-text search
 - Cleanup strategies
 
 ### 5. **AI Domain**
-Claude API integration and suggestion system.
-- API client wrapper
+Claude API integration and suggestion system with provider abstraction.
+- AIProvider interface for multiple AI providers
+- ContextSelector interface for pluggable context selection
+- ProviderMiddleware for cross-cutting concerns
 - Context selection algorithm
-- Suggestion parsing
-- Diff generation and application
+- Token estimation and budgeting
+- Suggestion parsing and diff generation
 
 ### 6. **Config Domain**
 Application configuration.
@@ -56,6 +66,20 @@ Cross-cutting infrastructure.
 - Error handling
 - File system utilities
 - Bootstrap orchestration
+
+### 9. **Storage Domain** (NEW)
+Composition persistence with repository pattern.
+- CompositionRepository interface for multiple storage backends
+- SQLite implementation (current)
+- PostgreSQL implementation (future)
+- Neo4j implementation (future)
+- Factory pattern for repository instantiation
+
+### 10. **Events Domain** (NEW)
+Domain events for decoupling components.
+- Event types (CompositionSaved, PromptUsed, SuggestionAccepted)
+- Event dispatcher for pub/sub pattern
+- Async event handling
 
 ---
 
@@ -94,36 +118,60 @@ promptstack/
 │   │   └── storage_test.go
 │   │
 │   ├── library/                       # LIBRARY DOMAIN
-│   │   ├── library.go                 # Library manager
+│   │   ├── source.go                  # NEW: PromptSource interface
+│   │   ├── source_test.go
+│   │   ├── filesystem.go              # NEW: Filesystem implementation
+│   │   ├── filesystem_test.go
+│   │   ├── cache.go                   # NEW: Prompt cache
+│   │   ├── cache_test.go
+│   │   ├── library.go                 # REFACTOR: Use PromptSource
 │   │   ├── library_test.go
-│   │   ├── loader.go                  # Load prompts from filesystem
+│   │   ├── loader.go                  # DEPRECATE: Move to filesystem.go
 │   │   ├── loader_test.go
 │   │   ├── index.go                   # In-memory indexing
 │   │   ├── index_test.go
 │   │   ├── scorer.go                  # Context relevance scoring
 │   │   ├── scorer_test.go
 │   │   ├── search.go                  # Fuzzy search
-│   │   └── search_test.go
+│   │   ├── search_test.go
+│   │   ├── validator.go               # Library validation
+│   │   └── validator_test.go
+│   │
+│   ├── storage/                       # STORAGE DOMAIN (NEW)
+│   │   ├── repository.go              # CompositionRepository interface
+│   │   ├── repository_test.go
+│   │   ├── sqlite.go                  # SQLite implementation
+│   │   ├── sqlite_test.go
+│   │   ├── factory.go                 # Repository factory
+│   │   ├── factory_test.go
+│   │   ├── postgres.go                # FUTURE: PostgreSQL implementation
+│   │   └── graph.go                   # FUTURE: Neo4j implementation
 │   │
 │   ├── history/                       # HISTORY DOMAIN
-│   │   ├── manager.go                 # History manager
+│   │   ├── manager.go                 # REFACTOR: Use repository
 │   │   ├── manager_test.go
-│   │   ├── database.go                # SQLite operations
+│   │   ├── database.go                # DEPRECATE: Move to storage/sqlite.go
 │   │   ├── database_test.go
-│   │   ├── storage.go                 # Markdown file operations
+│   │   ├── storage.go                 # DEPRECATE: Move to storage/sqlite.go
 │   │   ├── storage_test.go
-│   │   ├── sync.go                    # DB/file sync verification
+│   │   ├── sync.go                    # REFACTOR: Use repository
 │   │   ├── sync_test.go
-│   │   ├── search.go                  # Full-text search
+│   │   ├── search.go                  # REFACTOR: Use repository
 │   │   ├── search_test.go
-│   │   ├── cleanup.go                 # History cleanup strategies
+│   │   ├── cleanup.go                 # REFACTOR: Use repository
 │   │   └── cleanup_test.go
 │   │
 │   ├── ai/                            # AI DOMAIN
-│   │   ├── client.go                  # Claude API client
-│   │   ├── client_test.go
-│   │   ├── context.go                 # Context selection
+│   │   ├── provider.go                # NEW: AIProvider interface
+│   │   ├── provider_test.go
+│   │   ├── claude.go                  # NEW: Claude implementation
+│   │   ├── claude_test.go
+│   │   ├── selector.go                # NEW: ContextSelector interface
+│   │   ├── selector_test.go
+│   │   ├── context.go                 # REFACTOR: Implement ContextSelector
 │   │   ├── context_test.go
+│   │   ├── middleware.go              # NEW: ProviderMiddleware type
+│   │   ├── middleware_test.go
 │   │   ├── tokens.go                  # Token estimation & budgeting
 │   │   ├── tokens_test.go
 │   │   ├── suggestions.go             # Suggestion types & parsing
@@ -163,6 +211,12 @@ promptstack/
 │   │   ├── state_test.go
 │   │   ├── keymaps.go                 # Mode keybindings
 │   │   └── keymaps_test.go
+│   │
+│   ├── events/                        # EVENTS DOMAIN (NEW)
+│   │   ├── events.go                  # Event types
+│   │   ├── events_test.go
+│   │   └── dispatcher.go              # Event dispatcher
+│   │   └── dispatcher_test.go
 │   │
 │   └── commands/                      # COMMAND SYSTEM (cross-cutting)
 │       ├── registry.go                # Command registry
@@ -308,8 +362,10 @@ Each domain package is **self-contained** and has clear responsibilities:
 - **`internal/editor/`** - Pure text editing logic, no knowledge of prompts or AI
 - **`internal/prompt/`** - Prompt models and operations, no knowledge of library or history
 - **`internal/library/`** - Library management, depends on `prompt` package
-- **`internal/history/`** - Composition storage, minimal dependencies
+- **`internal/storage/`** - Composition persistence with repository pattern, depends on `platform/errors`
+- **`internal/history/`** - Composition storage, uses `storage` repository
 - **`internal/ai/`** - AI integration, depends on `prompt` for context selection
+- **`internal/events/`** - Domain events for decoupling, minimal dependencies
 - **`internal/config/`** - Configuration, no business logic dependencies
 - **`internal/platform/`** - Infrastructure, no business logic dependencies
 
@@ -332,10 +388,13 @@ ui/           →  internal/{domain}  →  internal/platform
 - `ui/workspace` → `internal/editor`, `internal/prompt`
 - `internal/library` → `internal/prompt`, `internal/platform/files`
 - `internal/ai` → `internal/prompt`, `internal/library`
+- `internal/history` → `internal/storage`, `internal/events`
+- `internal/storage` → `internal/platform/errors`
 
 **Example Invalid Imports:**
 - `internal/editor` → `ui/workspace` ❌
 - `internal/platform/logging` → `internal/library` ❌
+- `internal/storage` → `internal/history` ❌
 
 ### 3. **Package Naming**
 
@@ -594,8 +653,11 @@ type LibrarySearcher interface {
 ### What's New
 
 1. **`internal/platform/`**: Infrastructure package for cross-cutting concerns
-2. **`test/` directory**: Centralized integration tests and fixtures
-3. **Consistent UI patterns**: `model.go`, `update.go`, `view.go`, `messages.go`
+2. **`internal/storage/`**: Repository pattern for composition persistence with multiple backend support
+3. **`internal/events/`**: Domain events system for decoupling components
+4. **`test/` directory**: Centralized integration tests and fixtures
+5. **Consistent UI patterns**: `model.go`, `update.go`, `view.go`, `messages.go`
+6. **Provider abstractions**: AIProvider, ContextSelector, PromptSource interfaces for extensibility
 
 ---
 
@@ -932,5 +994,5 @@ The theme uses **Catppuccin Mocha**, a popular dark theme with excellent contras
 
 ---
 
-**Last Updated**: 2026-01-07  
-**Status**: Proposed - Ready for review and refinement
+**Last Updated**: 2026-01-07
+**Status**: Updated with Phase 1 scalability abstractions - Ready for implementation

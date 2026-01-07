@@ -25,6 +25,16 @@
 - [`DEPENDENCIES.md`](DEPENDENCIES.md) - External dependencies
 - [`keybinding-system.md`](keybinding-system.md) - Vim mode details
 
+### Key Learnings (Context-Specific)
+- [`learnings/go-fundamentals.md`](learnings/go-fundamentals.md) - Go-specific patterns and pitfalls
+- [`learnings/editor-domain.md`](learnings/editor-domain.md) - Editor implementation patterns
+- [`learnings/ui-domain.md`](learnings/ui-domain.md) - UI/TUI implementation patterns
+- [`learnings/error-handling.md`](learnings/error-handling.md) - Error handling patterns
+- [`learnings/ai-domain.md`](learnings/ai-domain.md) - AI integration patterns
+- [`learnings/vim-domain.md`](learnings/vim-domain.md) - Vim mode patterns
+- [`learnings/history-domain.md`](learnings/history-domain.md) - History management patterns
+- [`learnings/architecture-patterns.md`](learnings/architecture-patterns.md) - Architecture and design patterns
+
 ### Supporting Documents (As Needed)
 - [`BUILD.md`](BUILD.md) - Build processes
 - [`SETUP.md`](SETUP.md) - Development setup
@@ -113,9 +123,9 @@
 
 | Milestone | Title | Required Documents | Additional Context |
 |-----------|-------|-------------------|-------------------|
-| **M36** | Settings Panel | Core Planning, Implementation Guides, project-structure.md (ui/settings) | CONFIG-SCHEMA.md, POLISH-TESTING-GUIDE.md |
-| **M37** | Responsive Layout | Core Planning, Implementation Guides, project-structure.md (ui/app) | requirements.md (Split-Pane Layout), POLISH-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M37-RESPONSIVE-LAYOUT.md |
-| **M38** | Error Handling & Log Viewer | Core Planning, Implementation Guides, project-structure.md (platform/errors) | CONFIG-SCHEMA.md (logging section), POLISH-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M38-ERROR-HANDLING.md |
+| **M36** | Settings Panel | Core Planning, Implementation Guides, project-structure.md (ui/settings), learnings/ui-domain.md | CONFIG-SCHEMA.md, POLISH-TESTING-GUIDE.md |
+| **M37** | Responsive Layout | Core Planning, Implementation Guides, project-structure.md (ui/app), learnings/ui-domain.md | requirements.md (Split-Pane Layout), POLISH-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M37-RESPONSIVE-LAYOUT.md |
+| **M38** | Error Handling & Log Viewer | Core Planning, Implementation Guides, project-structure.md (platform/errors), learnings/error-handling.md | CONFIG-SCHEMA.md (logging section), POLISH-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M38-ERROR-HANDLING.md |
 
 ---
 
@@ -163,35 +173,35 @@
 
 ### Editor Domain
 **Milestones**: M4, M5, M6, M11, M12, M13, M14
-**Key Documents**: project-structure.md (editor section), go-style-guide.md, go-testing-guide.md
+**Key Documents**: project-structure.md (editor section), go-style-guide.md, go-testing-guide.md, learnings/editor-domain.md
 
 ### Library Domain
 **Milestones**: M7, M8, M9, M10, M23, M24, M25, M26
-**Key Documents**: project-structure.md (library section), requirements.md (Library section), DEPENDENCIES.md (sahilm/fuzzy)
+**Key Documents**: project-structure.md (library section), requirements.md (Library section), DEPENDENCIES.md (sahilm/fuzzy), learnings/architecture-patterns.md
 
 ### History Domain
 **Milestones**: M15, M16, M17
-**Key Documents**: project-structure.md (history section), DATABASE-SCHEMA.md, requirements.md (History section)
+**Key Documents**: project-structure.md (history section), DATABASE-SCHEMA.md, requirements.md (History section), learnings/history-domain.md
 
 ### AI Domain
 **Milestones**: M27, M28, M29, M30, M31, M32, M33
-**Key Documents**: project-structure.md (ai domain), DEPENDENCIES.md (anthropic-sdk-go), requirements.md (AI section)
+**Key Documents**: project-structure.md (ai domain), DEPENDENCIES.md (anthropic-sdk-go), requirements.md (AI section), learnings/ai-domain.md
 
 ### UI Domain
 **Milestones**: M2, M8, M19, M24, M25, M26, M31, M36, M37
-**Key Documents**: project-structure.md (ui packages), go-testing-guide.md (Bubble Tea patterns)
+**Key Documents**: project-structure.md (ui packages), go-testing-guide.md (Bubble Tea patterns), learnings/ui-domain.md
 
 ### Platform Domain
 **Milestones**: M1, M3, M15, M20, M21, M38
-**Key Documents**: project-structure.md (platform packages), CONFIG-SCHEMA.md, DATABASE-SCHEMA.md
+**Key Documents**: project-structure.md (platform packages), CONFIG-SCHEMA.md, DATABASE-SCHEMA.md, learnings/go-fundamentals.md
 
 ### Vim Domain
 **Milestones**: M34, M35
-**Key Documents**: project-structure.md (vim domain), keybinding-system.md, CONFIG-SCHEMA.md (vim_mode)
+**Key Documents**: project-structure.md (vim domain), keybinding-system.md, CONFIG-SCHEMA.md (vim_mode), learnings/vim-domain.md
 
 ### Commands Domain
 **Milestones**: M18, M19
-**Key Documents**: project-structure.md (commands domain), go-style-guide.md (interface patterns)
+**Key Documents**: project-structure.md (commands domain), go-style-guide.md (interface patterns), learnings/architecture-patterns.md
 
 ---
 
@@ -210,6 +220,14 @@
 8. [`DATABASE-SCHEMA.md`](DATABASE-SCHEMA.md) - For database-related milestones
 9. [`DEPENDENCIES.md`](DEPENDENCIES.md) - For external package usage
 10. [`keybinding-system.md`](keybinding-system.md) - For vim mode milestones
+11. [`learnings/go-fundamentals.md`](learnings/go-fundamentals.md) - For Go-specific patterns
+12. [`learnings/editor-domain.md`](learnings/editor-domain.md) - For editor milestones
+13. [`learnings/ui-domain.md`](learnings/ui-domain.md) - For UI/TUI milestones
+14. [`learnings/error-handling.md`](learnings/error-handling.md) - For error handling
+15. [`learnings/ai-domain.md`](learnings/ai-domain.md) - For AI milestones
+16. [`learnings/vim-domain.md`](learnings/vim-domain.md) - For vim milestones
+17. [`learnings/history-domain.md`](learnings/history-domain.md) - For history milestones
+18. [`learnings/architecture-patterns.md`](learnings/architecture-patterns.md) - For architecture decisions
 
 ### Level 3: Supporting (Read as Needed)
 11. [`BUILD.md`](BUILD.md) - For build/deployment questions
@@ -228,10 +246,13 @@ When creating an implementation plan for any milestone, ensure you have:
 - [ ] Read [`go-style-guide.md`](go-style-guide.md) for coding standards
 - [ ] Read [`go-testing-guide.md`](go-testing-guide.md) for testing patterns
 - [ ] Read context-specific documents (CONFIG-SCHEMA, DATABASE-SCHEMA, etc.)
+- [ ] Read relevant key learnings from [`learnings/`](learnings/) directory
 - [ ] Referenced specific file paths from project structure
 - [ ] Included relevant dependencies from DEPENDENCIES.md
 - [ ] Applied style guide patterns to code examples
 - [ ] Applied testing guide patterns to test examples
+- [ ] Applied key learnings to implementation approach
+- [ ] Noted any deviations from key learnings with justification
 - [ ] Created task list with clear dependencies
 - [ ] Created reference document with code examples
 

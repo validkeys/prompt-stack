@@ -48,6 +48,11 @@ api:
   # Format: Go duration string (e.g., 30s, 1m, 500ms)
   timeout: "30s"
   
+  # AI provider selection (default: claude)
+  # Valid values: claude, mcp, openai
+  # Can be set via environment variable: PROMPTSTACK_AI_PROVIDER
+  provider: "claude"
+  
   # Context window management
   context:
     # Maximum percentage of context window for composition content (default: 25)
@@ -105,6 +110,10 @@ paths:
   # Index file (default: ~/.promptstack/data/.index.json)
   # Library index for AI context optimization
   index_file: "~/.promptstack/data/.index.json"
+  
+  # Plugin directory (default: ~/.promptstack/plugins)
+  # Contains third-party plugin files
+  plugin_dir: "~/.promptstack/plugins"
 
 # ============================================
 # Logging Configuration
@@ -259,6 +268,52 @@ advanced:
   
   # Cache library in memory (default: true)
   cache_library: true
+
+# ============================================
+# Storage Configuration
+# ============================================
+storage:
+  # Storage backend type (default: sqlite)
+  # Valid values: sqlite, postgres, graph
+  # Can be set via environment variable: PROMPTSTACK_STORAGE
+  type: "sqlite"
+  
+  # SQLite database path (default: ~/.promptstack/data/history.db)
+  # Used when storage.type == "sqlite"
+  database_path: "~/.promptstack/data/history.db"
+  
+  # PostgreSQL connection string (default: "")
+  # Used when storage.type == "postgres"
+  # Format: postgres://user:password@host:port/dbname
+  # Can be set via environment variable: PROMPTSTACK_POSTGRES_URL
+  postgres_url: ""
+  
+  # Neo4j connection URL (default: "")
+  # Used when storage.type == "graph"
+  # Format: bolt://user:password@host:7687
+  # Can be set via environment variable: PROMPTSTACK_NEO4J_URL
+  neo4j_url: ""
+
+# ============================================
+# MCP Configuration (Future)
+# ============================================
+mcp:
+  # MCP orchestrator address (default: "")
+  # Format: host:port
+  # Can be set via environment variable: PROMPTSTACK_MCP_HOST
+  host: ""
+  
+  # Enabled specialist servers (default: [])
+  # List of specialist server names to enable
+  specialists: []
+
+# ============================================
+# Plugin Configuration (Future)
+# ============================================
+plugins:
+  # Enable external plugin loading (default: false)
+  # Can be set via environment variable: PROMPTSTACK_ENABLE_PLUGINS
+  enabled: false
 ```
 
 ---
@@ -279,6 +334,7 @@ The following fields must be non-empty and valid:
 | `version` | string | Semantic version format | Auto-managed |
 | `api.claude_api_key` | string | Non-empty string | Required |
 | `api.model` | string | Valid model name | claude-3-sonnet-20240229 |
+| `api.provider` | string | claude\|mcp\|openai | claude |
 | `api.max_retries` | int | Range: 0-10 | 3 |
 | `api.timeout` | duration | Valid Go duration | 30s |
 | `api.context.composition_max_percent` | int | Range: 10-50 | 25 |
@@ -293,6 +349,7 @@ The following fields must be non-empty and valid:
 | `paths.history_dir` | string | Valid directory path | ~/.promptstack/data/.history |
 | `paths.database_file` | string | Valid file path | ~/.promptstack/data/history.db |
 | `paths.index_file` | string | Valid file path | ~/.promptstack/data/.index.json |
+| `paths.plugin_dir` | string | Valid directory path | ~/.promptstack/plugins |
 | `logging.level` | string | debug\|info\|warn\|error | info |
 | `logging.file` | string | Valid file path | ~/.promptstack/debug.log |
 | `logging.max_size` | size | Valid size string | 10MB |
@@ -326,6 +383,13 @@ The following fields must be non-empty and valid:
 | `advanced.verbose` | bool | true or false | false |
 | `advanced.profile` | bool | true or false | false |
 | `advanced.cache_library` | bool | true or false | true |
+| `storage.type` | string | sqlite\|postgres\|graph | sqlite |
+| `storage.database_path` | string | Valid file path | ~/.promptstack/data/history.db |
+| `storage.postgres_url` | string | Valid connection string | "" |
+| `storage.neo4j_url` | string | Valid URL format | "" |
+| `mcp.host` | string | Valid host:port format | "" |
+| `mcp.specialists` | list | Valid specialist names | [] |
+| `plugins.enabled` | bool | true or false | false |
 
 ### Validation Error Messages
 
@@ -349,9 +413,15 @@ Configuration values can be overridden using environment variables. Environment 
 |---------------------|--------------|------|-------|
 | `PROMPTSTACK_CLAUDE_API_KEY` | `api.claude_api_key` | string | Required for AI features |
 | `PROMPTSTACK_MODEL` | `api.model` | string | Claude model selection |
+| `PROMPTSTACK_AI_PROVIDER` | `api.provider` | string | AI provider selection |
 | `PROMPTSTACK_LOG_LEVEL` | `logging.level` | string | debug\|info\|warn\|error |
 | `PROMPTSTACK_DEBUG` | `advanced.debug` | bool | Set to "1" or "true" to enable |
 | `PROMPTSTACK_VERBOSE` | `advanced.verbose` | bool | Set to "1" or "true" to enable |
+| `PROMPTSTACK_STORAGE` | `storage.type` | string | Storage backend selection |
+| `PROMPTSTACK_POSTGRES_URL` | `storage.postgres_url` | string | PostgreSQL connection string |
+| `PROMPTSTACK_NEO4J_URL` | `storage.neo4j_url` | string | Neo4j connection URL |
+| `PROMPTSTACK_MCP_HOST` | `mcp.host` | string | MCP orchestrator address |
+| `PROMPTSTACK_ENABLE_PLUGINS` | `plugins.enabled` | bool | Set to "1" or "true" to enable |
 
 ### Usage Examples
 
@@ -659,13 +729,13 @@ promptstack
 
 Potential future configuration options:
 
-- **Multiple API providers**: Support for other AI providers
 - **Custom themes**: User-defined color schemes
 - **Keybinding customization**: Custom keybinding configurations
-- **Plugin system**: Third-party plugin configuration
 - **Workspace-specific configs**: Per-project configuration files
 - **Cloud sync**: Configuration synchronization across devices
 - **Profiles**: Multiple configuration profiles for different use cases
+- **Additional AI providers**: Support for more AI providers beyond Claude, MCP, and OpenAI
+- **Additional storage backends**: Support for more storage backends beyond SQLite, PostgreSQL, and Neo4j
 
 ---
 

@@ -1,96 +1,281 @@
-# Key Learnings Index - AI Optimized
+# Key Learnings Index
 
-This index provides quick navigation to all issues, patterns, and learnings documented in key-learnings.md with specific line numbers.
+**Purpose**: Index of domain-specific key learnings from previous PromptStack implementation.
 
-## Core Go & Language Issues
+**Status**: ✅ Reorganized - Learnings now organized by domain in [`learnings/`](learnings/) directory
 
-- **Go Embed Limitations** - Line 5: `go:embed` does not support parent directory references (`..`)
-- **Zap Logger Structured Fields** - Line 15: Zap requires structured field objects, not string literals
-- **Regex Matching in Go** - Line 25: Different regex methods return different data types
-- **Go Version Requirements** - Line 49: Some packages require newer Go versions
-
-## Architecture & Design Decisions
-
-- **SQLite Driver Selection** - Line 35: Chose `modernc.org/sqlite` over `github.com/mattn/go-sqlite3`
-- **Project Structure Organization** - Line 59: Standard Go project layout with feature-based internal packages
-- **Error Handling Patterns** - Line 86: Use `fmt.Errorf` with `%w` for error wrapping
-- **Frontmatter Parsing Strategy** - Line 105: Simple string-based parser instead of full YAML library
-- **Placeholder Parsing** - Line 129: Regex with position tracking
-- **Index Scoring Algorithm** - Line 148: Multi-factor scoring for relevance
-- **Validation Strategy** - Line 166: Separate errors and warnings
-- **Database Schema Design** - Line 186: Separate tables with FTS5 for search
-- **Configuration Management** - Line 218: YAML with validation
-- **Starter Prompt Extraction** - Line 247: Version-aware extraction
-- **Logging Strategy** - Line 269: Structured logging with rotation
-
-## Bubble Tea & TUI Patterns
-
-- **Bubble Tea Model Implementation** - Line 287: Standard Bubble Tea model structure with Init(), Update(), View()
-- **Cursor and Viewport Management** - Line 314: Track both cursor position and viewport offset
-- **Auto-save Debouncing with Bubble Tea** - Line 344: Use tea.Tick for timer-based operations
-- **Custom Message Types** - Line 382: Define custom message types for async operations
-- **Status Bar State Management** - Line 410: Track status with explicit states and auto-clear
-- **Text Editor Cursor Positioning** - Line 440: Handle cursor movement across line boundaries
-- **File Path Management for History** - Line 463: Timestamp-based file naming with directory creation
-- **Lipgloss Styling** - Line 486: Define reusable styles and compose them
-- **Centralized Theme System** - Line 511: Single source of truth for all UI colors and styles
-
-## UI Component Patterns
-
-- **Library Browser Implementation** - Line 575: Modal overlay with fuzzy search and preview pane
-- **Modal Overlay Pattern** - Line 631: Visibility flag with Show()/Hide() methods
-- **Fuzzy Matching Integration** - Line 667: sahilm/fuzzy library usage
-- **Split-Pane Layout with Lipgloss** - Line 695: Use lipgloss.JoinHorizontal() for side-by-side panels
-- **Keyboard Navigation with Vim Mode** - Line 718: Conditional keybinding based on vim mode flag
-- **Message-Based Command Execution** - Line 760: Return custom message from Update() for async operations
-- **Command Registry Pattern** - Line 790: Centralized command registration with handler functions
-- **Command Palette Implementation** - Line 832: Modal overlay with fuzzy search and message-based execution
-- **Command Categorization** - Line 877: Group commands by category for better organization
-- **Placeholder Command Handlers** - Line 907: Register commands with placeholder handlers for future implementation
-
-## Error Handling Architecture
-
-- **Error Handling Architecture** - Line 936: Structured error types with severity levels and display strategies
-- **Status Bar Component Design** - Line 979: Message-based updates with auto-dismiss and persistent modes
-- **Modal Component Pattern** - Line 1034: Reusable modal with visibility flag and message-based control
-- **Error Handler Integration** - Line 1089: Centralized error handler with display strategy routing
-- **Import Cycle Prevention** - Line 1144: UI components importing internal packages can create circular dependencies
-- **Error Recovery Strategies** - Line 1178: Graceful degradation with user-friendly messages
-- **Graceful File Read Error Handling** - Line 1227: Comprehensive error handling with graceful degradation
-- **Error Logging Integration** - Line 1366: Centralized error logging with global logger access
-
-## Placeholder System
-
-- **Placeholder System Implementation** - Line 1542: Regex-based parsing with position tracking and navigation
-- **Placeholder Validation Strategy** - Line 1629: Separate errors and warnings with severity levels
-- **Cursor Position Management for Placeholders** - Line 1704: Convert between cursor coordinates and absolute positions
-- **Placeholder Highlighting in TUI** - Line 1755: Line-by-line rendering with position-based highlighting
-- **Theme Integration for Placeholders** - Line 1806: Centralized style for active placeholder highlighting
-- **Text Placeholder Editing Mode** - Line 1830: Vim-style editing mode with state management and value replacement
-- **Confirmation Dialog Integration for Destructive Operations** - Line 2043: Multi-step confirmation workflow with type assertion for Bubble Tea models
-- **Type Assertion for Bubble Tea Model Updates** - Line 2120: Handling tea.Model interface return type with type assertions
-- **AI Applying Indicator and Read-Only Mode** - Line 2143: State-based UI feedback with editing restrictions during async operations
-- **Diff Viewer Modal Implementation** - Line 2207: Viewport-based modal with unified diff display and color-coded changes
-
-## AI Integration
-
-- **AI Client Integration** - Line 2727: Dependency injection with graceful degradation
-- **AI Message-Based Workflow** - Line 2765: Custom message types for async AI operations
-- **Token Budget Enforcement** - Line 2855: Conservative token allocation with proactive warnings
-- **Context Selection Algorithm** - Line 2935: Multi-factor scoring for intelligent prompt selection
-- **Command Palette Integration for AI Features** - Line 3045: Command handler returns success, TUI handles execution
-- **Read-Only Mode During Async Operations** - Line 3115: State-based UI feedback with editing restrictions
-
-## Vim Mode System
-
-- **Vim Mode Transition Logic** - Line 2310: State machine with transition hooks and mode-specific state management
-
-## Future Considerations
-
-- **Future Considerations** - Line 1523: Potential improvements, technical debt, and architecture decisions to revisit
+**Last Updated**: 2026-01-07
 
 ---
 
-**Total Sections**: 59
-**Document Length**: 3185 lines
+## Overview
+
+The original [`key-learnings.md`](key-learnings.md) file (3,118 lines) has been reorganized into domain-specific documents for easier reference during milestone planning and execution.
+
+**New Organization**: [`learnings/`](learnings/) directory with 8 domain-specific documents plus index
+
+---
+
+## Domain-Specific Learning Documents
+
+### Go Fundamentals
+**File**: [`learnings/go-fundamentals.md`](learnings/go-fundamentals.md)
+
+**Description**: Go-specific patterns and pitfalls
+
+**Related Milestones**: M1-M6 (Foundation), M15 (SQLite Setup)
+
+**Key Topics**:
+- Go Embed Limitations
+- Zap Logger Structured Fields
+- Regex Matching in Go
+- SQLite Driver Selection
+- Go Version Requirements
+- Project Structure Organization
+- Error Handling Patterns
+- Frontmatter Parsing Strategy
+
+**Priority**: High - These are foundational learnings applicable to all milestones
+
+---
+
+### Editor Domain
+**File**: [`learnings/editor-domain.md`](learnings/editor-domain.md)
+
+**Description**: Editor implementation patterns
+
+**Related Milestones**: M4, M5, M6, M11, M12, M13, M14
+
+**Key Topics**:
+- Placeholder Parsing
+- Index Scoring Algorithm
+- Validation Strategy
+- Placeholder System Implementation
+- Placeholder Validation Strategy
+- Cursor Position Management for Placeholders
+- Placeholder Highlighting in TUI
+- Theme Integration for Placeholders
+- Text Placeholder Editing Mode
+- Text Editor Cursor Positioning
+- File Path Management for History
+- Lipgloss Styling
+
+**Priority**: High - Directly applicable to editor milestones
+
+---
+
+### UI/TUI Domain
+**File**: [`learnings/ui-domain.md`](learnings/ui-domain.md)
+
+**Description**: UI/TUI implementation patterns
+
+**Related Milestones**: M2, M8, M19, M24, M25, M26, M31, M36, M37
+
+**Key Topics**:
+- Bubble Tea Model Implementation
+- Cursor and Viewport Management
+- Auto-save Debouncing with Bubble Tea
+- Custom Message Types
+- Status Bar State Management
+- Centralized Theme System
+- Library Browser Implementation
+- Modal Overlay Pattern
+- Fuzzy Matching Integration
+- Split-Pane Layout with Lipgloss
+- Keyboard Navigation with Vim Mode
+- Message-Based Command Execution
+- Command Palette Implementation
+- Command Categorization
+- Placeholder Command Handlers
+
+**Priority**: High - Directly applicable to UI milestones
+
+---
+
+### Error Handling
+**File**: [`learnings/error-handling.md`](learnings/error-handling.md)
+
+**Description**: Error handling patterns
+
+**Related Milestones**: M1-M38 (All milestones)
+
+**Key Topics**:
+- Error Handling Architecture
+- Status Bar Component Design
+- Modal Component Pattern
+- Error Handler Integration
+- Import Cycle Prevention
+- Error Recovery Strategies
+- Graceful File Read Error Handling
+- Error Logging Integration
+
+**Priority**: High - Applicable to all milestones
+
+---
+
+### AI Domain
+**File**: [`learnings/ai-domain.md`](learnings/ai-domain.md)
+
+**Description**: AI integration patterns
+
+**Related Milestones**: M27, M28, M29, M30, M31, M32, M33
+
+**Key Topics**:
+- AI Applying Indicator and Read-Only Mode
+- Diff Viewer Modal Implementation
+- AI Message-Based Workflow
+- Token Budget Enforcement
+- Context Selection Algorithm
+- Command Palette Integration for AI Features
+- Read-Only Mode During Async Operations
+
+**Priority**: High - Directly applicable to AI milestones
+
+---
+
+### Vim Domain
+**File**: [`learnings/vim-domain.md`](learnings/vim-domain.md)
+
+**Description**: Vim mode patterns
+
+**Related Milestones**: M34, M35
+
+**Key Topics**:
+- Vim Mode Transition Logic
+- Read-Only Mode During Async Operations
+
+**Priority**: Medium - Applicable to vim milestones
+
+---
+
+### History Domain
+**File**: [`learnings/history-domain.md`](learnings/history-domain.md)
+
+**Description**: History management patterns
+
+**Related Milestones**: M15, M16, M17
+
+**Key Topics**:
+- History Browser Integration
+- History Manager Initialization in Bootstrap
+
+**Priority**: Medium - Applicable to history milestones
+
+---
+
+### Architecture Patterns
+**File**: [`learnings/architecture-patterns.md`](learnings/architecture-patterns.md)
+
+**Description**: Architecture and design patterns
+
+**Related Milestones**: M1-M38 (All milestones)
+
+**Key Topics**:
+- Database Schema Design
+- Configuration Management
+- Starter Prompt Extraction
+- Logging Strategy
+- Command Registry Pattern
+- Confirmation Dialog Integration for Destructive Operations
+- Type Assertion for Bubble Tea Model Updates
+
+**Priority**: Medium - Applicable to multiple milestones
+
+---
+
+## Learnings Directory Index
+
+**File**: [`learnings/README.md`](learnings/README.md)
+
+**Description**: Index and navigation guide for all learning documents
+
+**Contents**:
+- Overview of all learning documents
+- How to use these documents during milestone planning and implementation
+- Document template reference
+- Maintenance guidelines
+- Related documentation links
+
+---
+
+## Original Document
+
+**File**: [`key-learnings.md`](key-learnings.md)
+
+**Status**: Archived - Content has been reorganized into domain-specific documents
+
+**Description**: Original comprehensive learnings document (3,118 lines) organized by topic
+
+**Note**: This document is preserved for reference but should not be used for new implementations. Use the domain-specific documents in the [`learnings/`](learnings/) directory instead.
+
+---
+
+## Organization Plan
+
+**File**: [`key-learnings-organization-plan.md`](key-learnings-organization-plan.md)
+
+**Status**: In Progress - Phase 1 Complete
+
+**Description**: Detailed plan for reorganizing key learnings into domain-specific documents
+
+**Completed Phases**:
+- ✅ Phase 1: Create Learning Documents (All 9 documents created)
+
+**Remaining Phases**:
+- ⏳ Phase 2: Update DOCUMENT-REFERENCE-MATRIX.md
+- ⏳ Phase 3: Update milestone-execution-prompt.md
+- ⏳ Phase 4: Update DOCUMENT-INDEX.md
+- ⏳ Phase 5: Archive Original Document
+
+---
+
+## Quick Reference by Milestone
+
+### Foundation (M1-M6)
+- [`learnings/go-fundamentals.md`](learnings/go-fundamentals.md) - Go-specific patterns
+- [`learnings/ui-domain.md`](learnings/ui-domain.md) - Bubble Tea patterns
+- [`learnings/error-handling.md`](learnings/error-handling.md) - Error handling
+- [`learnings/architecture-patterns.md`](learnings/architecture-patterns.md) - Architecture patterns
+
+### Editor (M4, M5, M6, M11, M12, M13, M14)
+- [`learnings/editor-domain.md`](learnings/editor-domain.md) - Editor implementation
+- [`learnings/ui-domain.md`](learnings/ui-domain.md) - UI patterns
+- [`learnings/error-handling.md`](learnings/error-handling.md) - Error handling
+
+### History (M15, M16, M17)
+- [`learnings/go-fundamentals.md`](learnings/go-fundamentals.md) - SQLite driver
+- [`learnings/history-domain.md`](learnings/history-domain.md) - History patterns
+- [`learnings/error-handling.md`](learnings/error-handling.md) - Error handling
+- [`learnings/architecture-patterns.md`](learnings/architecture-patterns.md) - Database schema
+
+### AI (M27-M33)
+- [`learnings/ai-domain.md`](learnings/ai-domain.md) - AI integration
+- [`learnings/ui-domain.md`](learnings/ui-domain.md) - Diff viewer
+- [`learnings/error-handling.md`](learnings/error-handling.md) - Error handling
+
+### Vim (M34, M35)
+- [`learnings/vim-domain.md`](learnings/vim-domain.md) - Vim mode
+- [`learnings/ui-domain.md`](learnings/ui-domain.md) - Keyboard navigation
+
+### All Milestones
+- [`learnings/error-handling.md`](learnings/error-handling.md) - Error handling (applicable to all)
+- [`learnings/architecture-patterns.md`](learnings/architecture-patterns.md) - Architecture patterns
+
+---
+
+## Related Documentation
+
+- [`key-learnings-organization-plan.md`](key-learnings-organization-plan.md) - Organization plan and rationale
+- [`DOCUMENT-REFERENCE-MATRIX.md`](DOCUMENT-REFERENCE-MATRIX.md) - Document reference matrix (to be updated)
+- [`milestone-execution-prompt.md`](milestone-execution-prompt.md) - Execution prompt (to be updated)
+- [`DOCUMENT-INDEX.md`](DOCUMENT-INDEX.md) - Document index (to be updated)
+- [`project-structure.md`](project-structure.md) - Project structure by domain
+- [`go-style-guide.md`](go-style-guide.md) - Go coding standards
+- [`go-testing-guide.md`](go-testing-guide.md) - Go testing patterns
+
+---
+
+**Total Learning Documents**: 8 domain-specific + 1 index = 9 documents
+**Total Learnings Preserved**: 60+ learning sections from original document
 **Last Updated**: 2026-01-07
+**Status**: ✅ Phase 1 Complete - All learning documents created and indexed
