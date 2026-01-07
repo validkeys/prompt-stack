@@ -138,7 +138,7 @@ Read the next milestone from [`docs/plans/fresh-build/milestones.md`](docs/plans
 Create TWO documents:
 
 ### 6.1 Task List (Concise)
-**Location**: `docs/plans/fresh-build/milestones/M{N}-task-list.md`
+**Location**: `docs/plans/fresh-build/milestone-implementation-plans/M{N}/task-list.md`
 
 **Required Sections**:
 - **Overview**: Goal, deliverables, dependencies
@@ -162,7 +162,7 @@ Create TWO documents:
 - Reference relevant sections from [`STYLE`](go-style-guide.md) and [`TESTING`](go-testing-guide.md)
 
 ### 6.2 Reference Document (Detailed)
-**Location**: `docs/plans/fresh-build/milestones/M{N}-reference.md`
+**Location**: `docs/plans/fresh-build/milestone-implementation-plans/M{N}/reference.md`
 
 **Required Sections**:
 - **Architecture Context**: Domain overview, package structure, dependencies
@@ -216,8 +216,8 @@ Create TWO documents:
 📋 Milestone {N} Planning Complete
 
 📄 Documents Created:
-- Task List: docs/plans/fresh-build/milestones/M{N}-task-list.md
-- Reference: docs/plans/fresh-build/milestones/M{N}-reference.md
+- Task List: docs/plans/fresh-build/milestone-implementation-plans/M{N}/task-list.md
+- Reference: docs/plans/fresh-build/milestone-implementation-plans/M{N}/reference.md
 
 ✅ Document Coverage:
 - Core planning documents: ✅ Read
@@ -300,7 +300,7 @@ go test ./... -cover
 - [ ] Interfaces defined at usage site
 
 ### 7.6 Create Checkpoint Document
-**Location**: `docs/plans/fresh-build/milestones/M{N}-checkpoints/task-{N}-checkpoint.md`
+**Location**: `docs/plans/fresh-build/milestone-implementation-plans/M{N}/checkpoints/task-{N}-checkpoint.md`
 
 **Required Sections**:
 - **Completion Status**: Date, status (✅ Complete | ⚠️ Complete with notes | ❌ Blocked)
@@ -324,7 +324,7 @@ go test ./... -cover
 - Coverage: {N}%
 - Build: ✅ Success
 
-📄 Checkpoint: docs/plans/fresh-build/milestones/M{N}-checkpoints/task-{N}-checkpoint.md
+📄 Checkpoint: docs/plans/fresh-build/milestone-implementation-plans/M{N}/checkpoints/task-{N}-checkpoint.md
 
 ⏸️  STOPPING for human verification.
 
@@ -349,7 +349,7 @@ go build ./...
 ```
 
 ### 8.2 Create Milestone Test Guide
-**Location**: `docs/plans/fresh-build/milestones/M{N}-testing-guide.md`
+**Location**: `docs/plans/fresh-build/milestone-implementation-plans/M{N}/testing-guide.md`
 
 **Required Sections**:
 - **How to Test This Milestone**: Prerequisites, manual testing steps, automated testing, integration testing
@@ -357,7 +357,7 @@ go build ./...
 - **Troubleshooting**: Common problems and solutions
 
 ### 8.3 Create Milestone Summary
-**Location**: `docs/plans/fresh-build/milestones/M{N}-summary.md`
+**Location**: `docs/plans/fresh-build/milestone-implementation-plans/M{N}/summary.md`
 
 **Required Sections**:
 - **Overview**: Milestone number, title, completion date, status
@@ -386,11 +386,11 @@ go build ./...
 - Build: ✅ Success
 
 📄 Documents Created:
-- Task List: docs/plans/fresh-build/milestones/M{N}-task-list.md
-- Reference: docs/plans/fresh-build/milestones/M{N}-reference.md
-- Testing Guide: docs/plans/fresh-build/milestones/M{N}-testing-guide.md
-- Summary: docs/plans/fresh-build/milestones/M{N}-summary.md
-- Checkpoints: docs/plans/fresh-build/milestones/M{N}-checkpoints/
+- Task List: docs/plans/fresh-build/milestone-implementation-plans/M{N}/task-list.md
+- Reference: docs/plans/fresh-build/milestone-implementation-plans/M{N}/reference.md
+- Testing Guide: docs/plans/fresh-build/milestone-implementation-plans/M{N}/testing-guide.md
+- Summary: docs/plans/fresh-build/milestone-implementation-plans/M{N}/summary.md
+- Checkpoints: docs/plans/fresh-build/milestone-implementation-plans/M{N}/checkpoints/
 
 ⏸️  STOPPING for milestone review and testing.
 
@@ -599,19 +599,26 @@ docs/plans/fresh-build/
 ├── project-structure.md                   # Architecture guide
 ├── DOCUMENT-REFERENCE-MATRIX.md           # Milestone to document mapping
 ├── DOCUMENT-INDEX.md                     # Complete document index
-└── milestones/
-    ├── progress.md                        # Overall progress tracking
-    ├── ENHANCED-TEST-CRITERIA-TEMPLATE.md # Acceptance criteria template
-    ├── M1-task-list.md                    # Milestone 1 tasks
-    ├── M1-reference.md                    # Milestone 1 reference
-    ├── M1-testing-guide.md                # Milestone 1 testing
-    ├── M1-summary.md                      # Milestone 1 summary
-    ├── M1-checkpoints/
-    │   ├── task-1-checkpoint.md
-    │   ├── task-2-checkpoint.md
+├── milestones/                            # Reference documents only
+│   ├── progress.md                        # Overall progress tracking
+│   ├── ENHANCED-TEST-CRITERIA-TEMPLATE.md # Acceptance criteria template
+│   ├── ACCEPTANCE-CRITERIA-*.md           # Detailed acceptance criteria
+│   ├── *-TESTING-GUIDE.md                 # Testing guides by milestone group
+│   └── ...
+└── milestone-implementation-plans/        # Execution artifacts
+    ├── M1/
+    │   ├── task-list.md                    # Milestone 1 tasks
+    │   ├── reference.md                    # Milestone 1 reference
+    │   ├── testing-guide.md                # Milestone 1 testing
+    │   ├── summary.md                      # Milestone 1 summary
+    │   └── checkpoints/
+    │       ├── task-1-checkpoint.md
+    │       ├── task-2-checkpoint.md
+    │       └── ...
+    ├── M2/
+    │   ├── task-list.md
+    │   ├── reference.md
     │   └── ...
-    ├── M2-task-list.md
-    ├── M2-reference.md
     └── ...
 ```
 
