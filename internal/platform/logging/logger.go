@@ -1,10 +1,11 @@
+// Package logging provides structured logging infrastructure with file rotation
+// and environment variable control.
 package logging
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/mitchellh/go-homedir"
 	"go.uber.org/zap"
@@ -19,13 +20,8 @@ const (
 	DefaultMaxAge     = 30 // days
 )
 
-var (
-	globalLogger *zap.Logger
-	loggerMutex  sync.RWMutex
-)
-
-// Initialize sets up the global logger with file rotation
-func Initialize() (*zap.Logger, error) {
+// New creates a new logger instance with file rotation
+func New() (*zap.Logger, error) {
 	// Get home directory
 	home, err := homedir.Dir()
 	if err != nil {
@@ -66,24 +62,7 @@ func Initialize() (*zap.Logger, error) {
 	// Create logger
 	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 
-	// Store global logger
-	loggerMutex.Lock()
-	globalLogger = logger
-	loggerMutex.Unlock()
-
 	return logger, nil
-}
-
-// GetLogger returns the global logger instance
-func GetLogger() (*zap.Logger, error) {
-	loggerMutex.RLock()
-	defer loggerMutex.RUnlock()
-
-	if globalLogger == nil {
-		return nil, fmt.Errorf("logger not initialized")
-	}
-
-	return globalLogger, nil
 }
 
 // getLogLevel reads log level from environment variable

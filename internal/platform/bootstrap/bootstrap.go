@@ -1,3 +1,4 @@
+// Package bootstrap provides application initialization and startup logic.
 package bootstrap
 
 import (
@@ -5,7 +6,6 @@ import (
 	"os"
 
 	"github.com/kyledavis/prompt-stack/internal/config"
-	"github.com/kyledavis/prompt-stack/internal/setup"
 	"go.uber.org/zap"
 )
 
@@ -35,7 +35,7 @@ func (b *Bootstrap) Run() error {
 		b.logger.Info("Config not found, running setup wizard")
 
 		// Run setup wizard
-		wizard := setup.NewWizard(configPath, b.logger)
+		wizard := config.NewWizard(configPath, b.logger)
 		if err := wizard.Run(); err != nil {
 			return fmt.Errorf("setup wizard failed: %w", err)
 		}

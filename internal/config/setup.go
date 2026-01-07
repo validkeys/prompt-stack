@@ -1,4 +1,6 @@
-package setup
+// Package config provides application configuration management including
+// loading, validation, and persistence of user settings.
+package config
 
 import (
 	"bufio"
@@ -6,7 +8,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kyledavis/prompt-stack/internal/config"
 	"go.uber.org/zap"
 )
 
@@ -50,8 +51,8 @@ func (w *Wizard) Run() error {
 	}
 
 	// Create config
-	cfg := &config.Config{
-		Version:      config.DefaultVersion,
+	cfg := &Config{
+		Version:      DefaultVersion,
 		ClaudeAPIKey: apiKey,
 		Model:        model,
 		VimMode:      vimMode,
@@ -88,8 +89,8 @@ func (w *Wizard) promptAPIKey() (string, error) {
 		apiKey := strings.TrimSpace(input)
 
 		// Validate API key format
-		if !strings.HasPrefix(apiKey, "sk-ant-") {
-			fmt.Println("Invalid API key format. API keys should start with 'sk-ant-'")
+		if err := validateAPIKey(apiKey); err != nil {
+			fmt.Printf("Invalid API key: %v\n", err)
 			continue
 		}
 
@@ -97,11 +98,31 @@ func (w *Wizard) promptAPIKey() (string, error) {
 	}
 }
 
+// validateAPIKey checks if the API key meets format requirements
+func validateAPIKey(apiKey string) error {
+	if !strings.HasPrefix(apiKey, APIKeyPrefix) {
+		return fmt.Errorf("API key must start with '%s'", APIKeyPrefix)
+	}
+
+	if len(apiKey) < APIKeyMinLength {
+		return fmt.Errorf("API key must be at least %d characters", APIKeyMinLength)
+	}
+
+	// Check for valid characters (alphanumeric and hyphens)
+	for _, r := range apiKey {
+		if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '-') {
+			return fmt.Errorf("API key contains invalid character '%c'", r)
+		}
+	}
+
+	return nil
+}
+
 func (w *Wizard) promptModel() (string, error) {
 	fmt.Println("\nSelect Claude model:")
-	fmt.Println("1. claude-3-sonnet-20240229 (default)")
-	fmt.Println("2. claude-3-opus-20240229")
-	fmt.Println("3. claude-3-haiku-20240307")
+	fmt.Printf("1. %s (default)\n", ModelSonnet)
+	fmt.Printf("2. %s\n", ModelOpus)
+	fmt.Printf("3. %s\n", ModelHaiku)
 	fmt.Print("Enter choice [1-3]: ")
 
 	input, err := w.reader.ReadString('\n')
@@ -113,14 +134,14 @@ func (w *Wizard) promptModel() (string, error) {
 
 	switch choice {
 	case "1", "":
-		return "claude-3-sonnet-20240229", nil
+		return ModelSonnet, nil
 	case "2":
-		return "claude-3-opus-20240229", nil
+		return ModelOpus, nil
 	case "3":
-		return "claude-3-haiku-20240307", nil
+		return ModelHaiku, nil
 	default:
 		fmt.Println("Invalid choice. Using default model.")
-		return "claude-3-sonnet-20240229", nil
+		return ModelSonnet, nil
 	}
 }
 
@@ -136,7 +157,7 @@ func (w *Wizard) promptVimMode() (bool, error) {
 	return choice == "y" || choice == "yes", nil
 }
 
-func (w *Wizard) showSummary(cfg *config.Config) {
+func (w *Wizard) showSummary(cfg *Config) {
 	fmt.Println("\nConfiguration Summary:")
 	fmt.Printf("  API Key: %s\n", maskAPIKey(cfg.ClaudeAPIKey))
 	fmt.Printf("  Model: %s\n", cfg.Model)

@@ -1,3 +1,5 @@
+// Package config provides application configuration management including
+// loading, validation, and persistence of user settings.
 package config
 
 import (
@@ -34,7 +36,7 @@ vim_mode: false`,
 			want: &Config{
 				Version:      "1.0.0",
 				ClaudeAPIKey: "sk-ant-test",
-				Model:        "claude-3-sonnet-20240229",
+				Model:        ModelSonnet,
 				VimMode:      false,
 			},
 			wantErr: false,
@@ -84,14 +86,14 @@ func TestConfigValidate(t *testing.T) {
 			name: "valid config",
 			config: &Config{
 				ClaudeAPIKey: "sk-ant-test",
-				Model:        "claude-3-sonnet-20240229",
+				Model:        ModelSonnet,
 			},
 			wantErr: false,
 		},
 		{
 			name: "missing api key",
 			config: &Config{
-				Model: "claude-3-sonnet-20240229",
+				Model: ModelSonnet,
 			},
 			wantErr: true,
 		},
@@ -153,7 +155,7 @@ func TestSaveConfig(t *testing.T) {
 	cfg := &Config{
 		Version:      "1.0.0",
 		ClaudeAPIKey: "sk-ant-test",
-		Model:        "claude-3-sonnet-20240229",
+		Model:        ModelSonnet,
 		VimMode:      false,
 	}
 
@@ -194,15 +196,15 @@ func TestConfigValidateDefaults(t *testing.T) {
 				ClaudeAPIKey: "sk-ant-test",
 				Model:        "",
 			},
-			want: "claude-3-sonnet-20240229",
+			want: ModelSonnet,
 		},
 		{
 			name: "model preserved",
 			config: &Config{
 				ClaudeAPIKey: "sk-ant-test",
-				Model:        "claude-3-opus-20240229",
+				Model:        ModelOpus,
 			},
-			want: "claude-3-opus-20240229",
+			want: ModelOpus,
 		},
 	}
 

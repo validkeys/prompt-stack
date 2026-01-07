@@ -1,3 +1,4 @@
+// Package bootstrap provides application initialization and startup logic.
 package bootstrap
 
 import (
@@ -41,7 +42,7 @@ func TestBootstrapRun(t *testing.T) {
 		cfg := &config.Config{
 			Version:      "1.0.0",
 			ClaudeAPIKey: "sk-ant-test",
-			Model:        "claude-3-sonnet-20240229",
+			Model:        config.ModelSonnet,
 			VimMode:      false,
 		}
 
@@ -63,7 +64,7 @@ func TestBootstrapRun(t *testing.T) {
 		cfg := &config.Config{
 			Version:      "0.9.0",
 			ClaudeAPIKey: "sk-ant-test",
-			Model:        "claude-3-sonnet-20240229",
+			Model:        config.ModelSonnet,
 			VimMode:      false,
 		}
 
@@ -85,7 +86,7 @@ func TestBootstrapRun(t *testing.T) {
 		cfg := &config.Config{
 			Version:      "1.0.0",
 			ClaudeAPIKey: "sk-ant-test",
-			Model:        "claude-3-sonnet-20240229",
+			Model:        config.ModelSonnet,
 			VimMode:      false,
 		}
 

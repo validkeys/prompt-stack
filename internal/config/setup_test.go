@@ -1,4 +1,6 @@
-package setup
+// Package config provides application configuration management including
+// loading, validation, and persistence of user settings.
+package config
 
 import (
 	"bufio"
@@ -7,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kyledavis/prompt-stack/internal/config"
 	"go.uber.org/zap"
 )
 
@@ -44,7 +45,7 @@ func TestWizardRun(t *testing.T) {
 	defer logger.Sync()
 
 	// Simulate user input
-	input := "sk-ant-test123456789\n1\ny\ny\n"
+	input := "sk-ant-test123456789012345\n1\ny\ny\n"
 	reader := bufio.NewReader(strings.NewReader(input))
 
 	wizard := &Wizard{
@@ -65,17 +66,17 @@ func TestWizardRun(t *testing.T) {
 	}
 
 	// Load and verify config
-	cfg, err := config.LoadConfig(configPath)
+	cfg, err := LoadConfig(configPath)
 	if err != nil {
 		t.Errorf("failed to load config: %v", err)
 	}
 
-	if cfg.ClaudeAPIKey != "sk-ant-test123456789" {
-		t.Errorf("API key = %s, want sk-ant-test123456789", cfg.ClaudeAPIKey)
+	if cfg.ClaudeAPIKey != "sk-ant-test123456789012345" {
+		t.Errorf("API key = %s, want sk-ant-test123456789012345", cfg.ClaudeAPIKey)
 	}
 
-	if cfg.Model != "claude-3-sonnet-20240229" {
-		t.Errorf("Model = %s, want claude-3-sonnet-20240229", cfg.Model)
+	if cfg.Model != ModelSonnet {
+		t.Errorf("Model = %s, want %s", cfg.Model, ModelSonnet)
 	}
 
 	if !cfg.VimMode {
@@ -92,14 +93,14 @@ func TestPromptAPIKey(t *testing.T) {
 	}{
 		{
 			name:    "valid api key",
-			input:   "sk-ant-test123\n",
-			want:    "sk-ant-test123",
+			input:   "sk-ant-test123456789012345\n",
+			want:    "sk-ant-test123456789012345",
 			wantErr: false,
 		},
 		{
 			name:    "invalid api key format",
-			input:   "invalid-key\nsk-ant-test123\n",
-			want:    "sk-ant-test123",
+			input:   "invalid-key\nsk-ant-test123456789012345\n",
+			want:    "sk-ant-test123456789012345",
 			wantErr: false,
 		},
 	}
@@ -137,27 +138,27 @@ func TestPromptModel(t *testing.T) {
 		{
 			name:  "default model",
 			input: "\n",
-			want:  "claude-3-sonnet-20240229",
+			want:  ModelSonnet,
 		},
 		{
 			name:  "sonnet model",
 			input: "1\n",
-			want:  "claude-3-sonnet-20240229",
+			want:  ModelSonnet,
 		},
 		{
 			name:  "opus model",
 			input: "2\n",
-			want:  "claude-3-opus-20240229",
+			want:  ModelOpus,
 		},
 		{
 			name:  "haiku model",
 			input: "3\n",
-			want:  "claude-3-haiku-20240307",
+			want:  ModelHaiku,
 		},
 		{
 			name:  "invalid choice defaults",
 			input: "99\n",
-			want:  "claude-3-sonnet-20240229",
+			want:  ModelSonnet,
 		},
 	}
 

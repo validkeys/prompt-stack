@@ -1,3 +1,5 @@
+// Package config provides application configuration management including
+// loading, validation, and persistence of user settings.
 package config
 
 import (
@@ -10,9 +12,21 @@ import (
 )
 
 const (
+	// Application metadata
+	DefaultVersion = "1.0.0"
+	AppVersion     = "1.0.0"
+
+	// File paths
 	DefaultConfigPath = ".promptstack/config.yaml"
-	DefaultVersion    = "1.0.0"
-	AppVersion        = "1.0.0"
+
+	// API key validation
+	APIKeyPrefix    = "sk-ant-"
+	APIKeyMinLength = 20
+
+	// Model identifiers
+	ModelSonnet = "claude-3-sonnet-20240229"
+	ModelOpus   = "claude-3-opus-20240229"
+	ModelHaiku  = "claude-3-haiku-20240307"
 )
 
 type Config struct {
@@ -25,11 +39,11 @@ type Config struct {
 // Validate checks if the configuration is valid
 func (c *Config) Validate() error {
 	if c.ClaudeAPIKey == "" {
-		return fmt.Errorf("claude_api_key is required")
+		return fmt.Errorf("claude api key is required")
 	}
 
 	if c.Model == "" {
-		c.Model = "claude-3-sonnet-20240229" // Default
+		c.Model = ModelSonnet // Default
 	}
 
 	return nil
