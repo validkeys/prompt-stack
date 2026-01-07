@@ -6,52 +6,52 @@
 
 ---
 
-## Milestone 1: Bootstrap & Config
+## Milestone 1: Bootstrap & Config ✅ **COMPLETED**
 **Goal:** Initialize application foundation
 
 **Deliverables:**
-- Config structure at `~/.promptstack/config.yaml`
-- First-run interactive setup wizard
-- Logging setup with zap
-- Version tracking
+- Config structure at `~/.promptstack/config.yaml` ✅
+- First-run interactive setup wizard ✅
+- Logging setup with zap ✅
+- Version tracking ✅
 
 **Test Criteria:**
 
 ### Functional Requirements
-- [ ] App launches without errors on fresh install
-- [ ] Config file created at `~/.promptstack/config.yaml` with correct structure
-- [ ] Setup wizard prompts for API key and preferences
-  - [ ] Validates API key format before accepting
-  - [ ] Shows error message for invalid keys
-  - [ ] Allows re-entry of invalid fields
-- [ ] Logs written to `~/.promptstack/debug.log`
-  - [ ] Log file created with correct permissions (0600)
-  - [ ] Log entries include timestamp and level
-  - [ ] Log rotation works at 10MB limit
-- [ ] Version stored in config and compared on startup
+- [x] App launches without errors on fresh install
+- [x] Config file created at `~/.promptstack/config.yaml` with correct structure
+- [x] Setup wizard prompts for API key and preferences
+  - [x] Validates API key format before accepting
+  - [x] Shows error message for invalid keys
+  - [x] Allows re-entry of invalid fields
+- [x] Logs written to `~/.promptstack/debug.log`
+  - [x] Log file created with correct permissions (0600)
+  - [x] Log entries include timestamp and level
+  - [ ] Log rotation works at 10MB limit (not manually tested)
+- [x] Version stored in config and compared on startup
 
 ### Integration Requirements
-- [ ] Config loading integrates with logging system
-- [ ] Setup wizard integrates with config persistence
-- [ ] Version tracking integrates with starter prompt extraction
+- [x] Config loading integrates with logging system
+- [x] Setup wizard integrates with config persistence
+- [ ] Version tracking integrates with starter prompt extraction (N/A - no starter prompts yet)
 
 ### Edge Cases & Error Handling
-- [ ] Handle missing config directory (create automatically)
-- [ ] Handle corrupted config file (show error, offer reset)
-- [ ] Handle invalid API key format (reject with clear message)
-- [ ] Handle read-only filesystem (show error, exit gracefully)
-- [ ] Handle interrupted setup wizard (resume on next launch)
+- [x] Handle missing config directory (create automatically)
+- [ ] Handle corrupted config file (show error, offer reset) (not manually tested)
+- [x] Handle invalid API key format (reject with clear message)
+- [ ] Handle read-only filesystem (show error, exit gracefully) (not manually tested)
+- [ ] Handle interrupted setup wizard (resume on next launch) (not manually tested)
 
 ### Performance Requirements
-- [ ] App startup time <500ms on fresh install
-- [ ] Config file read/write <50ms
-- [ ] Log file write <10ms per entry
+- [x] App startup time <500ms on fresh install
+- [x] Config file read/write <50ms
+- [x] Log file write <10ms per entry
 
 ### User Experience Requirements
-- [ ] Setup wizard provides clear instructions
-- [ ] Error messages are actionable and specific
-- [ ] Progress indicators shown during initialization
-- [ ] Keyboard navigation works in setup wizard
+- [x] Setup wizard provides clear instructions
+- [x] Error messages are actionable and specific
+- [ ] Progress indicators shown during initialization (not manually tested)
+- [ ] Keyboard navigation works in setup wizard (not manually tested)
 
 **Files:** [`internal/config/config.go`], [`internal/setup/wizard.go`], [`internal/logging/logger.go`], [`cmd/promptstack/main.go`]
 

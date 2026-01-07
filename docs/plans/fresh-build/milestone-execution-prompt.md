@@ -97,6 +97,11 @@ Then read context-specific documents in a second batch.
 - [ ] Key learnings from [`LEARNINGS`](learnings/) are referenced
 - [ ] Key learnings are applied to implementation plan
 - [ ] Deviations from key learnings are documented with justification
+- [ ] **NEW**: Acceptance criteria use RFC 2119 keywords (MUST/SHOULD/MAY)
+- [ ] **NEW**: Testing requirements include coverage targets and critical scenarios
+- [ ] **NEW**: Navigation guide included in reference documents
+- [ ] **NEW**: All code examples pass validation checklist (6.2.1)
+- [ ] **NEW**: Code examples compile with correct imports from DEPENDENCIES.md
 
 **⚠️ DO NOT PROCEED until all checks pass.**
 
@@ -135,6 +140,12 @@ Read the next milestone from [`docs/plans/fresh-build/milestones.md`](docs/plans
 
 ## 6. Step 2: Generate Task List
 
+**⚠️ CRITICAL: Document Size Limit**
+All documents created during milestone execution MUST be MAX 600 lines. If a document needs more information than 600 lines, split it into multiple files using the `-part-{N}.md` suffix pattern:
+- Example: `reference.md` → `reference.md`, `reference-part-2.md`, `reference-part-3.md`
+- Each part should be logically organized and self-contained
+- Reference subsequent parts in the main document
+
 Create TWO documents:
 
 ### 6.1 Task List (Concise)
@@ -142,6 +153,7 @@ Create TWO documents:
 
 **Required Sections**:
 - **Overview**: Goal, deliverables, dependencies
+- **Pre-Implementation Checklist**: Verify before starting (see 6.1.1)
 - **Tasks**: Ordered by dependency, each with:
   - Title
   - Dependencies (None | Task {N})
@@ -149,7 +161,8 @@ Create TWO documents:
   - Integration Points (if any)
   - Estimated Complexity (Low | Medium | High)
   - Description (1-2 sentences)
-  - Acceptance Criteria (specific, testable)
+  - Acceptance Criteria (specific, testable, measurable using RFC 2119 keywords)
+  - Testing Requirements (coverage target, critical scenarios, edge cases)
   - Testing Guide Reference (from [`MATRIX`](DOCUMENT-REFERENCE-MATRIX.md))
   - Acceptance Criteria Document (if applicable)
 
@@ -161,10 +174,67 @@ Create TWO documents:
 - Note integration points with existing code
 - Reference relevant sections from [`STYLE`](go-style-guide.md) and [`TESTING`](go-testing-guide.md)
 
+**Acceptance Criteria Guidelines**:
+- Use RFC 2119 keywords (MUST/SHOULD/MAY/MUST NOT)
+- Include measurable outcomes (e.g., "< 50ms", "> 80% coverage")
+- Specify exact formats (e.g., "Error format: 'failed to X: %w'")
+- Define success conditions (e.g., "File MUST exist at exact path")
+- Include negative tests (e.g., "MUST reject invalid input with specific error")
+
+**Testing Requirements Guidelines**:
+- Coverage Target: Specify minimum percentage (e.g., "> 80%")
+- Critical Test Scenarios: List 3-5 must-test paths
+- Test Execution Order: Unit → Integration → Manual
+- Edge Cases: List specific edge cases for this task
+
+### 6.1.1 Pre-Implementation Checklist
+
+**MUST be included in every task-list.md:**
+
+```markdown
+## Pre-Implementation Checklist
+
+Before writing any code, verify:
+
+### Package Structure
+- [ ] All file paths match [`project-structure.md`](../../project-structure.md)
+- [ ] Packages are in correct domain (config, platform, domain)
+- [ ] No packages in wrong locations (e.g., setup as separate package)
+
+### Dependency Injection
+- [ ] No global state variables planned
+- [ ] All dependencies passed through constructors
+- [ ] Logger passed explicitly, not accessed globally
+
+### Documentation
+- [ ] Package comments planned for all new packages
+- [ ] Exported function comments planned
+- [ ] Error messages follow lowercase, no punctuation style
+
+### Testing
+- [ ] Test files planned alongside implementation files
+- [ ] Table-driven test structure planned
+- [ ] Mock interfaces identified for testing
+
+### Style Compliance
+- [ ] Constructor naming follows New() or NewType() pattern
+- [ ] Error wrapping uses %w consistently
+- [ ] Method receivers are consistent (all pointer or all value)
+- [ ] No stuttering in names (e.g., config.ConfigLoad → config.Load)
+
+### Constants
+- [ ] Magic strings identified for extraction to constants
+- [ ] Validation rules defined as constants
+- [ ] No hardcoded values in implementation
+
+**If any item is unchecked, review and adjust plan before proceeding.**
+```
+
 ### 6.2 Reference Document (Detailed)
 **Location**: `docs/plans/fresh-build/milestone-implementation-plans/M{N}/reference.md`
 
 **Required Sections**:
+- **Navigation Guide**: How to use this document (see 6.2.0)
 - **Architecture Context**: Domain overview, package structure, dependencies
 - **Style Guide References**: Relevant patterns from [`STYLE`](go-style-guide.md) with examples, common pitfalls
 - **Testing Guide References**:
@@ -178,9 +248,63 @@ Create TWO documents:
   - Common pitfalls to avoid
   - Implementation examples from previous attempts
 - **Implementation Notes**: For each task:
-  - Code examples (Go structure)
-  - Test examples (Go structure)
+  - Code examples (Go structure) - MUST pass validation (see 6.2.1)
+  - Test examples (Go structure) - MUST pass validation (see 6.2.1)
   - Integration considerations
+  - Rollback scenarios (if applicable)
+
+### 6.2.0 Navigation Guide Requirements
+
+**Each reference document (including parts) MUST include at the top:**
+
+```markdown
+## How to Use This Document
+
+**Read this section when:**
+- [Specific scenario 1 - e.g., "Before implementing Task 2"]
+- [Specific scenario 2 - e.g., "When debugging config loading issues"]
+- [Specific scenario 3 - e.g., "To understand error handling patterns"]
+
+**Key sections:**
+- Lines X-Y: [Topic] - Read before Task N
+- Lines A-B: [Topic] - Reference during Task M implementation
+- Lines C-D: [Topic] - Consult when writing tests
+
+**Related documents:**
+- See [other-doc.md] for [related topic]
+- Cross-reference with [another-doc.md] for [integration details]
+```
+
+### 6.2.1 Code Example Validation Requirements
+
+**All code examples in reference documents MUST meet these criteria:**
+
+**Compilation Requirements**:
+- [ ] Code MUST compile without errors if extracted
+- [ ] All imports MUST match actual usage
+- [ ] Use actual dependency names from [`DEPENDENCIES.md`](DEPENDENCIES.md)
+- [ ] No placeholder or pseudo-code in production examples
+
+**Style Compliance**:
+- [ ] Follow exact patterns from [`STYLE`](go-style-guide.md)
+- [ ] Include error handling per [`error-handling.md`](learnings/error-handling.md)
+- [ ] Use proper error wrapping with `%w`
+- [ ] Include comments on all exported functions
+- [ ] No stuttering in names (e.g., `config.ConfigLoad` → `config.Load`)
+
+**Test Alignment**:
+- [ ] Test examples MUST match code example signatures
+- [ ] Test examples MUST follow [`TESTING`](go-testing-guide.md) patterns
+- [ ] Include table-driven tests where appropriate
+- [ ] Cover both success and error paths
+
+**Verification Process**:
+1. Write code example
+2. Verify imports match actual package usage (check go.mod)
+3. Check against [`STYLE`](go-style-guide.md) checklist
+4. Ensure test example matches code signatures
+5. Confirm example would compile in actual project context
+6. Verify error handling follows patterns from [`error-handling.md`](learnings/error-handling.md)
 
 **Testing Guides by Milestone Group**:
 - Foundation (M1-M6): [`FOUNDATION-TESTING-GUIDE.md`](milestones/FOUNDATION-TESTING-GUIDE.md)
