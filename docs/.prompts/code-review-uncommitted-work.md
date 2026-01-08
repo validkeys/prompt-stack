@@ -65,7 +65,19 @@ Assess adherence to [`bubble-tea-best-practices.md`](../../bubble-tea-best-pract
 - **Initialization**: Proper Init() implementation returning initial Commands
 - **Testing**: Message simulation and effect verification per [`bubble-tea-testing-best-practices.md`](../plans/fresh-build/bubble-tea-testing-best-practices.md)
 
-### 7. Code Quality Issues
+### 7. OpenCode Design System Compliance
+Verify adherence to [`opencode-design-system.md`](../plans/fresh-build/opencode-design-system.md):
+- **Color Usage**: Consistent use of Catppuccin Mocha palette for backgrounds, foregrounds, accents, and borders
+- **Theme Integration**: Proper use of theme helpers from [`ui/theme/theme.go`](../../ui/theme/theme.go)
+- **Spacing System**: Consistent padding (1-2 units), margins (1-2 units), and gutters (1 unit)
+- **Component Patterns**: Modal dialogs, status bars, input fields, and lists follow established patterns
+- **Visual Hierarchy**: Clear separation of primary, secondary, and muted text colors
+- **Interactive Elements**: Proper hover/focus states, clear visual feedback, and consistent padding/borders
+- **Layout Patterns**: Modal dialogs centered with rounded borders, status bars at bottom, proper responsive behavior
+- **Accessibility**: Sufficient color contrast, keyboard navigation support, and screen reader compatibility
+- **Lipgloss Usage**: Proper use of lipgloss styles, extending base styles for components, consistent styling approach
+
+### 8. Code Quality Issues
 Identify any:
 - **Anti-patterns**: `init()` side effects, panic in library code, naked returns, generic variable names
 - **Code Smells**: Long functions, tight coupling, hidden dependencies
@@ -99,7 +111,7 @@ Please structure your review as follows:
 ### ⚠️ Issues Found
 For each issue, provide:
 - **Severity**: Critical / Major / Minor
-- **Category**: Code Quality / Structure / Testing / Requirements / Performance / Security / Commit Readiness
+- **Category**: Code Quality / Structure / Testing / Requirements / Performance / Security / Design System / Commit Readiness
 - **Location**: File path and line number
 - **Description**: What's wrong and why it matters
 - **Recommendation**: Specific fix or improvement
