@@ -860,4 +860,34 @@ func assertEqual(t *testing.T, got, want string) {
 
 ---
 
+## Related Documentation
+
+### Bubble Tea Testing Best Practices
+
+For comprehensive guidance on testing Bubble Tea TUI applications, see [`bubble-tea-testing-best-practices.md`](./bubble-tea-testing-best-practices.md).
+
+**Key Topics Covered**:
+- Effect-first testing philosophy
+- Essential test patterns for Bubble Tea
+- Message simulation and input sequences
+- Test helpers for AI development
+- Anti-patterns to avoid
+- AI development checklist
+
+**Why This Matters**: The best practices document was created in response to bug #002 (keyboard input not working), which occurred because tests didn't verify input handling effects. Following these practices prevents similar bugs.
+
+**Quick Reference**:
+| Pattern | Use Case | Example |
+|---------|----------|---------|
+| Table-driven | Multiple test cases | `TestUpdateHandlesAllMessages` |
+| Input simulation | User workflows | `TestTypingWorkflow` |
+| Edge cases | Boundary conditions | `TestEdgeCases` |
+| Test helpers | Reduce boilerplate | `TypeText()`, `PressKey()` |
+
+**See Also**:
+- [Test Review Analysis](./milestone-implementation-plans/M2/code-reviews/test-review-against-best-practices.md) - Detailed review of existing tests against best practices
+- [Test Improvement Implementation Plan](./milestone-implementation-plans/M2/code-reviews/test-improvement-implementation-plan.md) - Step-by-step plan to align tests with best practices
+
+---
+
 **Remember**: Tests are documentation. Make them clear, maintainable, and focused on behavior.

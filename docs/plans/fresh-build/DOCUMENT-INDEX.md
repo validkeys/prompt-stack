@@ -134,6 +134,20 @@
 
 **When to Use**: Always - for all testing
 
+### bubble-tea-testing-best-practices.md
+**Purpose**: AI-focused testing guide for interactive Bubble Tea TUI systems
+**Key Sections**:
+- Core Principle: Test Effects, Not Implementation
+- Essential Test Patterns (Message Simulation, Input Sequences, Edge Cases)
+- Test Helpers for AI Development (TypeText, PressKey, AssertState)
+- Anti-Patterns to Avoid (don't test view output, don't ignore commands, don't test private methods)
+- Official Documentation links (Bubble Tea Tutorials, Examples, Lip Gloss)
+- AI Development Checklist (all message types, input sequences, edge cases, state transitions, commands, errors, performance)
+- Quick Reference table (table-driven, input simulation, edge cases, test helpers)
+- Key Takeaway: Bug #002 prevention through effect-based testing
+
+**When to Use**: M2, M8, M19, M24, M25, M26, M31, M36, M37 (UI/TUI milestones) - for Bubble Tea component testing
+
 ### ENHANCED-TEST-CRITERIA-TEMPLATE.md
 **Purpose**: Template for writing comprehensive acceptance criteria
 **Key Sections**:
@@ -610,12 +624,13 @@
 - Testing guide from FOUNDATION-TESTING-GUIDE.md
 
 ### M2: Basic TUI Shell
-**Documents**: Core Planning + project-structure.md (UI domain) + FOUNDATION-TESTING-GUIDE.md
+**Documents**: Core Planning + project-structure.md (UI domain) + FOUNDATION-TESTING-GUIDE.md + bubble-tea-testing-best-practices.md
 **Key Information**:
 - Bubble Tea model structure from project-structure.md
 - Status bar from project-structure.md
 - Theme system from project-structure.md
 - Testing guide from FOUNDATION-TESTING-GUIDE.md
+- Bubble Tea testing patterns from bubble-tea-testing-best-practices.md
 
 ### M3: File I/O Foundation
 **Documents**: Core Planning + project-structure.md (platform/files) + FOUNDATION-TESTING-GUIDE.md
@@ -662,12 +677,13 @@
 - Testing guide from LIBRARY-INTEGRATION-TESTING-GUIDE.md
 
 ### M8: Library Browser UI
-**Documents**: Core Planning + project-structure.md (ui/browser) + LIBRARY-INTEGRATION-TESTING-GUIDE.md
+**Documents**: Core Planning + project-structure.md (ui/browser) + LIBRARY-INTEGRATION-TESTING-GUIDE.md + bubble-tea-testing-best-practices.md
 **Key Information**:
 - Browser UI structure from project-structure.md
 - Modal patterns from go-testing-guide.md
 - Fuzzy search from DEPENDENCIES.md (sahilm/fuzzy)
 - Testing guide from LIBRARY-INTEGRATION-TESTING-GUIDE.md
+- Bubble Tea testing patterns from bubble-tea-testing-best-practices.md
 
 ### M9: Fuzzy Search in Library
 **Documents**: Core Planning + DEPENDENCIES.md (sahilm/fuzzy) + LIBRARY-INTEGRATION-TESTING-GUIDE.md
@@ -766,12 +782,13 @@
 - Testing guide from COMMANDS-FILES-TESTING-GUIDE.md
 
 ### M19: Command Palette UI
-**Documents**: Core Planning + project-structure.md (ui/palette) + COMMANDS-FILES-TESTING-GUIDE.md
+**Documents**: Core Planning + project-structure.md (ui/palette) + COMMANDS-FILES-TESTING-GUIDE.md + bubble-tea-testing-best-practices.md
 **Key Information**:
 - Palette UI from project-structure.md
 - Fuzzy search from DEPENDENCIES.md (sahilm/fuzzy)
 - Modal patterns from go-testing-guide.md
 - Testing guide from COMMANDS-FILES-TESTING-GUIDE.md
+- Bubble Tea testing patterns from bubble-tea-testing-best-practices.md
 
 ### M20: File Finder
 **Documents**: Core Planning + project-structure.md (platform/files) + DEPENDENCIES.md (go-gitignore) + COMMANDS-FILES-TESTING-GUIDE.md
@@ -810,28 +827,31 @@
 - Testing guide from PROMPT-MANAGEMENT-TESTING-GUIDE.md
 
 ### M24: Validation Results Display
-**Documents**: Core Planning + project-structure.md (ui/validation) + PROMPT-MANAGEMENT-TESTING-GUIDE.md
+**Documents**: Core Planning + project-structure.md (ui/validation) + PROMPT-MANAGEMENT-TESTING-GUIDE.md + bubble-tea-testing-best-practices.md
 **Key Information**:
 - Validation UI from project-structure.md
 - Modal patterns from go-testing-guide.md
 - Error display from requirements.md
 - Testing guide from PROMPT-MANAGEMENT-TESTING-GUIDE.md
+- Bubble Tea testing patterns from bubble-tea-testing-best-practices.md
 
 ### M25: Prompt Creator
-**Documents**: Core Planning + project-structure.md (ui/promptcreator) + PROMPT-MANAGEMENT-TESTING-GUIDE.md
+**Documents**: Core Planning + project-structure.md (ui/promptcreator) + PROMPT-MANAGEMENT-TESTING-GUIDE.md + bubble-tea-testing-best-practices.md
 **Key Information**:
 - Creator UI from project-structure.md
 - Form patterns from go-testing-guide.md
 - File operations from project-structure.md
 - Testing guide from PROMPT-MANAGEMENT-TESTING-GUIDE.md
+- Bubble Tea testing patterns from bubble-tea-testing-best-practices.md
 
 ### M26: Prompt Editor
-**Documents**: Core Planning + project-structure.md (ui/prompteditor) + DEPENDENCIES.md (glamour) + PROMPT-MANAGEMENT-TESTING-GUIDE.md
+**Documents**: Core Planning + project-structure.md (ui/prompteditor) + DEPENDENCIES.md (glamour) + PROMPT-MANAGEMENT-TESTING-GUIDE.md + bubble-tea-testing-best-practices.md
 **Key Information**:
 - Editor UI from project-structure.md
 - Markdown rendering from DEPENDENCIES.md (glamour)
 - Edit/preview toggle from requirements.md
 - Testing guide from PROMPT-MANAGEMENT-TESTING-GUIDE.md
+- Bubble Tea testing patterns from bubble-tea-testing-best-practices.md
 
 ---
 
@@ -872,12 +892,13 @@
 - Testing guide from AI-INTEGRATION-TESTING-GUIDE.md
 
 ### M31: Suggestions Panel
-**Documents**: Core Planning + project-structure.md (ui/suggestions) + AI-INTEGRATION-TESTING-GUIDE.md
+**Documents**: Core Planning + project-structure.md (ui/suggestions) + AI-INTEGRATION-TESTING-GUIDE.md + bubble-tea-testing-best-practices.md
 **Key Information**:
 - Suggestions UI from project-structure.md
 - Panel layout from requirements.md
 - Accept/dismiss actions from requirements.md
 - Testing guide from AI-INTEGRATION-TESTING-GUIDE.md
+- Bubble Tea testing patterns from bubble-tea-testing-best-practices.md
 
 ### M32: Diff Generation
 **Documents**: Core Planning + project-structure.md (ai domain) + DEPENDENCIES.md (sergi/go-diff) + AI-INTEGRATION-TESTING-GUIDE.md + ACCEPTANCE-CRITERIA-M32-DIFF-GENERATION.md
@@ -923,21 +944,23 @@
 ## Polish Milestones (M36-M38)
 
 ### M36: Settings Panel
-**Documents**: Core Planning + project-structure.md (ui/settings) + CONFIG-SCHEMA.md + POLISH-TESTING-GUIDE.md
+**Documents**: Core Planning + project-structure.md (ui/settings) + CONFIG-SCHEMA.md + POLISH-TESTING-GUIDE.md + bubble-tea-testing-best-practices.md
 **Key Information**:
 - Settings UI from project-structure.md
 - Config schema from CONFIG-SCHEMA.md
 - Form patterns from go-testing-guide.md
 - Testing guide from POLISH-TESTING-GUIDE.md
+- Bubble Tea testing patterns from bubble-tea-testing-best-practices.md
 
 ### M37: Responsive Layout
-**Documents**: Core Planning + project-structure.md (ui/app) + requirements.md (Split-Pane Layout) + POLISH-TESTING-GUIDE.md + ACCEPTANCE-CRITERIA-M37-RESPONSIVE-LAYOUT.md
+**Documents**: Core Planning + project-structure.md (ui/app) + requirements.md (Split-Pane Layout) + POLISH-TESTING-GUIDE.md + ACCEPTANCE-CRITERIA-M37-RESPONSIVE-LAYOUT.md + bubble-tea-testing-best-practices.md
 **Key Information**:
 - Layout management from project-structure.md
 - Responsive behavior from requirements.md
 - Terminal resize handling from go-testing-guide.md
 - Testing guide from POLISH-TESTING-GUIDE.md
 - Acceptance criteria from ACCEPTANCE-CRITERIA-M37-RESPONSIVE-LAYOUT.md
+- Bubble Tea testing patterns from bubble-tea-testing-best-practices.md
 
 ### M38: Error Handling & Log Viewer
 **Documents**: Core Planning + project-structure.md (platform/errors) + CONFIG-SCHEMA.md (logging section) + POLISH-TESTING-GUIDE.md + ACCEPTANCE-CRITERIA-M38-ERROR-HANDLING.md
@@ -1166,6 +1189,7 @@
 **Key Documents**:
 - project-structure.md (ui packages)
 - go-testing-guide.md (Bubble Tea patterns)
+- bubble-tea-testing-best-practices.md (Bubble Tea TUI testing patterns)
 - requirements.md (UI features)
 - project-structure.md (theme system)
 - learnings/ui-domain.md (UI/TUI implementation patterns)
@@ -1228,6 +1252,7 @@
 | Mocking | go-testing-guide.md | Mocking |
 | Bubble Tea models | go-testing-guide.md | Model Testing |
 | Bubble Tea commands | go-testing-guide.md | Command Testing |
+| Bubble Tea TUI testing | bubble-tea-testing-best-practices.md | Test Effects, Not Implementation |
 
 ### Find Feature Specifications
 | Feature | Document | Section |
