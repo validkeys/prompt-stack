@@ -435,58 +435,58 @@ coverage: 91.7% of statements
 **Files**:
 - `ui/workspace/model.go` (add viewport)
 - `ui/workspace/view.go` (add scrolling)
+- `ui/workspace/viewport_cursor.go` (cursor visibility logic)
 - `ui/workspace/model_test.go` (add tests)
 
 **Integration Points**:
 - Viewport tracks visible region of buffer
 - Adjusts automatically to keep cursor visible
 - Integrates with window dimensions from WindowSizeMsg
+- Future: M5 (Auto-save) - scroll position as part of auto-save state
+- Future: M6 (Undo/Redo) - scroll position as part of undo state
+- Future: M34-M35 (Vim Mode) - j/k keys alignment with vim state machine
+- Future: M37 (Responsive Layout) - viewport resize handling
 
 **Estimated Complexity**: High
 
-**Description**: Add viewport management to workspace for scrolling through content. Implements "middle third" scrolling strategy to keep cursor visible and provide smooth scrolling experience.
+**Description**: **See detailed implementation plan at [`task5-viewport-bubbles-migration/task-list.md`](../../../../implementation-plans/m4-viewport-bubbles-migration/task-list.md)**
+
+Add viewport management to workspace for scrolling through content using `charmbracelet/bubbles/viewport`. Implements "middle third" scrolling strategy to keep cursor visible and provide smooth scrolling experience.
+
+**Complete Implementation Plan**: Refer to the comprehensive task breakdown in the dedicated viewport migration plan which includes:
+- 7 detailed tasks (Dependency Setup → Documentation)
+- 141 acceptance criteria using RFC 2119 keywords (MUST/SHOULD/MAY)
+- Pre-implementation checklist (50+ items)
+- Integration points with future milestones (M5, M6, M34-M35, M37)
+- Complete API reference and code examples
+- Testing patterns with >90% coverage targets
+- Troubleshooting section with 4 common issues
 
 **Acceptance Criteria**:
-- FR1: Viewport MUST track offset (x, y) for visible region
-- FR2: View() MUST render only visible lines within viewport
-- FR3: Cursor movements MUST trigger viewport adjustments
-- FR4: MUST implement "middle third" scrolling strategy
-- FR5: Viewport MUST adjust when cursor moves out of visible region
-- FR6: Horizontal scrolling MUST work for long lines
-- IR1: MUST integrate with buffer cursor position
-- IR2: MUST integrate with window dimensions
-- EC1: MUST handle cursor at viewport boundaries
-- EC2: MUST handle very long lines (>1000 characters)
-- EC3: MUST handle very tall documents (>1000 lines)
-- EC4: MUST handle window resize (recalculate visible region)
-- EC5: MUST handle cursor jump (e.g., Home/End keys)
-- PR1: Viewport adjustment MUST complete in < 5ms
-- PR2: View() rendering MUST complete in < 16ms (60 FPS)
-- PR3: MUST handle smooth scrolling without flicker
-- UX1: Cursor MUST always be visible after any operation
-- UX2: Scrolling MUST be smooth (not jumpy)
-- UX3: "Middle third" strategy MUST keep cursor away from edges
-- UX4: Line numbers SHOULD be visible (if space allows)
+See [`task5-viewport-bubbles-migration/task-list.md`](../../../../implementation-plans/m4-viewport-bubbles-migration/task-list.md) for detailed acceptance criteria.
 
 **Testing Requirements**:
-- Coverage Target: > 80%
+- Coverage Target: > 90% for viewport integration code
 - Critical Test Scenarios:
-  1. Viewport initialization (correct initial position)
-  2. Cursor movement triggers (up, down, left, right)
-  3. "Middle third" scrolling behavior
+  1. Bubbles viewport integration (custom → bubbles migration)
+  2. Cursor visibility with middle-third scrolling
+  3. Buffer-viewport synchronization
   4. Window resize handling
-  5. Large document handling
+  5. Large document handling (>10,000 lines)
 - Edge Cases:
-  - Very small windows (<10 lines)
-  - Very long lines (horizontal scroll)
-  - Very tall documents (vertical scroll)
-  - Rapid cursor movement
-  - Window resize during editing
-- Test Execution Order: Unit → Integration → Manual
+  - Very small viewports (<10 lines)
+  - Empty buffer, single line buffer
+  - Very long documents (>100,000 lines)
+  - Viewport taller than document
+  - Cursor at document boundaries
+- Test Execution Order: Unit → Integration → Performance → Manual
 
 **Testing Guide Reference**: 
+- [`task5-viewport-bubbles-migration/reference.md`](../../../../implementation-plans/m4-viewport-bubbles-migration/reference.md) - Complete reference with code examples and patterns
 - [`FOUNDATION-TESTING-GUIDE.md`](../../milestones/FOUNDATION-TESTING-GUIDE.md)
-- [`learnings/ui-domain.md`](../../learnings/ui-domain.md) (Viewport Management section)
+- [`learnings/ui-domain.md`](../../learnings/ui-domain.md) (Cursor and Viewport Management - Category 2)
+- [`learnings/editor-domain.md`](../../learnings/editor-domain.md) (Editor Integration Patterns)
+- [`go-testing-guide.md`](../../go-testing-guide.md) (Table-driven tests)
 
 ---
 
