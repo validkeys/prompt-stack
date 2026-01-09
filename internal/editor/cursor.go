@@ -152,7 +152,8 @@ func (m Cursor) AdjustToLineLength(content string) Cursor {
 	lines := splitLines(content)
 
 	if newModel.y < len(lines) {
-		lineLen := len(lines[newModel.y])
+		lineRunes := []rune(lines[newModel.y])
+		lineLen := len(lineRunes)
 		if newModel.x > lineLen {
 			newModel.x = lineLen
 		}

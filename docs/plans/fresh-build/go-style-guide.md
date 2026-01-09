@@ -12,6 +12,7 @@
 2. **Explicit over implicit** - Make dependencies and behavior clear
 3. **Simple over complex** - Prefer straightforward solutions
 4. **Testable by design** - Write code that's easy to test
+5. **Constants over magic values** - Define named constants instead of magic strings/numbers
 
 ---
 
@@ -1077,6 +1078,42 @@ func (m Model) View() string { ... }
 type libraryLoadedMsg struct { ... }
 ```
 
+### Constants and Magic Values
+```go
+// ✅ GOOD: Define constants for magic values
+const (
+    defaultTimeout    = 30 * time.Second
+    maxRetries        = 3
+    apiVersion        = "v1"
+    placeholderPrefix = "{{"
+    placeholderSuffix = "}}"
+)
+
+// ✅ GOOD: Use package-level variables for configuration
+var (
+    defaultConfig = Config{
+        Timeout:    30 * time.Second,
+        MaxRetries: 3,
+    }
+)
+
+// ❌ BAD: Magic strings/numbers in code
+func Process() {
+    time.Sleep(30 * time.Second)  // magic number
+    if status == "completed" {     // magic string
+        // ...
+    }
+}
+
+// ✅ GOOD: Use constants
+func Process() {
+    time.Sleep(defaultTimeout)
+    if status == StatusCompleted {
+        // ...
+    }
+}
+```
+
 ### Theme Usage
 ```go
 // ✅ GOOD: Always use theme helpers
@@ -1113,6 +1150,7 @@ log.Printf("Loading library from %s with %d prompts", path, len(prompts))
 **Tests**: table-driven, black-box when possible
 **Comments**: explain WHY, document exported APIs
 **Files**: one primary type per file, co-locate tests
+**Constants**: define named constants, avoid magic strings/numbers
 
 ---
 

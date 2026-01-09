@@ -66,16 +66,32 @@ func (v Viewport) VisibleLines() (start, end int) {
 	return v.topLine, v.topLine + v.height
 }
 
-// EnsureVisible ensures line is visible in viewport
+// EnsureVisible ensures line is visible in viewport using middle-third scrolling strategy
+// Keeps cursor in middle third of viewport for better visibility in large documents
 func (v Viewport) EnsureVisible(line int) Viewport {
+	if v.height <= 0 {
+		return v
+	}
+
 	start, end := v.VisibleLines()
+	third := v.height / 3
 
 	if line < start {
 		return v.ScrollTo(line)
 	}
+
 	if line >= end {
 		return v.ScrollTo(line - v.height + 1)
 	}
+
+	if line < start+third {
+		return v.ScrollTo(line - third)
+	}
+
+	if line >= end-third {
+		return v.ScrollTo(line - v.height + third)
+	}
+
 	return v
 }
 

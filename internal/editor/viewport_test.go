@@ -240,9 +240,9 @@ func TestViewportEnsureVisible(t *testing.T) {
 		wantTop int
 	}{
 		{
-			name:    "line already visible",
+			name:    "line already visible in middle third",
 			initial: NewViewport(10).ScrollTo(5),
-			line:    7,
+			line:    8,
 			wantTop: 5,
 		},
 		{
@@ -258,16 +258,16 @@ func TestViewportEnsureVisible(t *testing.T) {
 			wantTop: 6,
 		},
 		{
-			name:    "line at top edge",
+			name:    "line at top edge - scrolls to middle",
 			initial: NewViewport(10).ScrollTo(5),
 			line:    5,
-			wantTop: 5,
+			wantTop: 2,
 		},
 		{
-			name:    "line at bottom edge",
+			name:    "line at bottom edge - scrolls to middle",
 			initial: NewViewport(10).ScrollTo(0),
 			line:    9,
-			wantTop: 0,
+			wantTop: 2,
 		},
 	}
 
@@ -448,6 +448,158 @@ func TestViewportEdgeCases(t *testing.T) {
 		result := v.EnsureVisible(-1)
 		if result.topLine != -1 {
 			t.Errorf("expected topLine to be -1, got %d", result.topLine)
+		}
+	})
+}
+
+func TestViewportMiddleThirdScrolling(t *testing.T) {
+	t.Run("cursor in middle third - no scroll", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(20)
+		if result.topLine != 10 {
+			t.Errorf("expected no scroll when cursor in middle third, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor in top third - scroll up", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(15)
+		if result.topLine != 5 {
+			t.Errorf("expected scroll to position cursor in middle, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor in bottom third - scroll down", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(35)
+		if result.topLine != 15 {
+			t.Errorf("expected scroll to position cursor in middle, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor above viewport - scroll to cursor", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(5)
+		if result.topLine != 5 {
+			t.Errorf("expected scroll to cursor when above viewport, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor below viewport - scroll to cursor at bottom", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(45)
+		if result.topLine != 16 {
+			t.Errorf("expected scroll to position cursor at bottom, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor at top edge of middle third", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(20)
+		if result.topLine != 10 {
+			t.Errorf("expected no scroll at top edge of middle third, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor at bottom edge of middle third", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(29)
+		if result.topLine != 10 {
+			t.Errorf("expected no scroll at bottom edge of middle third, got topLine %d", result.topLine)
+		}
+	})
+}
+
+func TestViewportScrollingWithLargeDocument(t *testing.T) {
+	t.Run("cursor moves from top to middle", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(0)
+		result := v.EnsureVisible(50)
+		if result.topLine != 21 {
+			t.Errorf("expected viewport to scroll to keep cursor in middle, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor at very large line number", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(500)
+		result := v.EnsureVisible(550)
+		if result.topLine != 521 {
+			t.Errorf("expected viewport to scroll to keep cursor in middle, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor moves rapidly upward", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(100)
+		result := v.EnsureVisible(80)
+		if result.topLine != 71 {
+			t.Errorf("expected viewport to scroll up to keep cursor in middle, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor at document end", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(500).SetTotalLines(530)
+		result := v.EnsureVisible(529)
+		if result.topLine != 509 {
+			t.Errorf("expected viewport to stay at end when cursor at document end, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor at document start", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(0)
+		if result.topLine != 0 {
+			t.Errorf("expected viewport to scroll to start, got topLine %d", result.topLine)
+		}
+	})
+}
+
+func TestViewportScrollingWithSmallViewport(t *testing.T) {
+	t.Run("viewport height 3", func(t *testing.T) {
+		v := NewViewport(3).ScrollTo(10)
+		result := v.EnsureVisible(12)
+		if result.topLine != 10 {
+			t.Errorf("expected no scroll when cursor in middle of small viewport, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("viewport height 1", func(t *testing.T) {
+		v := NewViewport(1).ScrollTo(10)
+		result := v.EnsureVisible(10)
+		if result.topLine != 10 {
+			t.Errorf("expected no scroll with single line viewport, got topLine %d", result.topLine)
+		}
+	})
+}
+
+func TestViewportScrollingBoundaryConditions(t *testing.T) {
+	t.Run("cursor at viewport top line", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(10)
+		if result.topLine != 5 {
+			t.Errorf("expected scroll when cursor at top line, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor at viewport bottom-1 line", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(10)
+		result := v.EnsureVisible(39)
+		if result.topLine != 15 {
+			t.Errorf("expected scroll when cursor near bottom, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor enters top third", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(0)
+		result := v.EnsureVisible(5)
+		if result.topLine != 0 {
+			t.Errorf("expected cursor to enter top third without scroll, got topLine %d", result.topLine)
+		}
+	})
+
+	t.Run("cursor enters bottom third", func(t *testing.T) {
+		v := NewViewport(30).ScrollTo(0)
+		result := v.EnsureVisible(28)
+		if result.topLine != 0 {
+			t.Errorf("expected cursor to enter bottom third without scroll, got topLine %d", result.topLine)
 		}
 	})
 }

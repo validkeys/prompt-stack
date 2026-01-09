@@ -93,7 +93,13 @@ func (m Model) View() string {
 	mainContent := theme.ModalStyle().
 		Width(m.width).
 		Height(mainHeight).
-		Render(defaultTitle + "\n\n" + defaultMessage)
+		Render(
+			theme.ModalTitleStyle().Render(defaultTitle) +
+				theme.DoubleNewline +
+				theme.ModalContentStyle().Render(defaultMessage) +
+				theme.DoubleNewline +
+				theme.MutedStyle().Render("Keyboard shortcuts: "+theme.KeyboardHelp()),
+		)
 
 	// Render status bar at the bottom
 	statusBar := m.statusBar.View()

@@ -8,6 +8,7 @@
 - **STYLE**: go-style-guide.md
 - **TESTING**: go-testing-guide.md
 - **STRUCT**: project-structure.md
+- **DESIGN**: opencode-design-system.md
 - **TEMPLATE**: milestones/ENHANCED-TEST-CRITERIA-TEMPLATE.md
 - **LEARNINGS**: learnings/ (key learnings directory)
 
@@ -78,6 +79,7 @@ Then read context-specific documents in a second batch.
 - ✅ Reference the milestone's testing guide from [`MATRIX`](DOCUMENT-REFERENCE-MATRIX.md)
 - ✅ Reference detailed acceptance criteria documents if available (M16, M28, M32, M33, M35, M37, M38)
 - ✅ Use [`TEMPLATE`](milestones/ENHANCED-TEST-CRITERIA-TEMPLATE.md) for acceptance criteria structure
+- ✅ Apply design patterns from [`DESIGN`](opencode-design-system.md) for UI components
 
 ### 2.4 Verify Document Coverage
 
@@ -102,6 +104,7 @@ Then read context-specific documents in a second batch.
 - [ ] **NEW**: Navigation guide included in reference documents
 - [ ] **NEW**: All code examples pass validation checklist (6.2.1)
 - [ ] **NEW**: Code examples compile with correct imports from DEPENDENCIES.md
+- [ ] Design system guidelines are correctly applied (if UI milestone)
 
 **⚠️ DO NOT PROCEED until all checks pass.**
 
@@ -227,6 +230,14 @@ Before writing any code, verify:
 - [ ] Validation rules defined as constants
 - [ ] No hardcoded values in implementation
 
+### Design System Compliance
+- [ ] Color usage follows OpenCode palette guidelines
+- [ ] Spacing follows 1-character unit system
+- [ ] Component structure matches OpenCode patterns
+- [ ] Keyboard shortcuts follow OpenCode defaults
+- [ ] Visual hierarchy matches OpenCode examples
+- [ ] Interactive elements have clear visual feedback
+
 **If any item is unchecked, review and adjust plan before proceeding.**
 ```
 
@@ -247,6 +258,12 @@ Before writing any code, verify:
   - Specific patterns to apply
   - Common pitfalls to avoid
   - Implementation examples from previous attempts
+- **Design System References**:
+  - Relevant patterns from [`DESIGN`](opencode-design-system.md)
+  - Color palette usage for this component
+  - Layout patterns to follow
+  - Interactive patterns to implement
+  - Keyboard shortcuts to support
 - **Implementation Notes**: For each task:
   - Code examples (Go structure) - MUST pass validation (see 6.2.1)
   - Test examples (Go structure) - MUST pass validation (see 6.2.1)

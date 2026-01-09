@@ -20,6 +20,9 @@
 - [`bubble-tea-testing-best-practices.md`](bubble-tea-testing-best-practices.md) - Bubble Tea TUI testing patterns
 - [`ENHANCED-TEST-CRITERIA-TEMPLATE.md`](milestones/ENHANCED-TEST-CRITERIA-TEMPLATE.md) - Acceptance criteria template
 
+### Design System Documents (UI Milestones)
+- [`opencode-design-system.md`](opencode-design-system.md) - OpenCode design principles, color system, and UI patterns
+
 ### Technical Specifications (Context-Specific)
 - [`CONFIG-SCHEMA.md`](CONFIG-SCHEMA.md) - Configuration structure
 - [`DATABASE-SCHEMA.md`](DATABASE-SCHEMA.md) - SQLite schema
@@ -51,7 +54,7 @@
 | Milestone | Title | Required Documents | Additional Context |
 |-----------|-------|-------------------|-------------------|
 | **M1** | Bootstrap & Config | Core Planning, Implementation Guides, CONFIG-SCHEMA.md | SETUP.md for environment setup, FOUNDATION-TESTING-GUIDE.md |
-| **M2** | Basic TUI Shell | Core Planning, Implementation Guides, project-structure.md (UI domain) | FOUNDATION-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md |
+| **M2** | Basic TUI Shell | Core Planning, Implementation Guides, project-structure.md (UI domain) | FOUNDATION-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md, opencode-design-system.md |
 | **M3** | File I/O Foundation | Core Planning, Implementation Guides, project-structure.md (platform/files) | FOUNDATION-TESTING-GUIDE.md |
 | **M4** | Basic Text Editor | Core Planning, Implementation Guides, project-structure.md (editor domain) | FOUNDATION-TESTING-GUIDE.md |
 | **M5** | Auto-save | Core Planning, Implementation Guides, project-structure.md (editor domain) | FOUNDATION-TESTING-GUIDE.md |
@@ -62,7 +65,7 @@
 | Milestone | Title | Required Documents | Additional Context |
 |-----------|-------|-------------------|-------------------|
 | **M7** | Library Loader | Core Planning, Implementation Guides, project-structure.md (library domain) | requirements.md (Library section), LIBRARY-INTEGRATION-TESTING-GUIDE.md |
-| **M8** | Library Browser UI | Core Planning, Implementation Guides, project-structure.md (ui/browser) | LIBRARY-INTEGRATION-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md |
+| **M8** | Library Browser UI | Core Planning, Implementation Guides, project-structure.md (ui/browser) | LIBRARY-INTEGRATION-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md, opencode-design-system.md |
 | **M9** | Fuzzy Search in Library | Core Planning, Implementation Guides, DEPENDENCIES.md (sahilm/fuzzy) | LIBRARY-INTEGRATION-TESTING-GUIDE.md |
 | **M10** | Prompt Insertion | Core Planning, Implementation Guides, project-structure.md (library domain) | LIBRARY-INTEGRATION-TESTING-GUIDE.md |
 
@@ -88,7 +91,7 @@
 | Milestone | Title | Required Documents | Additional Context |
 |-----------|-------|-------------------|-------------------|
 | **M18** | Command Registry | Core Planning, Implementation Guides, project-structure.md (commands domain) | COMMANDS-FILES-TESTING-GUIDE.md |
-| **M19** | Command Palette UI | Core Planning, Implementation Guides, project-structure.md (ui/palette) | COMMANDS-FILES-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md |
+| **M19** | Command Palette UI | Core Planning, Implementation Guides, project-structure.md (ui/palette) | COMMANDS-FILES-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md, opencode-design-system.md |
 | **M20** | File Finder | Core Planning, Implementation Guides, project-structure.md (platform/files) | DEPENDENCIES.md (go-gitignore), COMMANDS-FILES-TESTING-GUIDE.md |
 | **M21** | Title Extraction | Core Planning, Implementation Guides, project-structure.md (platform/files) | COMMANDS-FILES-TESTING-GUIDE.md |
 | **M22** | Batch Title Editor & Link Insertion | Core Planning, Implementation Guides, project-structure.md (ui/filereference) | COMMANDS-FILES-TESTING-GUIDE.md |
@@ -98,9 +101,9 @@
 | Milestone | Title | Required Documents | Additional Context |
 |-----------|-------|-------------------|-------------------|
 | **M23** | Prompt Validation | Core Planning, Implementation Guides, project-structure.md (library domain) | requirements.md (Validation section), PROMPT-MANAGEMENT-TESTING-GUIDE.md |
-| **M24** | Validation Results Display | Core Planning, Implementation Guides, project-structure.md (ui/validation) | PROMPT-MANAGEMENT-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md |
-| **M25** | Prompt Creator | Core Planning, Implementation Guides, project-structure.md (ui/promptcreator) | PROMPT-MANAGEMENT-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md |
-| **M26** | Prompt Editor | Core Planning, Implementation Guides, project-structure.md (ui/prompteditor) | DEPENDENCIES.md (glamour), PROMPT-MANAGEMENT-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md |
+| **M24** | Validation Results Display | Core Planning, Implementation Guides, project-structure.md (ui/validation) | PROMPT-MANAGEMENT-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md, opencode-design-system.md |
+| **M25** | Prompt Creator | Core Planning, Implementation Guides, project-structure.md (ui/promptcreator) | PROMPT-MANAGEMENT-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md, opencode-design-system.md |
+| **M26** | Prompt Editor | Core Planning, Implementation Guides, project-structure.md (ui/prompteditor) | DEPENDENCIES.md (glamour), PROMPT-MANAGEMENT-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md, opencode-design-system.md |
 
 ### AI Integration Milestones (27-33)
 
@@ -110,7 +113,7 @@
 | **M28** | Context Selection Algorithm | Core Planning, Implementation Guides, project-structure.md (ai domain) | requirements.md (AI Context Window Management), AI-INTEGRATION-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M28-CONTEXT-SELECTION.md |
 | **M29** | Token Estimation & Budget | Core Planning, Implementation Guides, project-structure.md (ai domain) | requirements.md (AI Context Window Management), AI-INTEGRATION-TESTING-GUIDE.md |
 | **M30** | Suggestion Parsing | Core Planning, Implementation Guides, project-structure.md (ai domain) | requirements.md (AI Suggestions section), AI-INTEGRATION-TESTING-GUIDE.md |
-| **M31** | Suggestions Panel | Core Planning, Implementation Guides, project-structure.md (ui/suggestions) | AI-INTEGRATION-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md |
+| **M31** | Suggestions Panel | Core Planning, Implementation Guides, project-structure.md (ui/suggestions) | AI-INTEGRATION-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md, opencode-design-system.md |
 | **M32** | Diff Generation | Core Planning, Implementation Guides, project-structure.md (ai domain) | DEPENDENCIES.md (sergi/go-diff), AI-INTEGRATION-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M32-DIFF-GENERATION.md |
 | **M33** | Diff Application | Core Planning, Implementation Guides, project-structure.md (ai domain) | AI-INTEGRATION-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M33-DIFF-APPLICATION.md |
 
@@ -125,8 +128,8 @@
 
 | Milestone | Title | Required Documents | Additional Context |
 |-----------|-------|-------------------|-------------------|
-| **M36** | Settings Panel | Core Planning, Implementation Guides, project-structure.md (ui/settings), learnings/ui-domain.md | CONFIG-SCHEMA.md, POLISH-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md |
-| **M37** | Responsive Layout | Core Planning, Implementation Guides, project-structure.md (ui/app), learnings/ui-domain.md | requirements.md (Split-Pane Layout), POLISH-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M37-RESPONSIVE-LAYOUT.md, bubble-tea-testing-best-practices.md |
+| **M36** | Settings Panel | Core Planning, Implementation Guides, project-structure.md (ui/settings), learnings/ui-domain.md | CONFIG-SCHEMA.md, POLISH-TESTING-GUIDE.md, bubble-tea-testing-best-practices.md, opencode-design-system.md |
+| **M37** | Responsive Layout | Core Planning, Implementation Guides, project-structure.md (ui/app), learnings/ui-domain.md | requirements.md (Split-Pane Layout), POLISH-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M37-RESPONSIVE-LAYOUT.md, bubble-tea-testing-best-practices.md, opencode-design-system.md |
 | **M38** | Error Handling & Log Viewer | Core Planning, Implementation Guides, project-structure.md (platform/errors), learnings/error-handling.md | CONFIG-SCHEMA.md (logging section), POLISH-TESTING-GUIDE.md, ACCEPTANCE-CRITERIA-M38-ERROR-HANDLING.md |
 
 ---
@@ -191,7 +194,7 @@
 
 ### UI Domain
 **Milestones**: M2, M8, M19, M24, M25, M26, M31, M36, M37
-**Key Documents**: project-structure.md (ui packages), go-testing-guide.md (Bubble Tea patterns), bubble-tea-testing-best-practices.md, bubble-tea-best-practices.md, learnings/ui-domain.md
+**Key Documents**: project-structure.md (ui packages), go-testing-guide.md (Bubble Tea patterns), bubble-tea-testing-best-practices.md, bubble-tea-best-practices.md, learnings/ui-domain.md, opencode-design-system.md
 
 ### Platform Domain
 **Milestones**: M1, M3, M15, M20, M21, M38

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -8,10 +9,25 @@ import (
 	"github.com/kyledavis/prompt-stack/internal/platform/bootstrap"
 	"github.com/kyledavis/prompt-stack/internal/platform/logging"
 	"github.com/kyledavis/prompt-stack/ui/app"
+	"github.com/kyledavis/prompt-stack/ui/theme/examples"
 	"go.uber.org/zap"
 )
 
 func main() {
+	demoMode := flag.Bool("demo", false, "Run theme demo mode")
+	demoInteractive := flag.Bool("demo-interactive", false, "Run interactive theme demo")
+	flag.Parse()
+
+	if *demoMode {
+		examples.RunExamples()
+		return
+	}
+
+	if *demoInteractive {
+		examples.RunDemo()
+		return
+	}
+
 	if err := run(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
