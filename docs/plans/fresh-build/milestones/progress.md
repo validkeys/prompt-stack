@@ -2,9 +2,9 @@
 
 ## Current Status
 - **Current Milestone**: 4 - Basic Text Editor
-- **Current Task**: Not Started
-- **Overall Progress**: 8% (3/38 milestones)
-- **Last Updated**: 2026-01-08
+- **Current Task**: Task 5 (Viewport with Scrolling) - In Progress
+- **Overall Progress**: 11% (4/38 milestones)
+- **Last Updated**: 2026-01-09
 
 ## Milestone Status
 
@@ -13,7 +13,7 @@
 | 1 | Bootstrap & Config | ✅ | 0/0 | ✅ | 0 | 2026-01-07 |
 | 2 | Basic TUI Shell | ✅ | 0/0 | ✅ | 0 | 2026-01-07 |
 | 3 | File I/O Foundation | ✅ | 0/0 | ✅ | 0 | 2026-01-08 |
-| 4 | Basic Text Editor | ⏳ | 0/0 | ✅ | 0 | - |
+| 4 | Basic Text Editor | 🔄 | 4/7 | ✅ | 85% | - |
 | 5 | Auto-save | ⏳ | 0/0 | ✅ | 0 | - |
 | 6 | Undo/Redo | ⏳ | 0/0 | ✅ | 0 | - |
 | 7 | Library Loader | ⏳ | 0/0 | ✅ | 0 | - |
@@ -57,6 +57,7 @@
 
 ## Recent Activity
 
+- **2026-01-09**: Completed M4 foundational editor components (buffer, viewport, workspace model, theme system)
 - **2026-01-08**: Completed Milestone 3 (File I/O Foundation) with theme examples and demo mode enhancement
 - **2026-01-07**: Completed Milestone 2 (Basic TUI Shell) - TUI rendering and quit handling
 - **2026-01-07**: Completed Milestone 1 (Bootstrap & Config) - Config system and setup wizard
@@ -81,11 +82,11 @@
 ## Milestone Groups Progress
 
 ### Foundation (Milestones 1-6)
-Progress: 3/6 (50%)
+Progress: 4/6 (67%)
 - ✅ Bootstrap & Config
 - ✅ Basic TUI Shell
 - ✅ File I/O Foundation
-- ⏳ Basic Text Editor
+- 🔄 Basic Text Editor (4/7 tasks)
 - ⏳ Auto-save
 - ⏳ Undo/Redo
 
