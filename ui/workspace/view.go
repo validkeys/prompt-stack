@@ -25,7 +25,7 @@ func (m Model) View() string {
 	_, cursorY := m.buffer.CursorPosition()
 
 	for i, line := range lines {
-		visibleY := m.viewport.TopLine() + i
+		visibleY := m.viewport.YOffset + i
 		if visibleY == cursorY {
 			// Cursor line - render with cursor
 			renderedLines[i] = m.renderCursorLine(lines, i)
@@ -56,7 +56,7 @@ func (m Model) View() string {
 // renderCursorLine renders the line with cursor position highlighted.
 func (m Model) renderCursorLine(lines []string, visibleIndex int) string {
 	cursorX, cursorY := m.buffer.CursorPosition()
-	visibleY := m.viewport.TopLine() + visibleIndex
+	visibleY := m.viewport.YOffset + visibleIndex
 
 	if visibleY != cursorY || visibleIndex >= len(lines) {
 		if visibleIndex < len(lines) {

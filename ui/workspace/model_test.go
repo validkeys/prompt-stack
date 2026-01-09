@@ -155,8 +155,8 @@ func TestWindowResize(t *testing.T) {
 	}
 
 	// Verify viewport height is adjusted (height - 1 for status bar)
-	if model.viewport.Height() != 23 {
-		t.Errorf("expected viewport height 23, got %d", model.viewport.Height())
+	if model.viewport.Height != 23 {
+		t.Errorf("expected viewport height 23, got %d", model.viewport.Height)
 	}
 }
 

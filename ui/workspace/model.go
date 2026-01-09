@@ -6,6 +6,7 @@ package workspace
 import (
 	"strings"
 
+	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kyledavis/prompt-stack/internal/editor"
 )
@@ -14,7 +15,7 @@ import (
 // It integrates editor components to provide text editing functionality.
 type Model struct {
 	buffer       *editor.Buffer
-	viewport     editor.Viewport
+	viewport     viewport.Model
 	placeholders editor.Manager
 	fileManager  editor.FileManager
 	width        int
@@ -33,7 +34,7 @@ type statusBar struct {
 func New() Model {
 	return Model{
 		buffer:       editor.NewBuffer(),
-		viewport:     editor.NewViewport(24),
+		viewport:     viewport.New(0, 24),
 		placeholders: editor.New(),
 		fileManager:  editor.NewFileManager(""),
 		width:        0,
@@ -163,7 +164,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		newModel := m
 		newModel.width = msg.Width
 		newModel.height = msg.Height
-		newModel.viewport = newModel.viewport.SetHeight(msg.Height - 1) // Leave room for status bar
+		newModel.viewport.Width = msg.Width
+		newModel.viewport.Height = msg.Height - 1 // Leave room for status bar
 		return newModel, nil
 	}
 
@@ -221,14 +223,41 @@ func (m Model) saveToFile() error {
 func (m Model) adjustViewport() Model {
 	newModel := m
 	_, cursorY := newModel.buffer.CursorPosition()
-	newModel.viewport = newModel.viewport.EnsureVisible(cursorY)
+
+	viewportHeight := newModel.viewport.Height
+	if viewportHeight <= 0 {
+		return newModel
+	}
+
+	third := viewportHeight / 3
+	middleTop := newModel.viewport.YOffset + third
+	middleBottom := newModel.viewport.YOffset + viewportHeight - third
+
+	if cursorY < middleTop {
+		newOffset := cursorY - third
+		if newOffset < 0 {
+			newOffset = 0
+		}
+		newModel.viewport.SetYOffset(newOffset)
+	} else if cursorY >= middleBottom {
+		newOffset := cursorY - viewportHeight + third
+		maxOffset := newModel.buffer.LineCount() - viewportHeight
+		if maxOffset < 0 {
+			maxOffset = 0
+		}
+		if newOffset > maxOffset {
+			newOffset = maxOffset
+		}
+		newModel.viewport.SetYOffset(newOffset)
+	}
+
 	return newModel
 }
 
-// syncViewportLines syncs viewport totalLines with buffer line count.
+// syncViewportLines syncs viewport content with buffer.
 func (m Model) syncViewportLines() Model {
 	newModel := m
-	newModel.viewport = newModel.viewport.SetTotalLines(newModel.buffer.LineCount())
+	newModel.viewport.SetContent(newModel.buffer.Content())
 	return newModel
 }
 
@@ -236,7 +265,8 @@ func (m Model) syncViewportLines() Model {
 func (m Model) getVisibleLines(height int) []string {
 	lines := strings.Split(m.buffer.Content(), "\n")
 
-	start, end := m.viewport.VisibleLines()
+	start := m.viewport.YOffset
+	end := start + height
 	if start >= len(lines) {
 		return []string{}
 	}
@@ -368,7 +398,8 @@ func (m Model) SetSize(width, height int) Model {
 	newModel := m
 	newModel.width = width
 	newModel.height = height
-	newModel.viewport = newModel.viewport.SetHeight(height - 1)
+	newModel.viewport.Width = width
+	newModel.viewport.Height = height - 1
 	return newModel
 }
 
