@@ -14,6 +14,9 @@ func (m Model) View() string {
 		return "Initializing..."
 	}
 
+	// Sync buffer content to viewport before rendering
+	m = m.syncViewportLines()
+
 	// Calculate available space (leave room for status bar)
 	availableHeight := m.height - 1
 
@@ -38,7 +41,7 @@ func (m Model) View() string {
 	// Combine rendered lines
 	content := strings.Join(renderedLines, "\n")
 
-	// Style the editor
+	// Style editor
 	editorStyle := lipgloss.NewStyle().
 		Width(m.width).
 		Height(availableHeight).
@@ -53,7 +56,7 @@ func (m Model) View() string {
 	return lipgloss.JoinVertical(lipgloss.Left, editorView, statusBarView)
 }
 
-// renderCursorLine renders the line with cursor position highlighted.
+// renderCursorLine renders a line with cursor position highlighted.
 func (m Model) renderCursorLine(lines []string, visibleIndex int) string {
 	cursorX, cursorY := m.buffer.CursorPosition()
 	visibleY := m.viewport.YOffset + visibleIndex
