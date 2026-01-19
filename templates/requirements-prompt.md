@@ -1,36 +1,40 @@
-# Requirements Gathering — Interview Workflow Prompt (canonical)
-
-Follow the interview workflow in `docs/.prompts/1-make-milestone-requirements.md`.
+# Requirements Gathering — Interview Workflow Prompt (reusable canonical)
 
 Purpose: run a short, one-question-at-a-time interview with a stakeholder, record each Q&A, then produce a filled planning input (based on `templates/planning-phase.input.yaml`) and save it as the milestone requirements document.
 
-Before you begin
-- Repeat back the end goal, the steps you will take, and the documents you will consult (confirm you will use `/docs/requirements/main.md`, `/docs/requirements/milestones.md`, and `templates/planning-phase.input.yaml`).
-- Ask the user to confirm the milestone number (e.g. `m1`). All interview transcripts and the final requirements file will be placed under `docs/implementation-plan/m{n}/` (replace `{n}` with the milestone slug).
+Initial step (project context)
+- Ask the stakeholder for brief context and links to any relevant files, docs, or repos that will help you understand what they're trying to build. Example prompts you can use:
+  - "Give me a short project summary and links to any existing requirements, design docs, or repos."
+  - "List 2–3 files or URLs that best show the code/design style we should follow."
+- After the stakeholder replies, repeat back a concise summary of what you understood from their entry (one or two sentences). Confirm you have the correct context before proceeding.
+
+Before you begin (confirm references)
+- Ask which reference documents you should consult for this interview (e.g. project requirements, milestone list, or a planning template). If the stakeholder has local paths or repo URLs, record them.
+- Confirm the milestone identifier/slug to use (e.g. `m1`). All interview transcripts and the final requirements file will be placed under `docs/implementation-plan/<milestone>/` unless the stakeholder specifies a different location.
 
 Interview rules
-1. Ask one question at a time. Wait for the user's answer before asking the next question.
-2. Record every question and answer verbatim in `docs/implementation-plan/m{n}/requirements-interview.md` using a simple Q/A markdown format:
+1. Ask one question at a time. Wait for the stakeholder's answer before asking the next question.
+2. Record every question and answer verbatim in `docs/implementation-plan/<milestone>/requirements-interview.md` using this Q/A markdown format:
 
    Q: <question text>
 
    A: <answer text>
 
 3. After each answer, confirm the captured answer back in one sentence ("Captured: ...") and ask the next logical question.
-4. Continue until you have at least the required fields from `templates/planning-phase.input.yaml` (see list below) or the stakeholder says they are done.
-5. When finished, generate a filled `planning-phase.input.yaml` document using the collected answers and save it to `docs/implementation-plan/m{n}/requirements.md` (YAML or JSON is acceptable — YAML preferred). Also copy a usage example command showing how to run `your-tool plan` on the saved file.
+4. Continue until you have at least the required fields from the planning input template (see list below) or the stakeholder says they are done.
+5. When finished, generate a filled planning input document (YAML preferred) using the collected answers and save it to `docs/implementation-plan/<milestone>/requirements.md`. Include a short `usage` snippet that demonstrates how to run the plan generator against the saved file.
 
-Required fields to gather (map these to `planning-phase.input.yaml`):
+Required fields to gather (map these to `templates/planning-phase.input.yaml`)
 - id (short slug)
 - title (one-line)
 - short_description
 - requirements_file (path — can point to this saved requirements.md)
 - style_anchors (1-3 files or references)
-- stakeholders.product_owner (name/email or github handle)
+- stakeholders.product_owner (name/email or handle)
 - objectives (1-5)
 - success_metrics (metric + target)
 
-Helpful additional fields (ask when available):
+Helpful additional fields (ask when available)
 - background
 - constraints and assumptions
 - scope: in_scope / out_of_scope
@@ -39,7 +43,7 @@ Helpful additional fields (ask when available):
 - testing expectations
 - data_classification / secrets_included
 
-Suggested question sequence (ask in order, but follow up when answers need clarification):
+Suggested question sequence (ask in order, but follow up when answers need clarification)
 1. "What is the milestone id/slug you want to use for this work?"
 2. "Give me a one-line title for the milestone."
 3. "Provide a short (1-2 sentence) description of the milestone goal."
@@ -56,24 +60,21 @@ Suggested question sequence (ask in order, but follow up when answers need clari
 14. "Any privacy, compliance, or secrets handling notes?"
 
 Finalization
-- Once you have captured the required fields, produce a filled `planning-phase.input.yaml` (YAML) using the collected answers.
-- Save the file to `docs/implementation-plan/m{n}/requirements.md` and also save the interview transcript to `docs/implementation-plan/m{n}/requirements-interview.md`.
-- Append a short `usage` section in the saved requirements.md showing the `your-tool plan` command that consumes it, e.g.:
+- Produce a filled planning input YAML using the collected answers and save it to `docs/implementation-plan/<milestone>/requirements.md`.
+- Save the interview transcript to `docs/implementation-plan/<milestone>/requirements-interview.md` (Q/A format).
+- Append a short `usage` section in the saved requirements.md showing the `plan` command that consumes it; for example:
 
 ```bash
 # Generate a candidate plan (code path)
-your-tool plan docs/implementation-plan/m{n}/requirements.md --method code --output planning/milestones/{id}.ralphy.yaml
+your-tool plan docs/implementation-plan/<milestone>/requirements.md --method code --output planning/milestones/<id>.ralphy.yaml
 ```
 
-Example: if the milestone is `m1`, save to:
-- `docs/implementation-plan/m1/requirements-interview.md`
-- `docs/implementation-plan/m1/requirements.md`
-
-Notes
+Notes and best practices
 - Keep questions short and actionable; prefer affirmative phrasing.
-- If the stakeholder is unsure about a field, capture the assumption as a note in the interview transcript and mark the field as "assumption: <text>" in the final YAML.
+- If the stakeholder is unsure about a field, capture the assumption as a note in the interview transcript and mark the field as `assumption: <text>` in the final YAML.
+- When possible, prefer file paths or URLs for style anchors so the plan generator can inspect concrete examples.
 - All final artifacts should be human-readable and committed under `docs/implementation-plan/` for traceability.
 
 ---
 
-This is the canonical template. Use it from `templates/requirements-prompt.md` in code or CI.
+This is the canonical, project-agnostic interview prompt. Use it from `templates/requirements-prompt.md` in code, CI, or manual workflows.
