@@ -365,7 +365,7 @@ tasks:
   - id: "m0-008"
     title: "Integrate reusable validators into internal/validation"
     description: "Refactor the M0 validation scripts and tools into an internal `internal/validation` package, expose validator via `your-tool validate` CLI, and produce standardized JSON reports. Wrap or migrate existing `tools/*` validators, add test fixtures, and ensure templates call the validator instead of generating validator code. This makes validators reusable across projects."
-    completed: false
+    completed: true
     files_in_scope:
       - "internal/validation/**"
       - "internal/cli/commands/validate.go"

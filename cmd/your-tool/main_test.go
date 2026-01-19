@@ -138,7 +138,7 @@ func TestCommandsCompile(t *testing.T) {
 		args []string
 	}{
 		{"plan command compiles", []string{"plan"}},
-		{"validate command compiles", []string{"validate"}},
+		{"validate command compiles", []string{"validate", "--input", "test.yaml"}},
 		{"review command compiles", []string{"review"}},
 		{"build command compiles", []string{"build"}},
 	}
