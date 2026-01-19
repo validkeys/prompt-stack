@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var osExit = os.Exit
+
 var rootCmd = &cobra.Command{
 	Use:   "prompt-stack",
 	Short: "AI-assisted development workflow tool",
@@ -24,6 +26,6 @@ func init() {
 func main() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		osExit(1)
 	}
 }

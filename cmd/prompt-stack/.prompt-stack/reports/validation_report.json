@@ -1,6 +1,6 @@
 {
   "report_type": "final_quality_report",
-  "timestamp": "2026-01-19T15:38:35-05:00",
+  "timestamp": "2026-01-19T16:15:34-05:00",
   "requirements_file": "test.yaml",
   "generated_yaml": "test.yaml",
   "overall_score": 0,
@@ -19,7 +19,7 @@
     {
       "severity": "LOW",
       "path": "test.yaml",
-      "message": "stat tools/task_sizing/validate.go: no such file or directory\n"
+      "message": "failed to read YAML file \"test.yaml\": open test.yaml: no such file or directory\nexit status 2\n"
     },
     {
       "severity": "HIGH",
@@ -29,7 +29,7 @@
     {
       "severity": "LOW",
       "path": "test.yaml",
-      "message": "stat tools/validate_constraints/validate.go: no such file or directory\n"
+      "message": "failed to read YAML file \"test.yaml\": open test.yaml: no such file or directory\nexit status 2\n"
     }
   ],
   "component_scores": {
@@ -53,7 +53,7 @@
     }
   },
   "metadata": {
-    "generator": "your-tool",
-    "generated_at": "2026-01-19T15:38:35-05:00"
+    "generator": "prompt-stack",
+    "generated_at": "2026-01-19T16:15:34-05:00"
   }
 }

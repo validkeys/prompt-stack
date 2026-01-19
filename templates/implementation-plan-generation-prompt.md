@@ -27,6 +27,11 @@ References (consult these files in the repo)
 - `tools/validate_yaml.go` (or the project-provided validator) — preferred YAML syntax validator.
 
 Prompt rules and behavior (agent must follow exactly)
+
+- Reuse shared helpers: Do not regenerate repository-level validation helpers. Prefer the general-purpose helpers in `internal/validation/helpers.go` for common tasks (file existence, JSON/YAML reading, string utilities, task-section extraction, repo root detection). If you need additional glue code, write minimal adapters into `temp_artifacts_dir` and mark them with `assumption: true` so future milestones reuse the canonical helpers.
+- If the validator CLI (`prompt-stack validate`) is available prefer invoking it rather than emitting new validator code. If the CLI is not present, produce a validator spec that references the helpers in `internal/validation`.
+
+Prompt rules and behavior (agent must follow exactly)
 1. Ask the user: "Where is the requirements document (path) that I should read?" and record the answer. The agent will create the final PRD file named `make-implementation-plan.prd.yaml` in the same folder as the provided `requirements_file`.
 2. Read `requirements_file` fully and produce a concise 1-paragraph summary (one sentence summary + 2–3 bullet highlights: objectives, success metrics, constraints).
 3. Load `templates/planning-phase.prd-template.yaml` and use it as the authoritative structure. Replace placeholders (`{{...}}`) with concrete values derived from `requirements_file` and provided inputs.

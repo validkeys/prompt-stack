@@ -26,6 +26,10 @@ References (load before review)
 - `temp_artifacts_dir` (if present) — reviewer should consult full sidecar artifacts here when deeper inspection is required (schema_validation_report.json, secrets_scan_report.json, generated helper code).
 
 Agent directives
+
+- Reuse shared helpers: When reviewing or regenerating PRDs, prefer repository helpers in `internal/validation/helpers.go`. Do not instruct the generator to recreate basic utilities (file reading, JSON/YAML parsing, simple string helpers, section extraction, repo root detection). If a missing helper is required, create a tiny adapter in `temp_artifacts_dir` marked `assumption: true` that calls into `internal/validation`.
+
+Agent directives
 1. Confirm the PRD is the planning-phase artifact for the specified milestone and contains the expected top-level sections: `metadata`, `global_constraints`, `tasks`, `instructions`, `research_compliance`, `performance_targets`, and inline `validation` summaries. Flag missing sections.
 2. Validate metadata:
    - Ensure `name`, `description`, `version`, `rules_file`, `style_anchors`, `allowed_dependencies`, `prompt_template`, `model_preferences`, and `outputs` fields exist where required by `docs/ralphy-inputs.md`.
