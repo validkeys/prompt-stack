@@ -176,6 +176,24 @@ func saveResult(result *ValidationResult, path string) error {
 	return os.WriteFile(path, data, 0644)
 }
 
+// findProjectRoot walks up the filesystem from the current working directory to find go.mod
+func findProjectRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return ""
+		}
+		dir = parent
+	}
+}
+
 // YAMLValidator validates YAML syntax and structure
 type YAMLValidator struct{}
 
@@ -235,7 +253,15 @@ func (v *TaskSizingValidator) Validate(inputPath string) (ComponentResult, error
 		},
 	}
 
-	cmd := exec.Command("go", "run", filepath.Join("tools", "task_sizing", "validate.go"), inputPath)
+	// Run the task_sizing validator tool in its module directory so deps resolve
+	root := findProjectRoot()
+	scriptDir := filepath.Join("tools", "task_sizing")
+	if root != "" {
+		scriptDir = filepath.Join(root, "tools", "task_sizing")
+	}
+
+	cmd := exec.Command("go", "run", "./validate.go", "--file", inputPath)
+	cmd.Dir = scriptDir
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		result.Valid = false
@@ -274,7 +300,14 @@ func (v *ConstraintsValidator) Validate(inputPath string) (ComponentResult, erro
 		},
 	}
 
-	cmd := exec.Command("go", "run", filepath.Join("tools", "validate_constraints", "validate.go"), inputPath)
+	root := findProjectRoot()
+	scriptDir := filepath.Join("tools", "validate_constraints")
+	if root != "" {
+		scriptDir = filepath.Join(root, "tools", "validate_constraints")
+	}
+
+	cmd := exec.Command("go", "run", "./validate.go", "--file", inputPath)
+	cmd.Dir = scriptDir
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		result.Valid = false
