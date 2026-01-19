@@ -1,0 +1,251 @@
+name: prompt-stack
+description: "AI-assisted development policy and inputs for milestone m1 - CLI scaffold implementation"
+version: 0.1.0
+rules_file: docs/opencode-rules.md
+style_anchors:
+  - examples/style-anchor/
+  - docs/style-markers.md
+  - docs/requirements/project-structure.md
+allowed_dependencies:
+  - cobra
+  - testify
+  - golangci-lint
+task_sizing:
+  min_minutes: 30
+  max_minutes: 150
+  max_files: 5
+tdd:
+  required: true
+  test_command: go test ./...
+ci:
+  precommit:
+    - make lint
+  ci_checks:
+    - make test
+    - make lint
+drift_policy_ref: docs/drift-policy.md
+validation_schemas:
+  - internal/validation/*.go
+prompt_template:
+  prefix: "Project rules:\n{{rules_file}}\n\nTask:\n"
+  suffix: "\nMake a minimal diff. Commit after tests pass."
+model_preferences:
+  primary: opencode
+  review_model: gpt-4
+outputs:
+  allowed_file_edits:
+    - cmd/**
+    - internal/**
+    - pkg/**
+    - tools/**
+  disallowed_file_edits:
+    - scripts/**
+    - .github/**
+  commit_policy:
+    prefix_rules:
+      - feat:
+      - fix:
+      - test:
+tasks:
+  - id: "m1-001"
+    title: "Implement help command with core command listing"
+    description: "Implement help command that lists core commands (init, plan, validate, review, build) following Cobra framework patterns"
+    files_in_scope:
+      - "cmd/prompt-stack/main.go"
+      - "cmd/prompt-stack/help.go"
+      - "cmd/prompt-stack/help_test.go"
+    style_anchors:
+      - file: "examples/style-anchor/cmd/mytool/main.go"
+        reason: "Cobra command structure and help integration pattern"
+      - file: "docs/style-markers.md"
+        reason: "Single-command UX with subcommands pattern from Hugo"
+    estimated_duration_minutes: 45
+    verification:
+      pre_commit:
+        - "prompt-stack --help lists init, plan, validate, review, build commands"
+        - "Help command exits with status 0"
+        - "Command follows Cobra framework conventions"
+
+  - id: "m1-002"
+    title: "Implement init command with config file creation"
+    description: "Implement init command that creates .prompt-stack/config.yaml with minimal defaults and .prompt-stack/knowledge.db SQLite database"
+    dependencies:
+      - "m1-001"
+    files_in_scope:
+      - "cmd/prompt-stack/init.go"
+      - "cmd/prompt-stack/init_test.go"
+      - "internal/config/config.go"
+      - "internal/database/schema.go"
+      - ".prompt-stack/config.yaml.template"
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Minimal public package pattern for config and database packages"
+      - file: "docs/style-markers.md"
+        reason: "Config-driven defaults pattern from fzf"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Project layout specification for config file placement"
+    estimated_duration_minutes: 90
+    verification:
+      pre_commit:
+        - "prompt-stack init creates .prompt-stack/config.yaml"
+        - "prompt-stack init creates .prompt-stack/knowledge.db"
+        - "Config file contains minimal defaults"
+        - "Database schema includes required tables for patterns storage"
+
+  - id: "m1-003"
+    title: "Implement project structure validation"
+    description: "Verify project structure matches docs/requirements/project-structure.md spec with validation logic"
+    dependencies:
+      - "m1-001"
+    files_in_scope:
+      - "internal/validation/project_structure.go"
+      - "internal/validation/project_structure_test.go"
+      - "cmd/prompt-stack/validate.go"
+    style_anchors:
+      - file: "docs/requirements/project-structure.md"
+        reason: "Project layout specification for validation logic"
+      - file: "examples/style-anchor/pkg/greeter/greeter_test.go"
+        reason: "Table-driven test patterns for validation tests"
+    estimated_duration_minutes: 60
+    verification:
+      pre_commit:
+        - "Validation logic checks directory structure matches spec"
+        - "Validation provides clear error messages for mismatches"
+        - "validate command can be run to check project structure"
+
+  - id: "m1-004"
+    title: "Implement core command stubs (plan, validate, review, build)"
+    description: "Implement plan, validate, review, build commands with placeholder Run functions that show help"
+    dependencies:
+      - "m1-001"
+    files_in_scope:
+      - "cmd/prompt-stack/plan.go"
+      - "cmd/prompt-stack/validate.go"
+      - "cmd/prompt-stack/review.go"
+      - "cmd/prompt-stack/build.go"
+      - "cmd/prompt-stack/commands_test.go"
+    style_anchors:
+      - file: "examples/style-anchor/cmd/mytool/main.go"
+        reason: "Cobra command structure for multiple subcommands"
+      - file: "docs/style-markers.md"
+        reason: "Single-command UX with subcommands pattern from Hugo"
+    estimated_duration_minutes: 75
+    verification:
+      pre_commit:
+        - "All core commands exist (plan, validate, review, build)"
+        - "Each command has placeholder Run function"
+        - "Commands follow consistent naming pattern"
+        - "All command files compile without errors"
+
+  - id: "m1-005"
+    title: "Implement secrets scanning and validation"
+    description: "Implement secrets scanning to ensure no secrets are written to knowledge.db database"
+    dependencies:
+      - "m1-002"
+    files_in_scope:
+      - "internal/security/secrets_scanner.go"
+      - "internal/security/secrets_scanner_test.go"
+      - "internal/database/validation.go"
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Package structure for security utilities"
+      - file: "docs/style-markers.md"
+        reason: "Explicit support notes pattern from Kubernetes"
+    estimated_duration_minutes: 60
+    verification:
+      pre_commit:
+        - "Secrets scanner detects common secret patterns"
+        - "Database validation prevents secrets insertion"
+        - "Zero secrets in knowledge.db after init command"
+
+  - id: "m1-006"
+    title: "Add integration tests for CLI workflow"
+    description: "Create integration tests that test the complete CLI workflow from init to validation"
+    dependencies:
+      - "m1-002"
+      - "m1-003"
+      - "m1-004"
+    files_in_scope:
+      - "tests/integration/cli_workflow_test.go"
+      - "tests/integration/test_helpers.go"
+      - "Makefile"
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter_test.go"
+        reason: "Test structure and table-driven patterns"
+      - file: "docs/style-markers.md"
+        reason: "Makefile-first developer workflow pattern from Kubernetes"
+    estimated_duration_minutes: 90
+    verification:
+      pre_commit:
+        - "Integration tests cover init -> validate -> plan workflow"
+        - "Tests use temporary directories for isolation"
+        - "make test runs integration tests"
+        - "Tests verify acceptance criteria AC-1, AC-2, AC-3"
+
+  - id: "m1-007"
+    title: "Update documentation and README"
+    description: "Update project documentation with CLI usage examples and implementation details"
+    dependencies:
+      - "m1-001"
+      - "m1-002"
+      - "m1-004"
+    files_in_scope:
+      - "README.md"
+      - "docs/commands.md"
+      - "CONTRIBUTING.md"
+    style_anchors:
+      - file: "docs/style-markers.md"
+        reason: "UX-first README pattern from fzf with concise highlights and examples"
+      - file: "docs/style-markers.md"
+        reason: "Friendly developer onboarding pattern from Hugo"
+    estimated_duration_minutes: 45
+    verification:
+      pre_commit:
+        - "README includes CLI usage examples for all commands"
+        - "Documentation matches implemented functionality"
+        - "Contributing guidelines include development setup"
+
+global_constraints:
+  forbidden_patterns:
+    - pattern: "panic\\("
+      message: "Use proper error handling instead of panic"
+      when: "implementation_phase"
+    - pattern: "interface\\{\\}"
+      message: "Use specific types or generics instead of empty interface where possible"
+      when: "implementation_phase"
+    - pattern: "\\.Println"
+      message: "Use structured logging instead of direct println for production code"
+      when: "implementation_phase"
+  affirmative_constraints:
+    - "Use Cobra for CLI subcommands and only add dependencies with justification"
+    - "Create config under .prompt-stack/config.yaml with minimal defaults"
+
+# Validation metadata (non-schema fields for review purposes)
+_validation:
+  quality_score: 0.9775
+  issues: []
+  approval: "APPROVED"
+  explanation: "Weighted score using anchors(30%), sizing(25%), schema(20%), secrets(15%), affirmative constraints(10%)."
+  reports:
+    schema_check:
+      summary: "All schema-required top-level fields present"
+      passed: true
+    anchors_check:
+      summary: "Style anchors provided (3 global anchors, 2 per task)"
+      passed: true
+    sizing_check:
+      summary: "All task estimates within 30-150 minute guideline"
+      passed: true
+
+_assumptions:
+  validator_command:
+    value: "prompt-stack validate"
+    assumption: true
+    reason: "`prompt-stack` is a local Go command (./prompt-stack) but not in PATH; prefer built-in validator when available."
+
+_instructions: |
+  Run the planning tasks sequentially according to dependencies. Place temporary artifacts in ./.prompt-stack/reports/m1/ (validator spec, schema reports, generated helper adapters). The final execution artifact is `implementation-plan.yaml` in this directory.
+
+_usage: |
+  prompt-stack plan docs/implementation-plan/m1/requirements.md --method code --output docs/implementation-plan/m1/implementation-plan.yaml
+  prompt-stack validate --input docs/implementation-plan/m1/implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out ./.prompt-stack/reports/m1/validation.json

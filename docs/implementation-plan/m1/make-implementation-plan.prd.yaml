@@ -105,6 +105,7 @@ tasks:
         - "All tasks sized 30-150 minutes"
         - "Each task has single responsibility"
         - "Style anchors assigned (2-3 per task)"
+    completed: true
 
   - id: "planning-004"
     title: "Generate complete Ralphy YAML inputs"
@@ -126,6 +127,7 @@ tasks:
         - "YAML structure matches docs/ralphy-inputs.md"
         - "All required fields present"
         - "Style anchors (2-3) per task"
+    completed: true
 
 global_constraints:
   forbidden_patterns:
