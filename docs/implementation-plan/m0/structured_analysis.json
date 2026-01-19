@@ -1,0 +1,178 @@
+{
+  "milestone": "m0",
+  "title": "Initial setup with requirements gathering phase",
+  "requirements_file": "docs/implementation-plan/m0/requirements.md",
+  "analyzed_at": "2026-01-19T08:50:00Z",
+
+  "core_functional_requirements": [
+    {
+      "id": "FR-001",
+      "description": "Scaffold Go CLI with Cobra framework",
+      "details": "Create initial command structure with plan, validate, review, build, and init commands",
+      "acceptance_criteria": [
+        "--help command lists all core commands",
+        "--help command exits with status code 0",
+        "CLI executable can be built with Go toolchain"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "description": "Bundle Ralphy shell executor",
+      "details": "Embed vendor/ralphy/ralphy.sh and materialize at runtime with dry-run reporting capability",
+      "acceptance_criteria": [
+        "ralphy.sh is embedded in Go binary or vendored",
+        "Dry-run mode writes to ./.your-tool/report.txt",
+        "Dry-run mode writes to ./.your-tool/audit.log"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "description": "Interactive requirements prompt",
+      "details": "One-question-at-a-time interactive prompt that saves filled planning input YAML",
+      "acceptance_criteria": [
+        "Prompt displays questions sequentially",
+        "User responses are captured and validated",
+        "Final output saves to YAML file matching template schema",
+        "Transcript of interview is saved"
+      ]
+    }
+  ],
+
+  "non_functional_requirements": [
+    {
+      "category": "performance",
+      "requirements": [
+        "CLI startup time < 500ms",
+        "Requirements prompt should be responsive (< 100ms response time)"
+      ]
+    },
+    {
+      "category": "security",
+      "requirements": [
+        "No secrets stored in repository",
+        "No secrets stored in SQLite database",
+        "Use OS secret store or environment variables for sensitive data"
+      ]
+    },
+    {
+      "category": "compatibility",
+      "requirements": [
+        "POSIX bash required for bundled ralphy.sh",
+        "Support macOS and Linux platforms"
+      ]
+    },
+    {
+      "category": "maintainability",
+      "requirements": [
+        "Include basic unit tests",
+        "Include Makefile with build/test targets",
+        "Include minimal README with usage instructions"
+      ]
+    }
+  ],
+
+  "integration_points": [
+    {
+      "system": "OpenCode (executor target)",
+      "integration_type": "via_bundled_script",
+      "notes": "Executor will call vendored ralphy.sh which orchestrates OpenCode agents; real OpenCode integration is out of scope for M0 beyond dry-run",
+      "out_of_scope": "Full AI provider integration (Anthropic/OpenAI) — adapters may be stubbed"
+    },
+    {
+      "system": "Ralphy shell executor",
+      "integration_type": "embedded_or_vendored",
+      "path": ".your-tool/vendor/ralphy/ralphy.sh",
+      "notes": "Materialized at runtime, supports dry-run mode"
+    }
+  ],
+
+  "dependencies": [
+    {
+      "type": "runtime",
+      "name": "Go",
+      "version": "1.x",
+      "purpose": "CLI implementation language"
+    },
+    {
+      "type": "library",
+      "name": "Cobra",
+      "purpose": "CLI framework for command structure"
+    },
+    {
+      "type": "runtime",
+      "name": "bash",
+      "version": "POSIX compliant",
+      "purpose": "Ralphy shell executor script"
+    },
+    {
+      "type": "optional",
+      "name": "SQLite",
+      "purpose": "Knowledge database storage"
+    }
+  ],
+
+  "constraints": [
+    {
+      "id": "C-001",
+      "type": "technical",
+      "description": "POSIX bash required for bundled ralphy.sh",
+      "impact": "Limited to macOS/Linux platforms"
+    },
+    {
+      "id": "C-002",
+      "type": "security",
+      "description": "Secrets must not be stored in repo or SQLite DB",
+      "mitigation": "Use OS secret store or environment variables"
+    },
+    {
+      "id": "C-003",
+      "type": "scope",
+      "description": "Timeline is 1-3 days for M0",
+      "impact": "Limited feature set for initial milestone"
+    }
+  ],
+
+  "acceptance_criteria": [
+    {
+      "metric": "CLI help surface",
+      "target": "--help lists core commands and exits 0",
+      "verification_method": "manual_test"
+    },
+    {
+      "metric": "Requirements output",
+      "target": "Produces docs/implementation-plan/m0/requirements.md matching template schema",
+      "verification_method": "schema_validation"
+    },
+    {
+      "metric": "Executor dry-run",
+      "target": "Writes ./.your-tool/report.txt and ./.your-tool/audit.log",
+      "verification_method": "file_check"
+    }
+  ],
+
+  "deliverables": [
+    "docs/implementation-plan/m0/requirements.md",
+    "docs/implementation-plan/m0/requirements-interview.md",
+    "cmd/your-tool/main.go (Cobra scaffold)",
+    ".your-tool/vendor/ralphy/ralphy.sh (materialized at runtime)",
+    "Makefile, README.md, and basic unit tests",
+    ".your-tool/report.txt and .your-tool/audit.log (after dry-run)"
+  ],
+
+  "tech_stack": {
+    "languages": ["Go"],
+    "frameworks": ["Cobra"],
+    "infra": ["SQLite (optional)"]
+  },
+
+  "stakeholders": {
+    "product_owner": "@kyledavis",
+    "primary_user": "@kyledavis (as author/committer)"
+  },
+
+  "timeline": {
+    "start_date": "2026-01-19",
+    "target_completion": "2026-01-21",
+    "duration_days": "1-3"
+  }
+}
