@@ -871,6 +871,20 @@ Execute with build mode? [Y/n]
 
 ## Implementation Phases
 
+### Phase 0: Requirements Gathering (1-3 days)
+
+- Goal: Capture, formalize, and validate project requirements as the first milestone. Produce a concise requirements input file and templates that Plan Mode can consume; this milestone intentionally avoids Ralphy/OpenCode usage and focuses on human-driven requirements collection and static validation.
+- Deliverables: `examples/requirements/inputs/requirements.input.md` (or `requirements.md`), `examples/requirements/templates/requirements-prompt.md` (prompt + templates used to gather requirements), an updated `docs/requirements/main.md` entry documenting the gathered requirements, and a short `planning/manifest.yaml` entry referencing the milestone.
+- Acceptance criteria:
+  - A requirements input file exists at `examples/requirements/inputs/requirements.input.md` and follows the project's input template.
+  - The example prompt and templates used to gather requirements are committed under `docs/requirements/templates/`.
+  - `your-tool plan examples/requirements/inputs/requirements.input.md --method code` produces a syntactically valid `tasks.yaml` candidate (code-generation path only; no AI required).
+  - The requirements document (`docs/requirements/main.md`) includes the example prompt and links to the templates.
+- Manual test checklist:
+  1. Run the requirements prompt (copy the template from `examples/requirements/templates/requirements-prompt.md`) interactively and save output to `examples/requirements/inputs/requirements.input.md`.
+  2. Run `your-tool plan examples/requirements/inputs/requirements.input.md --method code` and verify `tasks.yaml` is produced.
+  3. Confirm `docs/requirements/main.md` references this milestone and contains the example prompt or link to `docs/requirements/templates/`.
+
 ### Phase 1: MVP (1-2 weeks)
 
 **Plan Mode - Code Generation**:
@@ -1052,6 +1066,37 @@ your-tool/
 - **Knowledge query**: <100ms
 
 ---
+
+## Multi-Milestone Projects
+
+This project supports iterative planning by treating each milestone as a first-class planning unit. Recommended approach:
+
+- Per-milestone planning files: store a single concise input per milestone (follow `templates/planning-phase.input.yaml`) and generate one Ralphy YAML per milestone. Keep each milestone focused so AI context budgets remain small.
+- Use a small project manifest to declare milestone order and cross-milestone dependencies (the manifest is lightweight and only references per-milestone input files).
+- Run Plan Mode per milestone during development (`your-tool plan <milestone.input.yaml>`) and run a separate integration pass when you need a full-project view or cross-milestone validation.
+- Enforce per-milestone quality gates (YAML syntax, schema, secrets scan, style-anchor and sizing validations). Only promote a milestone to `APPROVED` once it meets the quality target.
+- Store artifacts under `planning/` or `examples/multi-milestone-setup/` for clarity (see the concise example in `examples/multi-milestone-setup`).
+
+Example layout (recommended):
+
+- planning/
+  - inputs/
+    - <milestone>.input.yaml
+  - milestones/
+    - <milestone>.ralphy.yaml
+  - reports/
+    - <milestone>/final_quality_report.json
+  - manifest.yaml  # lightweight list of milestones + deps
+
+CLI examples:
+
+- Generate a single milestone (hybrid + review):
+  `your-tool plan planning/inputs/auth-v1.input.yaml --method hybrid --review --output planning/milestones/auth-v1.ralphy.yaml`
+
+- Run a manifest-driven integration check (validate ordering and cross-milestone constraints):
+  `your-tool plan --manifest planning/manifest.yaml --integration-check`
+
+See `examples/multi-milestone-setup` for a concrete minimal example you can copy and adapt.
 
 ## Complete Workflow Examples
 
