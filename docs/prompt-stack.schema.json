@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Prompt Stack Config",
+  "type": "object",
+  "required": ["version", "models", "roles"],
+  "properties": {
+    "version": { "type": "integer" },
+    "models": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "provider": { "type": "string" },
+          "token_limit": { "type": "integer" },
+          "cost_rank": { "type": "integer" },
+          "deterministic": { "type": "boolean" },
+          "latency_hint": { "type": "string" }
+        },
+        "required": ["provider"]
+      }
+    },
+    "roles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "required": { "type": "object" },
+          "candidates": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "policy": { "type": "string", "enum": ["advisory", "strict"] }
+        },
+        "required": ["candidates", "policy"]
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "fallback_models": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

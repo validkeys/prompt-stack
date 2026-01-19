@@ -1,0 +1,35 @@
+version: 1
+models:
+  openai-gpt-4:
+    provider: openai
+    token_limit: 8192
+    cost_rank: 3
+    deterministic: false
+  local-small:
+    provider: local
+    token_limit: 2048
+    cost_rank: 1
+roles:
+  planner:
+    required:
+      token_limit: 4000
+    candidates: [openai-gpt-4, local-small]
+    policy: advisory
+  coder:
+    required:
+      token_limit: 4096
+    candidates: [openai-gpt-4]
+    policy: advisory
+  reviewer:
+    required:
+      deterministic: true
+    candidates: [openai-gpt-4, local-small]
+    policy: advisory
+  qa:
+    required:
+      deterministic: true
+      token_limit: 8000
+    candidates: [openai-gpt-4]
+    policy: advisory
+defaults:
+  fallback_models: [local-small]
