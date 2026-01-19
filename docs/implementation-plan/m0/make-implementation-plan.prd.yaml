@@ -333,7 +333,7 @@ tasks:
     estimated_duration_minutes: 30
     note: "assumption: true - shorter duration increased to meet task sizing policy"
     completed: true
-   # Phase 8: AI Validation - Implementation Guidelines Compliance (planning only — no tests generated)
+    # Phase 8: AI Validation - Implementation Guidelines Compliance (planning only — no tests generated)
   - id: "planning-008"
     title: "Validate implementation guidelines inclusion"
     description: |
@@ -387,6 +387,7 @@ tasks:
         - "Scope enforcement rules present (flag drift detection)"
     output_format: "validation_report_enforcement.json"
     estimated_duration_minutes: 30
+    completed: true
   # Phase 10: Generate Final Quality Report
   - id: "planning-010"
     title: "Generate comprehensive quality report"
