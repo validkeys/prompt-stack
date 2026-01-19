@@ -99,7 +99,7 @@ func Validate(config Config) (*ValidationResult, error) {
 		Issues:            []Issue{},
 		ValidationSummary: make(map[string]string),
 		Metadata: Metadata{
-			Generator:     "your-tool",
+			Generator:     "prompt-stack",
 			GeneratedAt:   time.Now().Format(time.RFC3339),
 			QualityTarget: config.QualityTarget,
 		},

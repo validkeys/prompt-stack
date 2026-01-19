@@ -13,7 +13,7 @@ make build
 Run the program:
 
 ```sh
-./dist/your-tool --help
+./dist/prompt-stack --help
 ```
 
 ## Features
@@ -31,45 +31,45 @@ Run the program:
 Run an interactive interview to gather milestone requirements:
 
 ```sh
-./dist/your-tool init
-./dist/your-tool init --output-dir docs/implementation-plan/m1
+./dist/prompt-stack init
+./dist/prompt-stack init --output-dir docs/implementation-plan/m1
 ```
 
 ### Generate implementation plans
 
 ```sh
-./dist/your-tool plan --input docs/requirements.md --output docs/implementation-plan/m0/
+./dist/prompt-stack plan --input docs/requirements.md --output docs/implementation-plan/m0/
 ```
 
 ### Validate implementation plans
 
 ```sh
-./dist/your-tool validate --input docs/implementation-plan/m0/final_implementation-plan.yaml
+./dist/prompt-stack validate --input docs/implementation-plan/m0/final_implementation-plan.yaml
 ```
 
 ### Build from implementation plan
 
 ```sh
-./dist/your-tool build --plan docs/implementation-plan/m0/final_implementation-plan.yaml
+./dist/prompt-stack build --plan docs/implementation-plan/m0/final_implementation-plan.yaml
 ```
 
 ### Review implementation progress
 
 ```sh
-./dist/your-tool review
+./dist/prompt-stack review
 ```
 
 ## Project Structure
 
 ```
 prompt-stack/
-├── cmd/your-tool/       # CLI commands
+├── cmd/prompt-stack/       # CLI commands
 ├── pkg/                 # Reusable packages
 │   ├── executor/       # Ralphy executor integration
 │   └── prompt/         # Interactive prompt system
 ├── docs/               # Documentation
 ├── tests/              # Integration tests
-└── .your-tool/         # Tool configuration and vendored scripts
+└── .prompt-stack/         # Tool configuration and vendored scripts
 ```
 
 ## Development

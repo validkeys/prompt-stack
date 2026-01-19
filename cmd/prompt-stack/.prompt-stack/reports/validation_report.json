@@ -1,0 +1,59 @@
+{
+  "report_type": "final_quality_report",
+  "timestamp": "2026-01-19T15:38:35-05:00",
+  "requirements_file": "test.yaml",
+  "generated_yaml": "test.yaml",
+  "overall_score": 0,
+  "overall_result": "FAIL",
+  "issues": [
+    {
+      "severity": "CRITICAL",
+      "path": "test.yaml",
+      "message": "file does not exist"
+    },
+    {
+      "severity": "HIGH",
+      "path": "test.yaml",
+      "message": "validation failed: exit status 1"
+    },
+    {
+      "severity": "LOW",
+      "path": "test.yaml",
+      "message": "stat tools/task_sizing/validate.go: no such file or directory\n"
+    },
+    {
+      "severity": "HIGH",
+      "path": "test.yaml",
+      "message": "validation failed: exit status 1"
+    },
+    {
+      "severity": "LOW",
+      "path": "test.yaml",
+      "message": "stat tools/validate_constraints/validate.go: no such file or directory\n"
+    }
+  ],
+  "component_scores": {
+    "constraints": {
+      "score": 0.9,
+      "reason": "Component constraints validation",
+      "details": {
+        "validator": "tools/validate_constraints/validate.go"
+      }
+    },
+    "task_sizing": {
+      "score": 0.8,
+      "reason": "Component task_sizing validation",
+      "details": {
+        "validator": "tools/task_sizing/validate.go"
+      }
+    },
+    "yaml_compliance": {
+      "score": 0,
+      "reason": "Component yaml_compliance validation"
+    }
+  },
+  "metadata": {
+    "generator": "your-tool",
+    "generated_at": "2026-01-19T15:38:35-05:00"
+  }
+}

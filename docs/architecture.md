@@ -6,7 +6,7 @@ prompt-stack is an AI-assisted development workflow tool that generates and vali
 
 ## Components
 
-### CLI Layer (`cmd/your-tool/`)
+### CLI Layer (`cmd/prompt-stack/`)
 
 The CLI layer provides user-facing commands using Cobra framework:
 
@@ -34,8 +34,8 @@ Manages execution of the vendored Ralphy shell script:
   - `executeDryRun()`: Validates and reports without actual execution
   - `DryRunValidator`: Comprehensive validation for dry-run mode
   - `generateDryRunReport()`: Generates execution reports
-  - `writeReport()`: Writes reports to `.your-tool/report.txt`
-  - `logAudit()`: Logs execution details to `.your-tool/audit.log`
+  - `writeReport()`: Writes reports to `.prompt-stack/report.txt`
+  - `logAudit()`: Logs execution details to `.prompt-stack/audit.log`
 
 #### Prompt Package (`pkg/prompt/`)
 
@@ -52,7 +52,7 @@ Interactive prompt system for requirements gathering:
   - `DefaultQuestions()`: Returns 14 milestone questions
   - Question validators for milestone ID, title, objectives, etc.
 
-### Configuration (`.your-tool/`)
+### Configuration (`.prompt-stack/`)
 
 - `vendor/ralphy/ralphy.sh`: Vendored Ralphy shell script
 - `report.txt`: Execution reports
@@ -62,20 +62,20 @@ Interactive prompt system for requirements gathering:
 
 ### Init Workflow
 
-1. User runs `your-tool init`
+1. User runs `prompt-stack init`
 2. Prompt package asks questions sequentially
 3. Responses are validated
 4. Results saved as YAML and markdown transcript
 
 ### Plan Workflow
 
-1. User runs `your-tool plan --input requirements.md`
+1. User runs `prompt-stack plan --input requirements.md`
 2. Requirements are processed (placeholder)
 3. Implementation plan generated (placeholder)
 
 ### Build Workflow
 
-1. User runs `your-tool build --plan plan.yaml`
+1. User runs `prompt-stack build --plan plan.yaml`
 2. Executor reads tasks from plan
 3. For each task:
    - Validate inputs

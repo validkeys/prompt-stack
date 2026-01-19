@@ -109,11 +109,11 @@ func TestREADMEUsageExamples(t *testing.T) {
 	readme := string(content)
 
 	requiredCommands := []string{
-		"your-tool init",
-		"your-tool plan",
-		"your-tool validate",
-		"your-tool build",
-		"your-tool review",
+		"prompt-stack init",
+		"prompt-stack plan",
+		"prompt-stack validate",
+		"prompt-stack build",
+		"prompt-stack review",
 	}
 
 	for _, cmd := range requiredCommands {

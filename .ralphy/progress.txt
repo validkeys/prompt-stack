@@ -170,7 +170,7 @@
 
 ## 2026-01-19: Task m0-001 completed
 - Initialized Go module: go mod init github.com/kyledavis/prompt-stack
-- Created directory structure: cmd/your-tool, pkg, tests, .your-tool
+- Created directory structure: cmd/prompt-stack, pkg, tests, .prompt-stack
 - Implemented main.go with Cobra root command
 - Added cobra dependency via go get
 - Created Makefile with build, test, fmt, lint, clean, and help targets
@@ -185,7 +185,7 @@
   * Directory structure matches planned layout
   * Main.go has basic Cobra root command
   * Makefile has build and test targets
-- Verification passed: go mod tidy, go build ./cmd/your-tool, go fmt ./..., go vet ./...
+- Verification passed: go mod tidy, go build ./cmd/prompt-stack, go fmt ./..., go vet ./...
 
 ## 2026-01-19: Task m0-002 completed
 - Created plan.go with plan command (Use, Short, Long, Run function)
@@ -207,7 +207,7 @@
   * --help exits with status 0
   * Each command has placeholder Run function (all command files compile without errors)
   * Commands follow consistent naming pattern (single word names)
-- Verification passed: go build ./cmd/your-tool, ./your-tool --help, go test ./cmd/your-tool
+- Verification passed: go build ./cmd/prompt-stack, ./prompt-stack --help, go test ./cmd/prompt-stack
 
 ## 2026-01-19: Task m0-003 completed
 - Created pkg/executor package with executor.go and dry_run.go files
@@ -219,8 +219,8 @@
 - Implemented executeDryRun() method for dry-run mode that writes to report files
 - Implemented buildCommandArgs() method to construct bash script arguments
 - Implemented generateDryRunReport() method for dry-run report generation
-- Implemented writeReport() method to write execution reports to .your-tool/report.txt
-- Implemented logAudit() method to log execution details to .your-tool/audit.log
+- Implemented writeReport() method to write execution reports to .prompt-stack/report.txt
+- Implemented logAudit() method to log execution details to .prompt-stack/audit.log
 - Implemented ValidateInputs() method for input validation
 - Implemented DryRunValidator with comprehensive validation methods:
   * ValidateConfig(): validates execution configuration
@@ -229,7 +229,7 @@
   * ValidateOutputPaths(): validates report and audit log paths
   * ValidateAll(): runs all validations
   * GenerateDryRunReport(): generates dry-run report structure
-- Copied ralphy.sh to .your-tool/vendor/ralphy/ralphy.sh with execute permissions
+- Copied ralphy.sh to .prompt-stack/vendor/ralphy/ralphy.sh with execute permissions
 - Created comprehensive unit tests with 11 test functions:
   * TestNewExecutor: tests executor creation
   * TestValidateInputs: tests input validation (4 subtests)
@@ -245,9 +245,9 @@
 - go vet validation passed
 - Updated final_implementation-plan.yaml to mark m0-003 as completed (completed: true)
 - All acceptance criteria met:
-  * ralphy.sh is vendored at .your-tool/vendor/ralphy/ralphy.sh (test: file exists)
-  * Dry-run mode writes to .your-tool/report.txt (test: report file created with expected format)
-  * Dry-run mode writes to .your-tool/audit.log (test: audit log contains execution details)
+  * ralphy.sh is vendored at .prompt-stack/vendor/ralphy/ralphy.sh (test: file exists)
+  * Dry-run mode writes to .prompt-stack/report.txt (test: report file created with expected format)
+  * Dry-run mode writes to .prompt-stack/audit.log (test: audit log contains execution details)
   * Executor can materialize script at runtime (test: executor_test.go validates materialization)
   * Dry-run mode validates inputs before execution (test: invalid inputs produce error messages)
   * Executor handles script execution errors gracefully (test: error cases are tested)
@@ -266,7 +266,7 @@
 - Implemented transcript generation recording all Q&A pairs
 - Created DefaultQuestions() function with 14 default milestone questions
 - Implemented question validation for milestone ID, title, objectives, etc.
-- Created cmd/your-tool/init.go with init command using Cobra
+- Created cmd/prompt-stack/init.go with init command using Cobra
 - Implemented saveInterviewResult() function to save transcript and requirements files
 - Implemented generateYAML() function to format responses as markdown YAML
 - Added --output-dir flag to init command for custom output paths
@@ -290,7 +290,7 @@
   * Transcript of interview is saved (test: transcript file contains all Q&A)
   * Input validation provides helpful error messages (test: invalid inputs produce clear errors)
   * Prompt handles cancellation gracefully (test: Ctrl+C exits cleanly)
-- Verification passed: go build ./pkg/prompt, go test ./pkg/prompt, go vet ./pkg/prompt, go build ./cmd/your-tool
+- Verification passed: go build ./pkg/prompt, go test ./pkg/prompt, go vet ./pkg/prompt, go build ./cmd/prompt-stack
 ## 2026-01-19: Task m0-005 completed
 - Created README.md with comprehensive project documentation
 - Created CONTRIBUTING.md with development setup, code style, testing guidelines, commit message format, and pull request process
@@ -313,12 +313,12 @@
   * Usage examples for each command (test: examples exist for all 5 core commands in README)
   * Architecture overview explains components (test: architecture.md exists and describes CLI Layer, Executor Package, Prompt Package)
   * Contributing guidelines present (test: CONTRIBUTING.md exists with development setup, code style, testing, and PR guidelines)
-- Verification passed: go test ./cmd/your-tool, go fmt ./..., go vet ./...
+- Verification passed: go test ./cmd/prompt-stack, go fmt ./..., go vet ./...
 
 ## 2026-01-19: Task m0-006 completed
 - Verified existing unit tests for all core packages (main, executor, prompt)
 - All tests passing with good coverage:
-  * cmd/your-tool: 36.0% coverage, 4 test functions
+  * cmd/prompt-stack: 36.0% coverage, 4 test functions
   * pkg/executor: 60.9% coverage, 11 test functions
   * pkg/prompt: 54.5% coverage, 8 test functions
 - All tests use table-driven pattern with t.Run() subtests
@@ -327,7 +327,7 @@
   * Runs on push/PR to main and develop branches
   * Sets up Go 1.21 environment
   * Runs tests with coverage, go vet, and build
-- Created cmd/your-tool/version.go with build-time variables:
+- Created cmd/prompt-stack/version.go with build-time variables:
   * Version, Commit, Date variables for versioning
 - Updated main.go to display version information via rootCmd.Version
 - Ran go test -v -cover ./... successfully
@@ -359,8 +359,8 @@
   * Creates SHA256 checksums
   * Creates GitHub release with all binaries and checksums
 - Ran make build successfully (binary created with version info)
-- Ran ./dist/your-tool --version (shows: your-tool version 6efae75-dirty)
-- Ran ./dist/your-tool --help (shows all commands and version flag works)
+- Ran ./dist/prompt-stack --version (shows: prompt-stack version 6efae75-dirty)
+- Ran ./dist/prompt-stack --help (shows all commands and version flag works)
 - Ran make test successfully (all tests passing)
 - Ran go vet ./... successfully
 - Ran go fmt ./... successfully
@@ -370,8 +370,8 @@
   * make build creates working binary (test: binary runs with --help)
   * make test runs all tests (test: all tests pass)
   * make clean removes build artifacts (test: dist/ removed)
-  * Binary can be executed with --help (test: ./dist/your-tool --help works)
-- Verification passed: make build, ./dist/your-tool --help, make test, go vet ./..., go fmt ./..., make clean
+  * Binary can be executed with --help (test: ./dist/prompt-stack --help works)
+- Verification passed: make build, ./dist/prompt-stack --help, make test, go vet ./..., go fmt ./..., make clean
 
 ## 2026-01-19: Task m0-008 completed
 - Created internal/validation package with validator.go and eventbus.go
@@ -383,7 +383,7 @@
   * ConstraintsValidator: wraps tools/validate_constraints/validate.go
 - Implemented EventBus with Subscribe/Emit methods for event-driven validation
 - Implemented EmitValidateEvents to emit beforeValidate and afterValidate events
-- Updated cmd/your-tool/validate.go with:
+- Updated cmd/prompt-stack/validate.go with:
   * --input flag for validation file path
   * --output flag for report output path
   * --strict flag to fail on any issues
@@ -397,13 +397,13 @@
 - Ran go test ./internal/validation/... successfully (all passing)
 - Ran go vet ./... successfully
 - Ran go fmt ./... successfully
-- Tested validate command: ./dist/your-tool validate --input docs/implementation-plan/m0/final_implementation-plan.yaml -o .your-tool/reports/final_quality_report.json
-- Validation report created successfully at .your-tool/reports/final_quality_report.json
+- Tested validate command: ./dist/prompt-stack validate --input docs/implementation-plan/m0/final_implementation-plan.yaml -o .prompt-stack/reports/final_quality_report.json
+- Validation report created successfully at .prompt-stack/reports/final_quality_report.json
 - Updated final_implementation-plan.yaml to mark m0-008 as completed (completed: true)
 - All acceptance criteria met:
-  * your-tool validate runs (test: command executes and produces output)
+  * prompt-stack validate runs (test: command executes and produces output)
   * Returns exit code 0 on passing plan (test: valid files return exit 0)
-  * Produces .your-tool/reports/final_quality_report.json conforming to schema (test: JSON report created)
+  * Produces .prompt-stack/reports/final_quality_report.json conforming to schema (test: JSON report created)
   * Existing tools/ validators wrapped (test: TaskSizingValidator and ConstraintsValidator call tools via go run)
   * EventBus emits beforeValidate and afterValidate events (test: EmitValidateEvents implemented)
 - Verification passed: go build ./internal/validation, go test ./internal/validation, go vet ./...

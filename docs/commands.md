@@ -11,7 +11,7 @@ prompt-stack provides 5 core commands for AI-assisted development workflow manag
 Initialize a new milestone with interactive requirements gathering.
 
 ```sh
-your-tool init [flags]
+prompt-stack init [flags]
 ```
 
 #### Flags
@@ -40,8 +40,8 @@ Runs an interactive interview to gather milestone requirements. Asks 14 question
 #### Example
 
 ```sh
-./dist/your-tool init
-./dist/your-tool init --output-dir docs/implementation-plan/m1
+./dist/prompt-stack init
+./dist/prompt-stack init --output-dir docs/implementation-plan/m1
 ```
 
 #### Features
@@ -58,7 +58,7 @@ Runs an interactive interview to gather milestone requirements. Asks 14 question
 Generate implementation plans from requirements.
 
 ```sh
-your-tool plan [flags]
+prompt-stack plan [flags]
 ```
 
 #### Flags
@@ -73,7 +73,7 @@ Generate implementation plans from requirements or templates. (Currently placeho
 #### Example
 
 ```sh
-./dist/your-tool plan --input docs/requirements.md --output docs/implementation-plan/m0/
+./dist/prompt-stack plan --input docs/requirements.md --output docs/implementation-plan/m0/
 ```
 
 ---
@@ -83,7 +83,7 @@ Generate implementation plans from requirements or templates. (Currently placeho
 Validate implementation plans.
 
 ```sh
-your-tool validate [flags]
+prompt-stack validate [flags]
 ```
 
 #### Flags
@@ -98,7 +98,7 @@ Validate implementation plans against schema and quality standards. (Currently p
 #### Example
 
 ```sh
-./dist/your-tool validate --input docs/implementation-plan/m0/final_implementation-plan.yaml
+./dist/prompt-stack validate --input docs/implementation-plan/m0/final_implementation-plan.yaml
 ```
 
 ---
@@ -108,7 +108,7 @@ Validate implementation plans against schema and quality standards. (Currently p
 Build project from implementation plan.
 
 ```sh
-your-tool build [flags]
+prompt-stack build [flags]
 ```
 
 #### Flags
@@ -123,8 +123,8 @@ Build project components based on implementation plan tasks. Uses the executor p
 #### Example
 
 ```sh
-./dist/your-tool build --plan docs/implementation-plan/m0/final_implementation-plan.yaml
-./dist/your-tool build --plan docs/implementation-plan/m0/final_implementation-plan.yaml --dry-run
+./dist/prompt-stack build --plan docs/implementation-plan/m0/final_implementation-plan.yaml
+./dist/prompt-stack build --plan docs/implementation-plan/m0/final_implementation-plan.yaml --dry-run
 ```
 
 #### Features
@@ -132,8 +132,8 @@ Build project components based on implementation plan tasks. Uses the executor p
 - Reads tasks from implementation plan
 - Validates inputs before execution
 - Dry-run mode generates reports without executing
-- Execution results logged to `.your-tool/audit.log`
-- Reports written to `.your-tool/report.txt`
+- Execution results logged to `.prompt-stack/audit.log`
+- Reports written to `.prompt-stack/report.txt`
 
 ---
 
@@ -142,7 +142,7 @@ Build project components based on implementation plan tasks. Uses the executor p
 Review implementation progress.
 
 ```sh
-your-tool review [flags]
+prompt-stack review [flags]
 ``
 
 #### Description
@@ -152,7 +152,7 @@ Review implementation progress and quality metrics. (Currently placeholder - ful
 #### Example
 
 ```sh
-./dist/your-tool review
+./dist/prompt-stack review
 ```
 
 ---

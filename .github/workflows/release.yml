@@ -34,14 +34,14 @@ jobs:
     - name: Create checksums
       run: |
         cd dist
-        sha256sum your-tool-* > checksums.txt
+        sha256sum prompt-stack-* > checksums.txt
         cat checksums.txt
     
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          dist/your-tool-*
+          dist/prompt-stack-*
           dist/checksums.txt
         draft: false
         prerelease: false

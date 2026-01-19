@@ -68,7 +68,7 @@ outputs:
   disallowed_file_edits:
     - .github/**
     - scripts/**
-    - .your-tool/vendor/**
+    - .prompt-stack/vendor/**
   commit_policy:
     prefix_rules:
       - "feat:"
@@ -123,7 +123,7 @@ global_constraints:
     - "ALWAYS reference existing style anchors from docs/best-practices.md when implementing similar functionality"
     - "ALWAYS pass context.Context as first parameter to functions that make network calls or long operations"
     - "ALWAYS wrap errors with fmt.Errorf and use errors.Is/errors.As for error handling as shown in examples"
-    - "ALWAYS follow project directory structure: cmd/your-tool/ for CLI commands, pkg/ for reusable packages"
+    - "ALWAYS follow project directory structure: cmd/prompt-stack/ for CLI commands, pkg/ for reusable packages"
     - "ALWAYS use Makefile targets: make build for building, make test for testing, make fmt for formatting"
     - "ALWAYS write integration tests for CLI commands using test helpers that simulate user input"
 
@@ -135,7 +135,7 @@ tasks:
     files_in_scope:
       - "go.mod"
       - "go.sum"
-      - "cmd/your-tool/main.go"
+      - "cmd/prompt-stack/main.go"
       - "Makefile"
       - ".gitignore"
     style_anchors:
@@ -156,7 +156,7 @@ tasks:
     verification:
       pre_commit:
         - "go mod tidy"
-        - "go build ./cmd/your-tool"
+        - "go build ./cmd/prompt-stack"
         - "go fmt ./..."
         - "go vet ./..."
 
@@ -165,11 +165,11 @@ tasks:
     description: "Create the command hierarchy with plan, validate, review, build, and init commands. Each command should have basic help text and placeholder Run functions. This provides the CLI surface that will be filled in by subsequent tasks."
     completed: true
     files_in_scope:
-      - "cmd/your-tool/main.go"
-      - "cmd/your-tool/plan.go"
-      - "cmd/your-tool/validate.go"
-      - "cmd/your-tool/review.go"
-      - "cmd/your-tool/build.go"
+      - "cmd/prompt-stack/main.go"
+      - "cmd/prompt-stack/plan.go"
+      - "cmd/prompt-stack/validate.go"
+      - "cmd/prompt-stack/review.go"
+      - "cmd/prompt-stack/build.go"
     style_anchors:
       - file: "examples/style-anchor/cmd/mytool/main.go"
         reason: "Cobra command structure and Run function patterns"
@@ -190,9 +190,9 @@ tasks:
       - "Commands follow consistent naming pattern (test: command names match pattern validation)"
     verification:
       pre_commit:
-        - "go build ./cmd/your-tool"
-        - "./your-tool --help"
-        - "go test ./cmd/your-tool"
+        - "go build ./cmd/prompt-stack"
+        - "./prompt-stack --help"
+        - "go test ./cmd/prompt-stack"
 
   - id: "m0-003"
     title: "Bundle and integrate Ralphy shell executor"
@@ -201,9 +201,9 @@ tasks:
     files_in_scope:
       - "pkg/executor/executor.go"
       - "pkg/executor/dry_run.go"
-      - "your-tool/vendor/ralphy/ralphy.sh"
-      - ".your-tool/report.txt"
-      - ".your-tool/audit.log"
+      - "prompt-stack/vendor/ralphy/ralphy.sh"
+      - ".prompt-stack/report.txt"
+      - ".prompt-stack/audit.log"
     style_anchors:
       - file: "examples/style-anchor/pkg/greeter/greeter.go"
         reason: "Simple package structure with clear exports"
@@ -218,9 +218,9 @@ tasks:
     estimated_context_tokens: 1500
     single_responsibility: "Ralphy executor integration and dry-run support"
     acceptance_criteria:
-      - "ralphy.sh is embedded or vendored (test: file exists at your-tool/vendor/ralphy/ralphy.sh)"
-      - "Dry-run mode writes to .your-tool/report.txt (test: report file created with expected format)"
-      - "Dry-run mode writes to .your-tool/audit.log (test: audit log contains execution details)"
+      - "ralphy.sh is embedded or vendored (test: file exists at prompt-stack/vendor/ralphy/ralphy.sh)"
+      - "Dry-run mode writes to .prompt-stack/report.txt (test: report file created with expected format)"
+      - "Dry-run mode writes to .prompt-stack/audit.log (test: audit log contains execution details)"
       - "Executor can materialize script at runtime (test: executor_test.go validates materialization)"
       - "Dry-run mode validates inputs before execution (test: invalid inputs produce error messages)"
       - "Executor handles script execution errors gracefully (test: error cases are tested)"
@@ -235,7 +235,7 @@ tasks:
     description: "Create the interactive prompt system that asks one question at a time. Capture user responses, validate them, and save to planning input YAML. Save transcript of the interview for reference. This fulfills the FR-003 requirement for interactive requirements gathering."
     completed: true
     files_in_scope:
-      - "cmd/your-tool/init.go"
+      - "cmd/prompt-stack/init.go"
       - "pkg/prompt/prompt.go"
       - "pkg/prompt/questions.go"
       - "docs/implementation-plan/m0/requirements-interview.md"
@@ -301,7 +301,7 @@ tasks:
     description: "Create unit tests for core packages using table-driven test patterns. Set up test runner and coverage reporting. Ensure tests can be run via Makefile. This fulfills the non-functional requirement for basic unit tests."
     completed: true
     files_in_scope:
-      - "cmd/your-tool/main_test.go"
+      - "cmd/prompt-stack/main_test.go"
       - "pkg/executor/executor_test.go"
       - "pkg/prompt/prompt_test.go"
       - "Makefile"
@@ -337,7 +337,7 @@ tasks:
       - "Makefile"
       - "build.sh"
       - ".github/workflows/release.yml"
-      - "cmd/your-tool/version.go"
+      - "cmd/prompt-stack/version.go"
       - "dist/"
     style_anchors:
       - file: "examples/style-anchor/pkg/greeter/greeter.go"
@@ -358,13 +358,13 @@ tasks:
     verification:
       pre_commit:
         - "make build"
-        - "./dist/your-tool --help"
+        - "./dist/prompt-stack --help"
         - "make test"
 
   # New task: integrate reusable validators into internal/validation and wire to CLI
   - id: "m0-008"
     title: "Integrate reusable validators into internal/validation"
-    description: "Refactor the M0 validation scripts and tools into an internal `internal/validation` package, expose validator via `your-tool validate` CLI, and produce standardized JSON reports. Wrap or migrate existing `tools/*` validators, add test fixtures, and ensure templates call the validator instead of generating validator code. This makes validators reusable across projects."
+    description: "Refactor the M0 validation scripts and tools into an internal `internal/validation` package, expose validator via `prompt-stack validate` CLI, and produce standardized JSON reports. Wrap or migrate existing `tools/*` validators, add test fixtures, and ensure templates call the validator instead of generating validator code. This makes validators reusable across projects."
     completed: true
     files_in_scope:
       - "internal/validation/**"
@@ -382,16 +382,16 @@ tasks:
     estimated_context_tokens: 800
     single_responsibility: "Create reusable internal validator package and wire to CLI"
     acceptance_criteria:
-      - "`your-tool validate` runs and returns exit code 0 on a passing plan (test: run against implementation-plan.yaml)"
-      - "Produces `./.your-tool/reports/final_quality_report.json` conforming to docs/validation/validation-report.schema.json"
+      - "`prompt-stack validate` runs and returns exit code 0 on a passing plan (test: run against implementation-plan.yaml)"
+      - "Produces `./.prompt-stack/reports/final_quality_report.json` conforming to docs/validation/validation-report.schema.json"
       - "Existing tools/ validators are wrapped or migrated and unit tests added under internal/validation/testdata"
-      - "Templates and prompts call `your-tool validate` instead of asking the AI to author validator code"
+      - "Templates and prompts call `prompt-stack validate` instead of asking the AI to author validator code"
       - "EventBus emits `beforeValidate` and `afterValidate` events during validation runs"
     verification:
       pre_commit:
         - "go build ./internal/validation"
         - "go test ./internal/validation"
-        - "your-tool validate --input docs/implementation-plan/m0/implementation-plan.yaml --out ./.your-tool/reports/final_quality_report.json"
+        - "prompt-stack validate --input docs/implementation-plan/m0/implementation-plan.yaml --out ./.prompt-stack/reports/final_quality_report.json"
 
 parallel_groups:
   m0-002: 1

@@ -21,8 +21,8 @@
       "details": "Embed vendor/ralphy/ralphy.sh and materialize at runtime with dry-run reporting capability",
       "acceptance_criteria": [
         "ralphy.sh is embedded in Go binary or vendored",
-        "Dry-run mode writes to ./.your-tool/report.txt",
-        "Dry-run mode writes to ./.your-tool/audit.log"
+        "Dry-run mode writes to ./.prompt-stack/report.txt",
+        "Dry-run mode writes to ./.prompt-stack/audit.log"
       ]
     },
     {
@@ -81,7 +81,7 @@
     {
       "system": "Ralphy shell executor",
       "integration_type": "embedded_or_vendored",
-      "path": ".your-tool/vendor/ralphy/ralphy.sh",
+      "path": ".prompt-stack/vendor/ralphy/ralphy.sh",
       "notes": "Materialized at runtime, supports dry-run mode"
     }
   ],
@@ -145,7 +145,7 @@
     },
     {
       "metric": "Executor dry-run",
-      "target": "Writes ./.your-tool/report.txt and ./.your-tool/audit.log",
+      "target": "Writes ./.prompt-stack/report.txt and ./.prompt-stack/audit.log",
       "verification_method": "file_check"
     }
   ],
@@ -153,10 +153,10 @@
   "deliverables": [
     "docs/implementation-plan/m0/requirements.md",
     "docs/implementation-plan/m0/requirements-interview.md",
-    "cmd/your-tool/main.go (Cobra scaffold)",
-    ".your-tool/vendor/ralphy/ralphy.sh (materialized at runtime)",
+    "cmd/prompt-stack/main.go (Cobra scaffold)",
+    ".prompt-stack/vendor/ralphy/ralphy.sh (materialized at runtime)",
     "Makefile, README.md, and basic unit tests",
-    ".your-tool/report.txt and .your-tool/audit.log (after dry-run)"
+    ".prompt-stack/report.txt and .prompt-stack/audit.log (after dry-run)"
   ],
 
   "tech_stack": {

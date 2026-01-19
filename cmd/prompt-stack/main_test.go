@@ -22,7 +22,7 @@ func TestRootCmd(t *testing.T) {
 			args:         []string{},
 			wantExitCode: 0,
 			outputContains: []string{
-				"your-tool",
+				"prompt-stack",
 				"Usage:",
 				"flags",
 			},
@@ -32,7 +32,7 @@ func TestRootCmd(t *testing.T) {
 			args:         []string{"--help"},
 			wantExitCode: 0,
 			outputContains: []string{
-				"your-tool",
+				"prompt-stack",
 				"generating and validating Ralphy YAML files",
 				"flags",
 			},

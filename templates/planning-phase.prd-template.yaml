@@ -65,8 +65,8 @@ tasks:
     outputs:
       patterns_report: "patterns_report.json"
     files_in_scope:
-      - "{{knowledge_db_path}}"  # Path to knowledge DB (default: .your-tool/knowledge.db)
-      - note: "If the knowledge DB is not present, set {{knowledge_db_path}} to a valid path or run 'your-tool init' to create one."
+      - "{{knowledge_db_path}}"  # Path to knowledge DB (default: .prompt-stack/knowledge.db)
+      - note: "If the knowledge DB is not present, set {{knowledge_db_path}} to a valid path or run 'prompt-stack init' to create one."
       - "docs/best-practices.md"   # Research-backed practices
       - "docs/ralphy-inputs.schema.json"
     style_anchors:
@@ -142,8 +142,8 @@ tasks:
     estimated_duration_minutes: 45
 
   # Phase 4a: YAML syntax validation (new)
-  # Validator integration: Prefer built-in validator at `your-tool validate` (internal/validation).
-  # The planning pipeline should call `your-tool validate` to produce structured JSON reports and the final_quality_report.json used in downstream steps.
+  # Validator integration: Prefer built-in validator at `prompt-stack validate` (internal/validation).
+  # The planning pipeline should call `prompt-stack validate` to produce structured JSON reports and the final_quality_report.json used in downstream steps.
 
   - id: "planning-004a"
     title: "Validate YAML syntax using validator tool"
@@ -435,13 +435,13 @@ instructions: |
   - TDD workflow: Where applicable
   - Multi-layer enforcement: ≥3 layers
   - No embedded secrets in final YAML
-  - Final YAML MUST pass YAML syntax validation using `your-tool validate` (internal/validation)
+  - Final YAML MUST pass YAML syntax validation using `prompt-stack validate` (internal/validation)
   - Final YAML MUST pass JSON Schema validation in docs/ralphy-inputs.schema.json (validator will perform this check)
 
 
   6. Output artifacts:
   - final-implementation-plan.yaml: Ready for execution
-  - final_quality_report.json: Detailed validation results (produced by `your-tool validate` via internal/validation)
+  - final_quality_report.json: Detailed validation results (produced by `prompt-stack validate` via internal/validation)
   - Intermediate analysis and validation reports
 
 

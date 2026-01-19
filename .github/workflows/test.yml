@@ -29,4 +29,4 @@ jobs:
       run: go vet ./...
     
     - name: Build
-      run: go build ./cmd/your-tool
+      run: go build ./cmd/prompt-stack

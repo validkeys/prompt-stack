@@ -89,7 +89,7 @@ func TestValidateInputs(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tmpDir := t.TempDir()
-			vendorDir := filepath.Join(tmpDir, ".your-tool/vendor/ralphy")
+			vendorDir := filepath.Join(tmpDir, ".prompt-stack/vendor/ralphy")
 			if err := os.MkdirAll(vendorDir, 0755); err != nil {
 				t.Fatalf("failed to create vendor directory: %v", err)
 			}
@@ -152,9 +152,9 @@ func TestExecuteDryRun(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tmpDir := t.TempDir()
-			yourToolDir := filepath.Join(tmpDir, ".your-tool")
+			yourToolDir := filepath.Join(tmpDir, ".prompt-stack")
 			if err := os.MkdirAll(yourToolDir, 0755); err != nil {
-				t.Fatalf("failed to create .your-tool directory: %v", err)
+				t.Fatalf("failed to create .prompt-stack directory: %v", err)
 			}
 
 			exec := NewExecutor(tmpDir, true)
@@ -307,7 +307,7 @@ func TestDryRunValidator(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tmpDir := t.TempDir()
 			if !tt.wantErr {
-				vendorDir := filepath.Join(tmpDir, ".your-tool/vendor/ralphy")
+				vendorDir := filepath.Join(tmpDir, ".prompt-stack/vendor/ralphy")
 				if err := os.MkdirAll(vendorDir, 0755); err != nil {
 					t.Fatalf("failed to create vendor directory: %v", err)
 				}
@@ -367,7 +367,7 @@ func TestDryRunValidatorValidateScriptMaterialization(t *testing.T) {
 				}
 			}
 
-			vendorDir := filepath.Join(tmpDir, ".your-tool/vendor/ralphy")
+			vendorDir := filepath.Join(tmpDir, ".prompt-stack/vendor/ralphy")
 			if err := os.MkdirAll(vendorDir, 0755); err != nil {
 				t.Fatalf("failed to create vendor directory: %v", err)
 			}
@@ -416,7 +416,7 @@ func TestValidateDryRun(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tmpDir := t.TempDir()
-			vendorDir := filepath.Join(tmpDir, ".your-tool/vendor/ralphy")
+			vendorDir := filepath.Join(tmpDir, ".prompt-stack/vendor/ralphy")
 			if err := os.MkdirAll(vendorDir, 0755); err != nil {
 				t.Fatalf("failed to create vendor directory: %v", err)
 			}
@@ -522,7 +522,7 @@ func TestExecutionResult(t *testing.T) {
 }
 
 func testWorkDir() string {
-	return ".your-tool"
+	return ".prompt-stack"
 }
 
 func TestMain(m *testing.M) {

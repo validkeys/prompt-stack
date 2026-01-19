@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	ralphyScriptPath = ".your-tool/vendor/ralphy/ralphy.sh"
-	reportFile       = ".your-tool/report.txt"
-	auditLogFile     = ".your-tool/audit.log"
+	ralphyScriptPath = ".prompt-stack/vendor/ralphy/ralphy.sh"
+	reportFile       = ".prompt-stack/report.txt"
+	auditLogFile     = ".prompt-stack/audit.log"
 )
 
 type Executor struct {

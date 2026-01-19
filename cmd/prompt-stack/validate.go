@@ -60,7 +60,7 @@ var validateCmd = &cobra.Command{
 
 func init() {
 	validateCmd.Flags().StringVarP(&validateInput, "input", "i", "", "Input file to validate (required)")
-	validateCmd.Flags().StringVarP(&validateOutput, "output", "o", ".your-tool/reports/validation_report.json", "Output report path")
+	validateCmd.Flags().StringVarP(&validateOutput, "output", "o", ".prompt-stack/reports/validation_report.json", "Output report path")
 	validateCmd.Flags().BoolVar(&validateStrict, "strict", false, "Fail validation on any issue")
 	rootCmd.AddCommand(validateCmd)
 }

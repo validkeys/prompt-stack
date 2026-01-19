@@ -2,7 +2,7 @@
 
 build:
 	mkdir -p dist
-	go build -ldflags="-X main.Version=$(shell git describe --tags --always --dirty 2>/dev/null || echo dev) -X main.Commit=$(shell git rev-parse --short HEAD 2>/dev/null || echo unknown) -X main.Date=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")" -o dist/your-tool ./cmd/your-tool
+	go build -ldflags="-X main.Version=$(shell git describe --tags --always --dirty 2>/dev/null || echo dev) -X main.Commit=$(shell git rev-parse --short HEAD 2>/dev/null || echo unknown) -X main.Date=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")" -o dist/prompt-stack ./cmd/prompt-stack
 
 test:
 	go test -v ./...

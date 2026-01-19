@@ -30,7 +30,7 @@ tasks:
     files_in_scope:
       - "go.mod"
       - "go.sum"
-      - "cmd/your-tool/main.go"
+      - "cmd/prompt-stack/main.go"
       - "Makefile"
       - ".gitignore"
     style_anchors:
@@ -56,12 +56,12 @@ tasks:
       This provides the CLI surface that will be filled in by subsequent tasks.
     estimated_duration_minutes: 60
     files_in_scope:
-      - "cmd/your-tool/main.go"
-      - "cmd/your-tool/plan.go"
-      - "cmd/your-tool/validate.go"
-      - "cmd/your-tool/review.go"
-      - "cmd/your-tool/build.go"
-      - "cmd/your-tool/init.go"
+      - "cmd/prompt-stack/main.go"
+      - "cmd/prompt-stack/plan.go"
+      - "cmd/prompt-stack/validate.go"
+      - "cmd/prompt-stack/review.go"
+      - "cmd/prompt-stack/build.go"
+      - "cmd/prompt-stack/init.go"
     style_anchors:
       - file: "examples/style-anchor/cmd/mytool/main.go"
         reason: "Cobra command structure and Run function patterns"
@@ -89,9 +89,9 @@ tasks:
     files_in_scope:
       - "pkg/executor/executor.go"
       - "pkg/executor/dry_run.go"
-      - "your-tool/vendor/ralphy/ralphy.sh"
-      - ".your-tool/report.txt"
-      - ".your-tool/audit.log"
+      - "prompt-stack/vendor/ralphy/ralphy.sh"
+      - ".prompt-stack/report.txt"
+      - ".prompt-stack/audit.log"
     style_anchors:
       - file: "examples/style-anchor/pkg/greeter/greeter.go"
         reason: "Simple package structure with clear exports"
@@ -104,8 +104,8 @@ tasks:
     single_responsibility: "Ralphy executor integration and dry-run support"
     acceptance_criteria:
       - "ralphy.sh is embedded or vendored"
-      - "Dry-run mode writes to .your-tool/report.txt"
-      - "Dry-run mode writes to .your-tool/audit.log"
+      - "Dry-run mode writes to .prompt-stack/report.txt"
+      - "Dry-run mode writes to .prompt-stack/audit.log"
       - "Executor can materialize script at runtime"
 
   # Task 4: Requirements prompt implementation
@@ -118,7 +118,7 @@ tasks:
       This fulfills the FR-003 requirement for interactive requirements gathering.
     estimated_duration_minutes: 75
     files_in_scope:
-      - "cmd/your-tool/init.go"
+      - "cmd/prompt-stack/init.go"
       - "pkg/prompt/prompt.go"
       - "pkg/prompt/questions.go"
       - "docs/implementation-plan/m0/requirements-interview.md"
@@ -176,7 +176,7 @@ tasks:
       This fulfills the non-functional requirement for basic unit tests.
     estimated_duration_minutes: 60
     files_in_scope:
-      - "cmd/your-tool/main_test.go"
+      - "cmd/prompt-stack/main_test.go"
       - "pkg/executor/executor_test.go"
       - "pkg/prompt/prompt_test.go"
       - "Makefile"
@@ -209,7 +209,7 @@ tasks:
       - "Makefile"
       - "build.sh"
       - ".github/workflows/release.yml"
-      - "cmd/your-tool/version.go"
+      - "cmd/prompt-stack/version.go"
       - "dist/"
     style_anchors:
       - file: "examples/style-anchor/pkg/greeter/greeter.go"

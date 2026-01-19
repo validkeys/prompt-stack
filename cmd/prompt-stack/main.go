@@ -8,7 +8,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "your-tool",
+	Use:   "prompt-stack",
 	Short: "AI-assisted development workflow tool",
 	Long:  `A tool for generating and validating Ralphy YAML files with Plan/Build modes.`,
 	Run: func(cmd *cobra.Command, args []string) {

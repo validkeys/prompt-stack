@@ -104,7 +104,7 @@ tasks:
     outputs:
       patterns_report: "patterns_report.json"
     files_in_scope:
-      - ".your-tool/knowledge.db" # Path to knowledge DB (default: .your-tool/knowledge.db)
+      - ".prompt-stack/knowledge.db" # Path to knowledge DB (default: .prompt-stack/knowledge.db)
       - note: "assumption: true - Knowledge DB may not exist yet; will be created during M0 implementation"
       - "docs/best-practices.md" # Research-backed practices
       - "docs/ralphy-inputs.schema.json"
@@ -464,7 +464,7 @@ instructions: |
      - planning-005..planning-011 outputs are similarly named and used by downstream tasks
 
   3. Required pre-conditions:
-     - Knowledge base (.your-tool/knowledge.db) should be populated for best results
+     - Knowledge base (.prompt-stack/knowledge.db) should be populated for best results
      - docs/best-practices.md, docs/ralphy-inputs.schema.json, docs/ralphy-yaml-spec.md, docs/task-sizing.md, docs/drift-policy.md, docs/opencode-rules.md must be available in repo
      - Examples under examples/style-anchor/ are optional; the template prefers real code anchors in the repo
 

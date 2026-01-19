@@ -1,0 +1,56 @@
+{
+  "report_type": "final_quality_report",
+  "timestamp": "2026-01-19T15:36:39-05:00",
+  "requirements_file": "docs/implementation-plan/m0/final_implementation-plan.yaml",
+  "generated_yaml": "docs/implementation-plan/m0/final_implementation-plan.yaml",
+  "overall_score": 0.8,
+  "overall_result": "APPROVED",
+  "approval_status": "APPROVED",
+  "approval_reason": "Quality score 0.8000 meets threshold 0.00",
+  "issues": [
+    {
+      "severity": "HIGH",
+      "path": "docs/implementation-plan/m0/final_implementation-plan.yaml",
+      "message": "validation failed: exit status 1"
+    },
+    {
+      "severity": "LOW",
+      "path": "docs/implementation-plan/m0/final_implementation-plan.yaml",
+      "message": "tools/task_sizing/validate.go:90:2: no required module provides package gopkg.in/yaml.v3; to add it:\n\tgo get gopkg.in/yaml.v3\n"
+    },
+    {
+      "severity": "HIGH",
+      "path": "docs/implementation-plan/m0/final_implementation-plan.yaml",
+      "message": "validation failed: exit status 1"
+    },
+    {
+      "severity": "LOW",
+      "path": "docs/implementation-plan/m0/final_implementation-plan.yaml",
+      "message": "tools/validate_constraints/validate.go:94:2: no required module provides package gopkg.in/yaml.v3; to add it:\n\tgo get gopkg.in/yaml.v3\n"
+    }
+  ],
+  "component_scores": {
+    "constraints": {
+      "score": 0.9,
+      "reason": "Component constraints validation",
+      "details": {
+        "validator": "tools/validate_constraints/validate.go"
+      }
+    },
+    "task_sizing": {
+      "score": 0.8,
+      "reason": "Component task_sizing validation",
+      "details": {
+        "validator": "tools/task_sizing/validate.go"
+      }
+    },
+    "yaml_compliance": {
+      "score": 1,
+      "reason": "Component yaml_compliance validation"
+    }
+  },
+  "metadata": {
+    "generator": "your-tool",
+    "generated_at": "2026-01-19T15:36:39-05:00"
+  }
+}
