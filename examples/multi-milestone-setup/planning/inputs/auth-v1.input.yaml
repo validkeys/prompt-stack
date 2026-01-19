@@ -1,0 +1,16 @@
+id: "auth-v1"
+title: "Authentication: Login & JWT"
+short_description: "Add user login, sessions, and JWT issuance."
+requirements_file: "docs/requirements/auth.md"
+style_anchors:
+  - "src/schemas/user.schema.ts"
+  - "src/services/auth.service.ts"
+stakeholders:
+  product_owner:
+    name: "Product Owner"
+    email: "po@example.com"
+timeline:
+  start_date: "2026-02-01"
+  target_completion: "2026-02-14"
+
+# Keep inputs minimal — the planning template will expand these into a full Ralphy YAML.

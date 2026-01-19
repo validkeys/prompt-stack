@@ -1,0 +1,16 @@
+id: "payments-core"
+title: "Payments: core processing and settlement"
+short_description: "Implement core payment processing flows and settlement pipeline."
+requirements_file: "docs/requirements/payments.md"
+style_anchors:
+  - "src/services/payments.service.ts"
+  - "src/schemas/payment.schema.ts"
+stakeholders:
+  product_owner:
+    name: "Payments PO"
+    email: "payments-po@example.com"
+timeline:
+  start_date: "2026-02-15"
+  target_completion: "2026-03-15"
+
+# Minimal input for example manifest.

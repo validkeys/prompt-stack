@@ -18,7 +18,7 @@ Milestones (ordered)
   - The example prompt and templates used to gather requirements are committed under `docs/requirements/templates/`.
   - `your-tool plan planning/inputs/requirements.input.md --method code` produces a syntactically valid `tasks.yaml` candidate (code-generation path only; no AI required).
 - Manual test checklist:
-  1. Run the requirements prompt (copy the template from `docs/requirements/templates/requirements-prompt.md`) interactively and save output to `planning/inputs/requirements.input.md`.
+   1. Run the requirements prompt (copy the template from `templates/requirements-gathering-prompt.md`) interactively and save output to `planning/inputs/requirements.input.md`.
   2. Run `your-tool plan planning/inputs/requirements.input.md --method code` and verify `tasks.yaml` is produced.
   3. Confirm `docs/requirements/main.md` references this milestone and contains the example prompt or link to `docs/requirements/templates/`.
 

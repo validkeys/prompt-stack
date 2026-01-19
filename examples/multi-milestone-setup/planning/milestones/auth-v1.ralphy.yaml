@@ -1,0 +1,81 @@
+metadata:
+  generated_by: "example-tool"
+  method: "hybrid"
+  generated_at: "2026-01-19T00:00:00Z"
+  quality_score: 0.0
+
+global_constraints:
+  style_anchors_required: 2
+  task_sizing_minutes: [30, 150]
+  affirmative_constraints: true
+
+tasks:
+  - id: "auth-001"
+    title: "Analyze auth requirements"
+    description: "Read requirements file and extract core functional and non-functional requirements, integration points, constraints, and acceptance criteria. Output: structured_analysis.json"
+    files_in_scope:
+      - "docs/requirements/auth.md"
+    style_anchors:
+      - file: "docs/best-practices.md"
+        reason: "Requirements analysis guidance"
+    outputs:
+      structured_analysis: "structured_analysis.json"
+    verification:
+      pre_commit:
+        - "All requirement categories identified"
+    estimated_duration_minutes: 45
+
+  - id: "auth-002"
+    title: "Create authentication Zod schemas"
+    description: "Design and add Zod schemas for login and user payloads. Ensure schemas are exported as const and types are inferred."
+    files_in_scope:
+      - "src/schemas/auth.schema.ts"
+    style_anchors:
+      - file: "src/schemas/user.schema.ts"
+        reason: "Zod schema pattern"
+      - file: "src/types/user.types.ts"
+        reason: "Type extraction pattern"
+    required_patterns:
+      - "export const.*Schema = z\\.object"
+      - "export type.* = z\\.infer"
+    verification:
+      pre_commit:
+        - "eslint src/schemas/auth.schema.ts --max-warnings=0"
+        - "tsc --noEmit"
+    acceptance_criteria:
+      - "LoginSchema validates email and password fields"
+      - "Exported types available via z.infer"
+    estimated_duration_minutes: 60
+
+  - id: "auth-003"
+    title: "Implement auth service and routes"
+    description: "Add AuthService methods for login and token issuance and wire HTTP routes. Reference JWT secret via env; do not embed secrets."
+    files_in_scope:
+      - "src/services/auth.service.ts"
+      - "src/routes/auth.routes.ts"
+    style_anchors:
+      - file: "src/services/session.service.ts"
+        reason: "Session and token patterns"
+      - file: "src/routes/user.routes.ts"
+        reason: "Route wiring pattern"
+    verification:
+      pre_commit:
+        - "eslint src/services/auth.service.ts src/routes/auth.routes.ts --max-warnings=0"
+        - "npm test -- --findRelatedTests src/services/auth.service.ts"
+    acceptance_criteria:
+      - "Login endpoint returns JWT on valid creds"
+      - "No secrets present in repo files"
+    estimated_duration_minutes: 90
+    completion_signal: "<promise>COMPLETE</promise>"
+
+verification:
+  quality_gates:
+    - name: "yaml_syntax"
+      tool: "tools/validate_yaml.go"
+    - name: "schema_validation"
+      schema: "docs/ralphy-inputs.schema.json"
+    - name: "secrets_scan"
+      patterns: ["api_key", "AWS", "private_key"]
+
+outputs:
+  final_ralphy_inputs: "final_ralphy_inputs.yaml"

@@ -1,0 +1,22 @@
+{
+  "validation_type": "yaml_syntax",
+  "timestamp": "2026-01-19T08:44:00Z",
+  "file_validated": "ralphy_inputs.yaml",
+  "validator_tool": "tools/validate_yaml.go",
+  "status": "WARNING",
+  "issues": [
+    {
+      "severity": "WARNING",
+      "message": "Validator tool has dependency issues: schema.ValidateInterface undefined",
+      "details": "Go validator tool cannot run due to missing dependencies or API changes",
+      "recommendation": "Fix validator tool dependencies or use alternative YAML validation"
+    }
+  ],
+  "manual_validation": {
+    "yaml_syntax": "PASS",
+    "structure": "PASS",
+    "indentation": "PASS",
+    "special_characters": "PASS"
+  },
+  "overall_result": "PASS_WITH_WARNINGS"
+}

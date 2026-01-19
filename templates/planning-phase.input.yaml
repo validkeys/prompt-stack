@@ -1,0 +1,95 @@
+# Initial Implementation Input — minimal, optimal input for planning generator
+# Provide this concise document to generate a complete implementation plan.
+
+id: ""            # short slug (required)
+title: ""         # one-line title (required)
+short_description: ""  # 1-2 sentence goal (required)
+background: ""    # 1-3 sentences giving context (optional)
+
+# Objectives — measurable, max 5
+objectives:
+  - ""
+
+# Success metrics (metric: target)
+success_metrics:
+  - metric: ""
+    target: ""
+
+# Primary files/inputs the generator will read (required)
+requirements_file: ""    # path to full requirements doc (required)
+style_anchors:            # 2-3 files that define design/style/architecture (strongly recommended)
+  - ""                  # e.g. docs/best-practices.md
+  - ""
+
+
+# Timeline — provide target dates where known
+timeline:
+  start_date: "YYYY-MM-DD"
+  target_completion: "YYYY-MM-DD"
+
+# Scope (concise lists)
+scope:
+  in_scope:
+    - ""
+  out_of_scope:
+    - ""
+
+# Constraints & assumptions
+constraints:
+  - ""    # e.g. browsers, platforms, budget
+assumptions:
+  - ""
+
+# Deliverables (artifacts to produce)
+deliverables:
+  - ""    # e.g. task_breakdown.yaml, ralphy_inputs.yaml, quality_report.json
+
+# Tech and integrations (short)
+tech_stack:
+  languages: [""]
+  frameworks: [""]
+  infra: [""]
+
+integrations:
+  - system: ""
+    notes: ""
+
+# Access & attachments
+attachments:             # optional paths to mocks, diagrams, or spec files
+  - ""
+repo_access:              # minimal access info for generator to inspect code
+  repo: ""               # repo path or URL
+  read_only: true
+
+# Testing & QA expectations
+testing:
+  require_unit_tests: true
+  require_integration_tests: true
+  require_e2e: false
+  qa_gates:
+    - "code review"
+    - "green CI"
+
+# Privacy & secrets handling
+data_classification: "internal"  # public|internal|confidential
+secrets_included: false           # true if the doc references secrets (avoid)
+
+# Minimal checklist the user must confirm
+confirmations:
+  - "I provided a valid requirements_file path"
+  - "I included 1-3 style_anchor files or code anchors"
+  - "I granted read access to the repo if code discovery is required"
+
+# Optional generator hints (keeps this short)
+hints:
+  prefer_affirmative_constraints: true
+  preferred_task_size_minutes: 30-120
+  required_top_level_fields:
+    - id
+    - title
+    - short_description
+    - requirements_file
+    - style_anchors
+    - stakeholders.product_owner
+
+# End of template

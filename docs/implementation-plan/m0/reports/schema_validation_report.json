@@ -1,0 +1,41 @@
+{
+  "validation_type": "json_schema",
+  "timestamp": "2026-01-19T08:44:00Z",
+  "file_validated": "ralphy_inputs.yaml",
+  "schema_file": "docs/ralphy-inputs.schema.json",
+  "status": "MANUAL_VALIDATION_REQUIRED",
+  "manual_validation_results": {
+    "required_fields_check": {
+      "metadata": "PASS",
+      "global_constraints": "PASS",
+      "tasks": "PASS",
+      "instructions": "PASS",
+      "research_compliance": "PASS",
+      "performance_targets": "PASS"
+    },
+    "task_structure": {
+      "task_count": 11,
+      "all_tasks_have_id": "PASS",
+      "all_tasks_have_title": "PASS",
+      "all_tasks_have_description": "PASS",
+      "all_tasks_have_outputs": "PASS",
+      "all_tasks_have_files_in_scope": "PASS",
+      "all_tasks_have_style_anchors": "PASS",
+      "style_anchors_per_task": "2-3 (PASS)",
+      "estimated_duration_range": "20-60 minutes (PASS)"
+    },
+    "constraints_check": {
+      "affirmative_constraints": "PASS",
+      "forbidden_patterns": "PASS",
+      "required_patterns": "PASS"
+    },
+    "compliance_issues": [],
+    "schema_warnings": [
+      {
+        "message": "Full JSON Schema validation requires working validator tool",
+        "recommendation": "Fix validator dependencies or use ajv for validation"
+      }
+    ]
+  },
+  "overall_result": "PASS_WITH_MANUAL_VALIDATION"
+}

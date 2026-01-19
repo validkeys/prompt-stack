@@ -1,0 +1,12 @@
+project_id: "example-project"
+title: "Example Multi-Milestone Roadmap"
+milestones:
+  - id: "auth-v1"
+    input: "planning/inputs/auth-v1.input.yaml"
+    sequence: 1
+    depends_on: []
+  - id: "payments-core"
+    input: "planning/inputs/payments-v1.input.yaml"
+    sequence: 2
+    depends_on:
+      - "auth-v1"

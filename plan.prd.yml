@@ -3,45 +3,40 @@
 
 name: prompt-stack-plan-prd
 description: >
-  Ralphy meta-PRD that generates, validates, and iterates on PRD files for each
-  implementation milestone defined in docs/requirements/main.md. The run will
-  continue (with retries) until each milestone PRD exists and validates against
-  the repo Ralphy inputs schema and research best-practices checks.
+  Ralphy meta-PRD that generates, validates, and iterates on PRD files for each implementation milestone defined in docs/requirements/main.md. The run will continue (with retries) until each milestone PRD exists and validates against the repo Ralphy inputs schema and research best-practices checks.
+
 version: 0.1.0
 rules_file: docs/opencode-rules.md
 style_anchors:
   - docs/requirements/main.md
   - docs/initial-claude-conversation/split-files/03-opencode-integrations-discussion.md
   - docs/best-practices.md
+  - cmd/**.go
+  - pkg/**.go
 allowed_dependencies:
-  - zod
-  - eslint
-  - vitest
-  - prettier
-
+  # Example allowed Go modules - adapt as needed
+  - github.com/stretchr/testify
+  - github.com/spf13/cobra
+  - github.com/mattn/go-sqlite3
+  - github.com/rs/zerolog
 task_sizing:
   min_minutes: 30
   max_minutes: 150
   max_files: 6
-
 tdd:
   required: true
-  test_command: pnpm test
+  test_command: go test ./...
   failure_instruction: "Halt generation if tests fail; report and remediate before retry."
-
 ci:
   precommit:
-    - pnpm lint
+    - golangci-lint run
   ci_checks:
-    - pnpm test
-    - pnpm lint
-  count_eslint_disable: true
-
+    - go test ./...
+    - golangci-lint run
+  count_eslint_disable: false
 drift_policy_ref: docs/drift-policy.md
 validation_schemas:
   - docs/ralphy-inputs.schema.json
-  - src/schemas/*.ts
-
 prompt_template:
   prefix: |
     Repository rules: {{rules_file}}
@@ -54,22 +49,24 @@ prompt_template:
     Produce a minimal, valid Ralphy PRD file at path: {{output_path}}.
     Ensure:
       - schema validation against docs/ralphy-inputs.schema.json
-      - 2-3 style anchors included
+      - 2-3 style anchors included (prefer Go examples)
       - TDD workflow present
-      - affirmative constraints
+      - Affirmative constraints:
+        - Implementation language: Go (use Go 1.20+; produce a `go.mod`)
+        - Tests must be runnable with: `go test ./...`
+        - Use idiomatic Go layout (e.g. `cmd/`, `pkg/`, `internal/`)
+        - Do NOT output TypeScript or JavaScript sources for implementation
     Output must be YAML only and include metadata.generated_by and metadata.quality_score.
   placeholders:
     - requirements_file
     - milestone
     - output_path
-
 model_preferences:
   primary: opencode
   review_model: gpt-4
   strategies:
     - minimal-diff
     - generate-3-variants
-
 outputs:
   allowed_file_edits:
     - docs/**
@@ -83,13 +80,11 @@ outputs:
       - "feat:"
       - "docs:"
       - "chore:"
-
 # Retry policy used by generation tasks: continue until validation passes or max_attempts reached
 retry_policy:
   max_attempts: 6
   backoff_seconds: 10
   success_condition: "file_exists && schema_valid && quality_score >= 0.90"
-
 # Tasks: one generation task per milestone (Phase 1..6 from requirements/main.md)
 # Each task generates a PRD file under outputs/prds/, validates it, and will be retried
 # according to retry_policy until success_condition is met.
@@ -106,6 +101,7 @@ tasks:
     style_anchors:
       - "docs/requirements/main.md -- Phase list and acceptance criteria"
       - "templates/meta-prd-generation.yaml -- Generation template"
+      - "cmd/main.go -- example CLI layout"
     output_path: outputs/prds/phase-1.prd.yml
     estimated_duration_minutes: 90
     verification:
@@ -113,7 +109,7 @@ tasks:
         - "your-tool validate outputs/prds/phase-1.prd.yml --schema docs/ralphy-inputs.schema.json"
         - "your-tool review outputs/prds/phase-1.prd.yml --strict"
     completion_signal: "<promise>PHASE_1_COMPLETE</promise>"
-
+    completed: false
   generate-prd-phase-2:
     title: "Generate PRD for Phase 2: Context Optimization"
     description: |
@@ -124,7 +120,7 @@ tasks:
       - docs/requirements/main.md
       - src/context/**
     style_anchors:
-      - "src/context/ast-analyzer.ts -- AST analysis pattern"
+      - "src/context/ast-analyzer.go -- AST analysis pattern"
       - "docs/initial-claude-conversation/split-files/05-jit-caching.md -- Context budgeting guidance"
     output_path: outputs/prds/phase-2.prd.yml
     estimated_duration_minutes: 120
@@ -133,7 +129,7 @@ tasks:
         - "your-tool validate outputs/prds/phase-2.prd.yml --schema docs/ralphy-inputs.schema.json"
         - "your-tool review outputs/prds/phase-2.prd.yml --strict"
     completion_signal: "<promise>PHASE_2_COMPLETE</promise>"
-
+    completed: false
   generate-prd-phase-3:
     title: "Generate PRD for Phase 3: JIT Discovery"
     description: |
@@ -143,7 +139,7 @@ tasks:
       - docs/requirements/main.md
       - src/knowledge/**
     style_anchors:
-      - "src/knowledge/discovery.ts -- Discovery & caching patterns"
+      - "src/knowledge/discovery.go -- Discovery & caching patterns"
       - "docs/initial-claude-conversation/split-files/05-jit-caching.md -- JIT discovery design"
     output_path: outputs/prds/phase-3.prd.yml
     estimated_duration_minutes: 150
@@ -152,7 +148,7 @@ tasks:
         - "your-tool validate outputs/prds/phase-3.prd.yml --schema docs/ralphy-inputs.schema.json"
         - "your-tool review outputs/prds/phase-3.prd.yml --strict"
     completion_signal: "<promise>PHASE_3_COMPLETE</promise>"
-
+    completed: false
   generate-prd-phase-4:
     title: "Generate PRD for Phase 4: AI Generation"
     description: |
@@ -160,10 +156,10 @@ tasks:
       YAML generation, hybrid mode, and quality validation. Output to outputs/prds/phase-4.prd.yml.
     files_in_scope:
       - templates/meta-prd-generation.yaml
-      - src/core/ai-generator.ts
+      - src/core/**
     style_anchors:
       - "templates/meta-prd-generation.yaml -- AI generation template"
-      - "src/core/ai-generator.ts -- Generator implementation"
+      - "src/core/ai-generator.go -- Generator implementation"
     output_path: outputs/prds/phase-4.prd.yml
     estimated_duration_minutes: 150
     verification:
@@ -171,7 +167,7 @@ tasks:
         - "your-tool validate outputs/prds/phase-4.prd.yml --schema docs/ralphy-inputs.schema.json"
         - "your-tool review outputs/prds/phase-4.prd.yml --strict"
     completion_signal: "<promise>PHASE_4_COMPLETE</promise>"
-
+    completed: false
   generate-prd-phase-5:
     title: "Generate PRD for Phase 5: AI Review"
     description: |
@@ -179,10 +175,10 @@ tasks:
       quality scoring, and auto-fix suggestions. Output to outputs/prds/phase-5.prd.yml.
     files_in_scope:
       - templates/meta-prd-review.yaml
-      - src/core/reviewer.ts
+      - src/core/reviewer.go
     style_anchors:
       - "templates/meta-prd-review.yaml -- Review PRD template"
-      - "src/core/reviewer.ts -- Review rules"
+      - "src/core/reviewer.go -- Review rules"
     output_path: outputs/prds/phase-5.prd.yml
     estimated_duration_minutes: 60
     verification:
@@ -190,17 +186,17 @@ tasks:
         - "your-tool validate outputs/prds/phase-5.prd.yml --schema docs/ralphy-inputs.schema.json"
         - "your-tool review outputs/prds/phase-5.prd.yml --strict"
     completion_signal: "<promise>PHASE_5_COMPLETE</promise>"
-
+    completed: false
   generate-prd-phase-6:
     title: "Generate PRD for Phase 6: Build Mode Integration"
     description: |
       Produce a PRD that specifies Ralphy execution wrapper, progress monitoring,
       post-execution learning, and knowledge updates for Build Mode. Output to outputs/prds/phase-6.prd.yml.
     files_in_scope:
-      - src/cli/build.ts
+      - src/cli/**
       - src/core/**
     style_anchors:
-      - "src/cli/build.ts -- Build mode entrypoint"
+      - "src/cli/main.go -- Build mode entrypoint"
       - "docs/requirements/main.md -- Build Mode requirements & targets"
     output_path: outputs/prds/phase-6.prd.yml
     estimated_duration_minutes: 90
@@ -209,7 +205,7 @@ tasks:
         - "your-tool validate outputs/prds/phase-6.prd.yml --schema docs/ralphy-inputs.schema.json"
         - "your-tool review outputs/prds/phase-6.prd.yml --strict"
     completion_signal: "<promise>PHASE_6_COMPLETE</promise>"
-
+    completed: false
   validate-and-aggregate-prds:
     title: "Validate & Aggregate milestone PRDs"
     description: |
@@ -231,16 +227,14 @@ tasks:
         - "your-tool review outputs/prds/*.prd.yml --report json || exit 1"
     output: outputs/prds/index.yml
     completion_signal: "<promise>ALL_PRDS_VALIDATED</promise>"
-
+    completed: false
 # Guidance for the Ralphy agent:
 # - Use prompt_template placeholders to build generation prompts.
 # - For each generate-prd-phase-* task, retry generation until verification passes or retry_policy.max_attempts reached.
 # - When retries exceed max_attempts, emit a warning and leave the failing PRD for manual inspection.
 # - Aggregate metadata.generated_by and metadata.quality_score into outputs/prds/index.yml
-
 metadata:
   generated_by: "prompt-stack plan.prd generator"
   purpose: "Iteratively produce validated milestone PRDs for Plan Mode testing"
   contact: "dev-team@local"
-
 # End of file
