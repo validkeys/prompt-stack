@@ -17,6 +17,10 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+func init() {
+	rootCmd.Version = fmt.Sprintf("%s (commit: %s, built: %s)", Version, Commit, Date)
+}
+
 func main() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)

@@ -314,3 +314,29 @@
   * Architecture overview explains components (test: architecture.md exists and describes CLI Layer, Executor Package, Prompt Package)
   * Contributing guidelines present (test: CONTRIBUTING.md exists with development setup, code style, testing, and PR guidelines)
 - Verification passed: go test ./cmd/your-tool, go fmt ./..., go vet ./...
+
+## 2026-01-19: Task m0-006 completed
+- Verified existing unit tests for all core packages (main, executor, prompt)
+- All tests passing with good coverage:
+  * cmd/your-tool: 36.0% coverage, 4 test functions
+  * pkg/executor: 60.9% coverage, 11 test functions
+  * pkg/prompt: 54.5% coverage, 8 test functions
+- All tests use table-driven pattern with t.Run() subtests
+- Updated Makefile with new 'coverage' target for coverage reporting
+- Created .github/workflows/test.yml CI workflow:
+  * Runs on push/PR to main and develop branches
+  * Sets up Go 1.21 environment
+  * Runs tests with coverage, go vet, and build
+- Created cmd/your-tool/version.go with build-time variables:
+  * Version, Commit, Date variables for versioning
+- Updated main.go to display version information via rootCmd.Version
+- Ran go test -v -cover ./... successfully
+- Ran go vet ./... successfully
+- Ran go fmt ./... successfully
+- Updated final_implementation-plan.yaml to mark m0-006 as completed (completed: true)
+- All acceptance criteria met:
+  * Unit tests exist for all core packages (test: all test files present and passing)
+  * Tests use table-driven pattern (test: all tests use t.Run() subtests)
+  * make test runs all tests (test: make test executes successfully)
+  * Coverage reporting configured (test: make coverage generates coverage.out and coverage.html)
+- Verification passed: go test -v -cover ./..., go vet ./..., go fmt ./...

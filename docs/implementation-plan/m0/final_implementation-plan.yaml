@@ -299,7 +299,7 @@ tasks:
   - id: "m0-006"
     title: "Add unit tests and testing infrastructure"
     description: "Create unit tests for core packages using table-driven test patterns. Set up test runner and coverage reporting. Ensure tests can be run via Makefile. This fulfills the non-functional requirement for basic unit tests."
-    completed: false
+    completed: true
     files_in_scope:
       - "cmd/your-tool/main_test.go"
       - "pkg/executor/executor_test.go"
