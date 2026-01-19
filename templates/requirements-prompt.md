@@ -10,7 +10,8 @@ Initial step (project context)
 
 Before you begin (confirm references)
 - Ask which reference documents you should consult for this interview (e.g. project requirements, milestone list, or a planning template). If the stakeholder has local paths or repo URLs, record them.
-- Confirm the milestone identifier/slug to use (e.g. `m1`). All interview transcripts and the final requirements file will be placed under `docs/implementation-plan/<milestone>/` unless the stakeholder specifies a different location.
+- Confirm the milestone identifier/slug to use (e.g. `m1`).
+- Ask the stakeholder where they would like the outputs (interview transcript and final requirements file) to be stored. Provide a default of `docs/implementation-plan/<milestone>/` but accept a custom path (absolute or repo-relative). Record and confirm the chosen output directory before proceeding. All produced files will be saved to that location unless otherwise instructed.
 
 Interview rules
 1. Ask one question at a time. Wait for the stakeholder's answer before asking the next question.
