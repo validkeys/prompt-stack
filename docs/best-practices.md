@@ -23,27 +23,26 @@
 - Project: persistent rules in `CLAUDE.md` or `.cursor/rules/` (loaded every session).
 - Context-aware: auto-attached rules per directory or file pattern.
 
-## Prompt-level TypeScript rules (copy into CLAUDE.md)
-- NEVER use `any`. Use `unknown` if absolutely necessary.
-- NEVER disable ESLint rules inline without explanation.
-- NEVER use type assertions (`as`) for external data — use Zod schemas.
-- ALWAYS explicitly type function parameters and return types.
+## Prompt-level Go rules (copy into CLAUDE.md)
+- NEVER use `interface{}` (empty interface) unless absolutely necessary.
+- NEVER ignore errors; always handle or explicitly return errors with context.
+- NEVER use type assertions for external data — use proper validation.
+- ALWAYS include doc comments for exported functions, types, and packages.
 
 ## IDE / linting
-- Enforce strict ESLint/@typescript-eslint rules such as:
-  - `@typescript-eslint/no-explicit-any: 'error'`
-  - `@typescript-eslint/no-unsafe-argument: 'error'`
-  - `@typescript-eslint/no-unsafe-assignment: 'error'`
-  - `@typescript-eslint/no-unsafe-return: 'error'`
-  - `@typescript-eslint/explicit-function-return-type: 'error'`
+- Enforce strict Go linting rules:
+  - Use `go vet` to catch common mistakes
+  - Use `golangci-lint` with strict configuration
+  - Ensure zero `gofmt` violations
+  - Run `go test -race` for race condition detection
 - Configure editor to surface these as errors.
 
 ## Commit & CI
-- Pre-commit: Husky + lint-staged with `--max-warnings 0`.
-- CI: quality gates that count `eslint-disable`/`eslint-disable-next-line` and fail if thresholds exceeded.
+- Pre-commit: Use `make lint` and `make test` with zero warnings.
+- CI: quality gates that count `gofmt` violations and fail if thresholds exceeded.
 
 ## Runtime validation
-- Validate all external inputs with Zod schemas instead of `as` assertions.
+- Validate all external inputs with proper error handling and validation instead of type assertions.
 
 ## TDD as anchor
 - Require a TDD checklist before implementation (tests → minimal code → more tests → refactor).
@@ -79,9 +78,9 @@
 2. Add 2–3 concrete style anchors to prompts (prefer repository examples)
 3. Rescope tasks to 30m–2.5h and commit per task
 4. Convert negative constraints to affirmative instructions
-5. Enforce ESLint zero-warnings, pre-commit hooks, and CI gates
+5. Enforce Go linting zero-warnings, pre-commit hooks, and CI gates
 6. Require TDD plans and tests before making changes
-7. Use Zod for runtime validation and count `eslint-disable` in CI
+7. Use proper error handling for runtime validation and count `gofmt` violations in CI
 8. Include all schema-required fields in generated YAML
 9. Mark inferred additions with `assumption: true` and rationale
 

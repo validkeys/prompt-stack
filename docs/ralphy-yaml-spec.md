@@ -27,8 +27,8 @@ Top-level keys
   - type: sequence
   - default: []
   - examples:
-    - "Always use TypeScript strict mode"
-    - "All API endpoints must validate input with Zod"
+    - "Always use Go strict conventions"
+    - "All API endpoints must validate input with proper error handling"
 
 - boundaries (map) — paths the agent should not modify or should always test
   - never_touch: sequence of strings — globs or paths which must not be modified by the agent (default: [])
@@ -42,8 +42,8 @@ Example `.ralphy/config.yaml`
 # Ralphy Configuration
 project:
   name: "my-app"
-  language: "TypeScript"
-  framework: "Next.js"
+  language: "Go"
+  framework: "Cobra"
   description: "Backend for foo service"
 
 commands:

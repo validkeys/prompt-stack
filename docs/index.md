@@ -15,7 +15,7 @@
   - `docs/tdd-checklist.md` — TDD checklist for AI-assisted edits: failing-tests-first loop, run/fix instructions, CI expectations.
   - `docs/task-sizing.md` — Task sizing guidance: keep model-driven tasks between 30 minutes and 2.5 hours; splitting guidance.
   - `docs/drift-policy.md` — Drift policy: stop/revert criteria, incident note guidance, and remediation workflow.
-  - `docs/opencode-rules.md` — Repository-level Opencode rules and hard constraints loaded at session start (TypeScript rules, allowed stack, testing and CI requirements).
+  - `docs/opencode-rules.md` — Repository-level Opencode rules and hard constraints loaded at session start (Go conventions, allowed stack, testing and CI requirements).
 
 - Ralphy & Agent Config
   - `docs/ralphy-yaml-spec.md` — Ralphy YAML spec, examples, and validation rules.

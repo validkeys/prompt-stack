@@ -37,7 +37,7 @@ Every generated YAML embeds 10 proven techniques from drift-prevention research:
 2. Task sizing (30min-2.5hr max)
 3. Affirmative constraints (what TO do, not what NOT to do)
 4. Multi-layer enforcement (prompt → IDE → commit → CI → runtime)
-5. TypeScript strict mode with forbidden/required patterns
+5. Go strict conventions with forbidden/required patterns
 6. TDD workflow
 7. Critical context positioning (beginning/end, not middle)
 8. Context budget management (5,000 tokens per task, 80-95% reduction)

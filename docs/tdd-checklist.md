@@ -5,8 +5,8 @@ Purpose
 
 Before implementation
 1. Describe the behavior to be tested in 1–3 sentences.
-2. List test types required (unit, integration, e2e, property) and minimal scope for now.
-3. Provide failing tests first (code + steps to run). Include exact commands (e.g., `pnpm test --filter <pattern>`).
+2. List test types required (unit, integration, e2e) and minimal scope for now.
+3. Provide failing tests first (code + steps to run). Include exact commands (e.g., `go test ./... -run <pattern>`).
 4. Note any required test doubles/mocks and where they live.
 
 Implementation loop (TDD)
@@ -26,27 +26,31 @@ Model instructions for failing tests
 
 Local verification
 - Provide exact commands to run relevant tests and linters (examples):
-  - `pnpm test` (run all)
-  - `pnpm test -- -t "UserService"` (run specific tests)
-  - `pnpm lint` (ESLint)
+  - `go test ./...` (run all)
+  - `go test ./... -run "TestUserService"` (run specific tests)
+  - `make lint` (golangci-lint)
+  - `go vet ./...` (Go vet)
 
 CI expectations
 - CI must run the same commands; failing CI blocks merges.
 - Coverage targets optional but document if enforced.
 
 Templates
-- Minimal test template (JS/TS):
+- Minimal test template (Go):
 
-```ts
-// tests/<feature>.test.ts
-import { describe, it, expect } from 'vitest'
-import { myFn } from '../src/myFn'
+```go
+// pkg/mypackage/mypackage_test.go
+package mypackage
 
-describe('myFn', () => {
-  it('does the expected thing', () => {
-    expect(myFn(input)).toEqual(expected)
-  })
-})
+import "testing"
+
+func TestMyFunc(t *testing.T) {
+    want := "expected"
+    got := MyFunc("input")
+    if got != want {
+        t.Fatalf("MyFunc() = %q, want %q", got, want)
+    }
+}
 ```
 
 Notes

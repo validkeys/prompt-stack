@@ -19,9 +19,9 @@ Top-level fields (recommended)
 - `ci`:
   - `precommit`: list of commands run locally (e.g., `husky`, `lint-staged` entries)
   - `ci_checks`: list of commands run in CI (e.g., `pnpm test`, `pnpm lint`)
-  - `count_eslint_disable`: boolean/threshold flag
+  - `count_gofmt_violations`: boolean/threshold flag
 - `drift_policy_ref`: relative path to drift policy doc (e.g., `docs/drift-policy.md`)
-- `validation_schemas`: paths where Zod/validation schemas live
+- `validation_schemas`: paths where validation structs/interfaces live
 - `prompt_template`: object with `prefix`, `suffix`, and `placeholders` (used to assemble model prompts)
 
 Metadata and validation
@@ -37,27 +37,27 @@ description: AI-assisted development policy and inputs
 version: 0.1.0
 rules_file: docs/opencode-rules.md
 style_anchors:
-  - examples/style/anchor-1.ts
+  - examples/style-anchor/pkg/greeter/greeter.go
 allowed_dependencies:
-  - zod
-  - eslint
-  - vitest
+  - cobra
+  - testify
+  - golangci-lint
 task_sizing:
   min_minutes: 30
   max_minutes: 150
   max_files: 5
 tdd:
   required: true
-  test_command: pnpm test
+  test_command: go test ./...
 ci:
   precommit:
-    - pnpm lint
+    - make lint
   ci_checks:
-    - pnpm test
-    - pnpm lint
+    - make test
+    - make lint
 drift_policy_ref: docs/drift-policy.md
 validation_schemas:
-  - src/schemas/*.ts
+  - internal/validation/*.go
 prompt_template:
   prefix: "Project rules:\n{{rules_file}}\n\nTask:\n"
   suffix: "\nMake a minimal diff. Commit after tests pass."
@@ -66,8 +66,10 @@ model_preferences:
   review_model: gpt-4
 outputs:
   allowed_file_edits:
-    - src/**
-    - tests/**
+    - cmd/**
+    - internal/**
+    - pkg/**
+    - tools/**
   disallowed_file_edits:
     - scripts/**
     - .github/**

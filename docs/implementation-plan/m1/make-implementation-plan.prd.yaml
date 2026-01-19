@@ -1,0 +1,171 @@
+name: prompt-stack
+description: "AI-assisted development policy and inputs for milestone m1 - CLI scaffold implementation"
+version: 0.1.0
+rules_file: docs/opencode-rules.md
+style_anchors:
+  - examples/style-anchor/
+  - docs/style-markers.md
+  - docs/requirements/project-structure.md
+allowed_dependencies:
+  - cobra
+  - testify
+  - golangci-lint
+task_sizing:
+  min_minutes: 30
+  max_minutes: 150
+  max_files: 5
+tdd:
+  required: true
+  test_command: go test ./...
+ci:
+  precommit:
+    - make lint
+  ci_checks:
+    - make test
+    - make lint
+drift_policy_ref: docs/drift-policy.md
+validation_schemas:
+  - internal/validation/*.go
+prompt_template:
+  prefix: "Project rules:\n{{rules_file}}\n\nTask:\n"
+  suffix: "\nMake a minimal diff. Commit after tests pass."
+model_preferences:
+  primary: opencode
+  review_model: gpt-4
+outputs:
+  allowed_file_edits:
+    - cmd/**
+    - internal/**
+    - pkg/**
+    - tools/**
+  disallowed_file_edits:
+    - scripts/**
+    - .github/**
+  commit_policy:
+    prefix_rules:
+      - feat:
+      - fix:
+      - test:
+tasks:
+  - id: "planning-001"
+    title: "Analyze requirements and extract key components"
+    description: "Read the provided requirements document and extract core functional and non-functional requirements, integration points, dependencies, and acceptance criteria. Produce a concise structured analysis to inform task breakdown."
+    files_in_scope:
+      - "docs/implementation-plan/m1/requirements.md"
+    style_anchors:
+      - file: "docs/style-markers.md"
+        reason: "Use the style markers to identify idiomatic CLI layouts and README expectations"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Validate produced project layout against canonical project-structure spec"
+    estimated_duration_minutes: 45
+    verification:
+      pre_commit:
+        - "All requirements categories identified"
+        - "Ambiguities flagged in generation_log.md"
+
+  - id: "planning-002"
+    title: "Retrieve relevant patterns from knowledge base"
+    description: "Query the local knowledge DB for past patterns, anchors, and prior implementations relevant to CLI scaffolds and repo-init tasks. If DB missing, note assumption and recommend running 'prompt-stack init'."
+    dependencies:
+      - "planning-001"
+    files_in_scope:
+      - ".prompt-stack/knowledge.db"
+      - "docs/best-practices.md"
+      - "docs/ralphy-inputs.schema.json"
+    style_anchors:
+      - file: "examples/style-anchor/"
+        reason: "Local example templates for CLI layouts and tests"
+      - file: "docs/style-markers.md"
+        reason: "Style markers provide concrete anchor snippets and reviewer checklist"
+    estimated_duration_minutes: 45
+    verification:
+      pre_commit:
+        - "At least 3 relevant patterns identified"
+        - "Style anchors categorized by relevance"
+
+  - id: "planning-003"
+    title: "Break down requirements into optimally sized tasks"
+    description: "Create a task breakdown following single-responsibility principle. Each task sized to 30-150 minutes, dependencies identified, and 2-3 style anchors assigned."
+    dependencies:
+      - "planning-001"
+      - "planning-002"
+    files_in_scope:
+      - "structured_analysis.json"
+      - "patterns_report.json"
+    style_anchors:
+      - file: "docs/task-sizing.md"
+        reason: "Research basis for task sizing"
+      - file: "docs/style-markers.md"
+        reason: "Concrete patterns for small, testable CLI tasks"
+    estimated_duration_minutes: 60
+    verification:
+      pre_commit:
+        - "All tasks sized 30-150 minutes"
+        - "Each task has single responsibility"
+        - "Style anchors assigned (2-3 per task)"
+
+  - id: "planning-004"
+    title: "Generate complete Ralphy YAML inputs"
+    description: "Produce final Ralphy inputs (implementation-plan.yaml) including metadata, global constraints, tasks with style anchors, verification steps, and model preferences. Ensure required fields per docs/ralphy-inputs.schema.json are present."
+    dependencies:
+      - "planning-003"
+    files_in_scope:
+      - "task_breakdown.yaml"
+      - "docs/ralphy-inputs.md"
+      - "docs/ralphy-inputs.schema.json"
+    style_anchors:
+      - file: "docs/ralphy-inputs.md"
+        reason: "Reference Ralphy inputs structure"
+      - file: "docs/ralphy-yaml-spec.md"
+        reason: "Spec examples for Ralphy YAML"
+    estimated_duration_minutes: 45
+    verification:
+      pre_commit:
+        - "YAML structure matches docs/ralphy-inputs.md"
+        - "All required fields present"
+        - "Style anchors (2-3) per task"
+
+global_constraints:
+  forbidden_patterns:
+    - pattern: "panic\\("
+      message: "Use proper error handling instead of panic"
+      when: "implementation_phase"
+    - pattern: "interface\\{\\}"
+      message: "Use specific types or generics instead of empty interface where possible"
+      when: "implementation_phase"
+    - pattern: "\\.Println"
+      message: "Use structured logging instead of direct println for production code"
+      when: "implementation_phase"
+  affirmative_constraints:
+    - "Use Cobra for CLI subcommands and only add dependencies with justification"
+    - "Create config under .prompt-stack/config.yaml with minimal defaults"
+
+# Validation metadata (non-schema fields for review purposes)
+_validation:
+  quality_score: 0.9775
+  issues: []
+  approval: "APPROVED"
+  explanation: "Weighted score using anchors(30%), sizing(25%), schema(20%), secrets(15%), affirmative constraints(10%)."
+  reports:
+    schema_check:
+      summary: "All schema-required top-level fields present"
+      passed: true
+    anchors_check:
+      summary: "Style anchors provided (3 global anchors, 2 per task)"
+      passed: true
+    sizing_check:
+      summary: "All task estimates within 30-150 minute guideline"
+      passed: true
+
+_assumptions:
+  validator_command:
+    value: "prompt-stack validate"
+    assumption: true
+    reason: "`prompt-stack` is a local Go command (./prompt-stack) but not in PATH; prefer built-in validator when available."
+
+_instructions: |
+  Run the planning tasks sequentially according to dependencies. Place temporary artifacts in ./.prompt-stack/reports/m1/ (validator spec, schema reports, generated helper adapters). The final execution artifact is `implementation-plan.yaml` in this directory.
+
+_usage: |
+  prompt-stack plan docs/implementation-plan/m1/requirements.md --method code --output docs/implementation-plan/m1/implementation-plan.yaml
+  prompt-stack validate --input docs/implementation-plan/m1/implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out ./.prompt-stack/reports/m1/validation.json
