@@ -8,8 +8,7 @@ metadata:
   generated_by: "planning-phase-prd-template"
   generator_version: "opencode-1.0"
   generated_at: "2026-01-19T08:44:00Z"
-  quality_target: 0.95  # Minimum quality score for approval
-
+  quality_target: 0.95 # Minimum quality score for approval
 # Concrete Ralphy inputs added (inferred)
 name: "prompt-stack"
 description: "Planning-phase Ralphy inputs for prompt-stack implementation plan"
@@ -45,7 +44,6 @@ outputs:
     prefix_rules:
       - "feat:"
       - "fix:"
-
 # Original template metadata preserved for traceability
 metadata_original:
   template_version: "1.0.1"
@@ -53,17 +51,15 @@ metadata_original:
   generated_by: "planning-phase-prd-template"
   generator_version: "opencode-1.0"
   generated_at: "2026-01-19T08:44:00Z"
-  quality_target: 0.95  # Minimum quality score for approval
+  quality_target: 0.95 # Minimum quality score for approval
   assumption: true
   assumption_rationale: "Original template metadata preserved when converting to concrete Ralphy inputs."
-
 global_constraints:
   # Research-backed constraints from docs/best-practices.md
-  style_anchors_required: 2-3  # Per task, critical for preventing drift
-  task_sizing_minutes: 30-150  # Optimal task duration range
-  affirmative_constraints: true  # Use "do this" not "don't do that"
-  context_positioning: "critical-specs-at-edges"  # Avoid "lost in middle" problem
-
+  style_anchors_required: 2-3 # Per task, critical for preventing drift
+  task_sizing_minutes: 30-150 # Optimal task duration range
+  affirmative_constraints: true # Use "do this" not "don't do that"
+  context_positioning: "critical-specs-at-edges" # Avoid "lost in middle" problem
   forbidden_patterns:
     - pattern: "\\bany\\b"
       message: "Use unknown with type guards instead"
@@ -71,7 +67,6 @@ global_constraints:
       message: "Fix type errors properly"
     - pattern: "eslint-disable"
       message: "Address lint issues instead of disabling"
-
   required_patterns:
     - pattern: "import.*zod"
       when: "validating_external_data"
@@ -79,18 +74,16 @@ global_constraints:
       when: "creating_schemas"
     - pattern: "export type.* = z\\.infer"
       when: "extracting_types"
-
 # Tasks
 tasks:
   # Phase 1: Requirements Analysis
   - id: "planning-001"
     title: "Analyze requirements and extract key components"
     description: "Read the provided requirements document and extract:\n1. Core functional requirements\n2. Non-functional requirements (performance, security, etc.)\n3. Integration points with existing systems\n4. Dependencies and constraints\n5. Acceptance criteria\n\nOutput a structured analysis that will inform task breakdown."
-
     outputs:
       structured_analysis: "structured_analysis.json"
     files_in_scope:
-      - "docs/implementation-plan/m0/requirements.md"  # Actual requirements file
+      - "docs/implementation-plan/m0/requirements.md" # Actual requirements file
     style_anchors:
       - file: "docs/requirements/architecture.md"
         reason: "Project architecture and problem framing from requirements"
@@ -103,19 +96,17 @@ tasks:
     output_format: "structured_analysis.json"
     estimated_duration_minutes: 45
     completed: true
-
   # Phase 2: Codebase Pattern Discovery (from knowledge base)
   - id: "planning-002"
     title: "Retrieve relevant patterns from knowledge base"
     description: "Query the knowledge base for:\n1. Existing style anchors relevant to requirements\n2. Coding standards and patterns for similar tasks\n3. Previous successful task implementations\n4. Common pitfalls to avoid\n\nUse semantic search to find the most relevant patterns."
-
     depends_on: ["planning-001"]
     outputs:
       patterns_report: "patterns_report.json"
     files_in_scope:
-      - ".your-tool/knowledge.db"  # Path to knowledge DB (default: .your-tool/knowledge.db)
+      - ".your-tool/knowledge.db" # Path to knowledge DB (default: .your-tool/knowledge.db)
       - note: "assumption: true - Knowledge DB may not exist yet; will be created during M0 implementation"
-      - "docs/best-practices.md"   # Research-backed practices
+      - "docs/best-practices.md" # Research-backed practices
       - "docs/ralphy-inputs.schema.json"
     style_anchors:
       - file: "docs/initial-claude-conversation/split-files/05-jit-caching.md"
@@ -137,18 +128,17 @@ tasks:
         - "Confidence scores > 0.7 for selected patterns"
     output_format: "patterns_report.json"
     estimated_duration_minutes: 45
-
+    completed: true
   # Phase 3: Task Breakdown and Sizing
   - id: "planning-003"
     title: "Break down requirements into optimally sized tasks"
     description: "Based on requirements analysis and patterns:\n1. Create task breakdown following single responsibility principle\n2. Size each task to 30-150 minute range\n3. Identify dependencies between tasks\n4. Assign appropriate style anchors (2-3 per task)\n5. Estimate context tokens per task\n\nApply research-backed task sizing principles."
-
     depends_on: ["planning-001", "planning-002"]
     outputs:
       task_breakdown: "task_breakdown.yaml"
     files_in_scope:
-      - "structured_analysis.json"  # From planning-001
-      - "patterns_report.json"      # From planning-002
+      - "structured_analysis.json" # From planning-001
+      - "patterns_report.json" # From planning-002
     style_anchors:
       - file: "docs/task-sizing.md"
         reason: "Research basis for task sizing"
@@ -162,22 +152,20 @@ tasks:
         - "Style anchors assigned (2-3 per task)"
     output_format: "task_breakdown.yaml"
     estimated_duration_minutes: 60
-
   # Phase 4: Generate Ralphy YAML Inputs
   - id: "planning-004"
     title: "Generate complete Ralphy YAML inputs"
     description: "Create the final Ralphy YAML inputs file that includes:\n1. Project metadata (name, description, version)\n2. Global constraints and standards\n3. Task definitions with style anchors\n4. Verification steps (pre-commit, post-commit)\n5. Context optimization specifications\n6. Model preferences and strategies\n\nFollow the structure defined in docs/ralphy-inputs.md and ensure produced outputs are declared in 'outputs' for downstream tasks."
-
     depends_on: ["planning-003"]
     outputs:
       ralphy_inputs: "ralphy_inputs.yaml"
     files_in_scope:
-      - "task_breakdown.yaml"  # From planning-003
-      - "docs/ralphy-inputs.md"      # Input specification
-      - "docs/best-practices.md"     # Research validation
+      - "task_breakdown.yaml" # From planning-003
+      - "docs/ralphy-inputs.md" # Input specification
+      - "docs/best-practices.md" # Research validation
       - "docs/ralphy-inputs.schema.json"
     style_anchors:
-      - file: "docs/ralphy-inputs.md:43-88"  # Example minimal Ralphy inputs
+      - file: "docs/ralphy-inputs.md:43-88" # Example minimal Ralphy inputs
         reason: "Reference structure for YAML inputs"
       - file: "docs/ralphy-yaml-spec.md"
         reason: "Ralphy YAML spec examples"
@@ -196,12 +184,10 @@ tasks:
         - "Affirmative constraints used"
     output_format: "ralphy_inputs.yaml"
     estimated_duration_minutes: 45
-
   # Phase 4a: YAML syntax validation (new)
   - id: "planning-004a"
     title: "Validate YAML syntax using validator tool"
     description: "Run the YAML validator tool to ensure the generated Ralphy inputs have valid YAML syntax and structure. This validates basic YAML correctness before schema validation."
-
     depends_on: ["planning-004"]
     outputs:
       yaml_validation: "yaml_validation_report.json"
@@ -220,12 +206,10 @@ tasks:
         - "No YAML parsing errors or structural issues"
     output_format: "yaml_validation_report.json"
     estimated_duration_minutes: 30
-
   # Phase 4b: Schema validation (new)
   - id: "planning-004b"
     title: "Validate generated Ralphy YAML against JSON Schema"
     description: "Run JSON Schema validation of the generated Ralphy inputs against docs/ralphy-inputs.schema.json. Fail on schema errors and include detailed diagnostics."
-
     depends_on: ["planning-004a"]
     outputs:
       schema_validation: "schema_validation_report.json"
@@ -243,12 +227,10 @@ tasks:
         - "JSON Schema validation passes against docs/ralphy-inputs.schema.json"
     output_format: "schema_validation_report.json"
     estimated_duration_minutes: 30
-
   # Phase 4c: Secrets and sensitive-data scan (new)
   - id: "planning-004c"
     title: "Scan generated YAML for embedded secrets"
     description: "Ensure no API keys, tokens, or secrets are present in the generated YAML. If secrets are required, confirm they are referenced via secure vault/env and not in the file."
-
     depends_on: ["planning-004b"]
     outputs:
       secrets_scan: "secrets_scan_report.json"
@@ -261,18 +243,16 @@ tasks:
         - "Any required secrets are referenced via vault or env placeholders"
     output_format: "secrets_scan_report.json"
     estimated_duration_minutes: 30
-
   # Phase 5: AI Validation - Style Anchors Compliance
   - id: "planning-005"
     title: "Validate style anchors compliance"
     description: "Review the generated Ralphy YAML to ensure:\n1. Each task has 2-3 style anchors\n2. Style anchors are relevant to task type\n3. Anchor files exist in the codebase\n4. Anchor reasons are specific and helpful\n\nThis is critical for preventing architectural drift."
-
     depends_on: ["planning-004"]
     outputs:
       anchors_validation: "validation_report_anchors.json"
     files_in_scope:
       - "ralphy_inputs.yaml"
-      - "docs/best-practices.md:164-170"  # Style anchors research section
+      - "docs/best-practices.md:164-170" # Style anchors research section
     style_anchors:
       - file: "docs/initial-claude-conversation/split-files/02-research-report-preventing-drift.md"
         reason: "Research basis for anchor importance"
@@ -294,18 +274,16 @@ tasks:
         - "Anchor reasons are specific (not generic)"
     output_format: "validation_report_anchors.json"
     estimated_duration_minutes: 30
-
   # Phase 6: AI Validation - Task Sizing Compliance
   - id: "planning-006"
     title: "Validate task sizing compliance"
     description: "Review task sizing to ensure:\n1. All tasks are 30-150 minutes\n2. No task is too large (risk of context overflow)\n3. No task is too small (inefficient overhead)\n4. Task dependencies are properly sequenced\n\nFlag any tasks that need splitting or merging."
-
     depends_on: ["planning-004"]
     outputs:
       sizing_validation: "validation_report_sizing.json"
     files_in_scope:
       - "ralphy_inputs.yaml"
-      - "docs/task-sizing.md"  # Task sizing heuristics
+      - "docs/task-sizing.md" # Task sizing heuristics
     style_anchors:
       - file: "docs/task-sizing.md"
         reason: "Example of optimal task sizing validation"
@@ -321,18 +299,16 @@ tasks:
         - "Parallel execution opportunities identified"
     output_format: "validation_report_sizing.json"
     estimated_duration_minutes: 30
-
   # Phase 7: AI Validation - Affirmative Constraints
   - id: "planning-007"
     title: "Validate affirmative constraints usage"
     description: "Review constraints to ensure:\n1. All constraints use affirmative language (\"do this\")\n2. No negative phrasing (\"don't do that\")\n3. Constraints are specific and actionable\n4. Constraints reference existing patterns when possible\n\nResearch shows 40%+ better compliance with affirmative framing."
-
     depends_on: ["planning-004"]
     outputs:
       constraints_validation: "validation_report_constraints.json"
     files_in_scope:
       - "ralphy_inputs.yaml"
-      - "docs/best-practices.md:178-183"  # Affirmative constraints research
+      - "docs/best-practices.md:178-183" # Affirmative constraints research
     style_anchors:
       - file: "docs/best-practices.md"
         reason: "Constraint patterns reference best-practices guidance"
@@ -349,7 +325,6 @@ tasks:
     output_format: "validation_report_constraints.json"
     estimated_duration_minutes: 30
     note: "assumption: true - shorter duration increased to meet task sizing policy"
-
   # Phase 8: AI Validation - Implementation Guidelines Compliance (planning only — no tests generated)
   - id: "planning-008"
     title: "Validate implementation guidelines inclusion"
@@ -360,13 +335,12 @@ tasks:
       3. Reference implementation guidance and style anchors for the implementation team
 
       Note: This planning-phase template does NOT generate tests or TDD artifacts; it only records guidance for later implementation phases.
-
     depends_on: ["planning-004"]
     outputs:
       implementation_guidelines_validation: "validation_report_implementation_guidelines.json"
     files_in_scope:
       - "ralphy_inputs.yaml"
-      - "docs/best-practices.md"  # Implementation guidance reference
+      - "docs/best-practices.md" # Implementation guidance reference
     style_anchors:
       - file: "docs/best-practices.md"
         reason: "Best-practices excerpt as implementation guideline reference"
@@ -377,18 +351,16 @@ tasks:
         - "No tests are generated in the planning phase"
     output_format: "validation_report_implementation_guidelines.json"
     estimated_duration_minutes: 30
-
   # Phase 9: AI Validation - Multi-Layer Enforcement
   - id: "planning-009"
     title: "Validate multi-layer enforcement and commit/scope policies"
     description: "Review verification layers to ensure:\n1. Prompt-level constraints in YAML\n2. IDE/LSP integration considerations\n3. Pre-commit hook specifications\n4. CI check definitions\n5. Runtime validation where applicable\n6. Commit/revert and file-scope enforcement (atomic commits, files_in_scope enforcement)\n\nMulti-layer enforcement is critical for preventing drift. Reference docs/opencode-rules.md and docs/requirements/main.md for commit policy."
-
     depends_on: ["planning-004"]
     outputs:
       enforcement_validation: "validation_report_enforcement.json"
     files_in_scope:
       - "ralphy_inputs.yaml"
-      - "docs/best-practices.md:184-193"  # Multi-layer enforcement research
+      - "docs/best-practices.md:184-193" # Multi-layer enforcement research
       - "docs/opencode-rules.md"
       - "docs/requirements/main.md"
       - "docs/drift-policy.md"
@@ -406,22 +378,11 @@ tasks:
         - "Scope enforcement rules present (flag drift detection)"
     output_format: "validation_report_enforcement.json"
     estimated_duration_minutes: 30
-
   # Phase 10: Generate Final Quality Report
   - id: "planning-010"
     title: "Generate comprehensive quality report"
     description: "Aggregate all validation results and generate:\n1. Overall quality score (0.0-1.0)\n2. Detailed issue breakdown\n3. Recommendations for improvement\n4. Approval status (APPROVED/REJECTED/NEEDS_REVISION)\n\nQuality score must be ≥0.95 for approval."
-
-    depends_on: [
-      "planning-005",
-      "planning-006",
-      "planning-007",
-      "planning-008",
-      "planning-009",
-      "planning-004a",
-      "planning-004b",
-      "planning-004c"
-    ]
+    depends_on: ["planning-005", "planning-006", "planning-007", "planning-008", "planning-009", "planning-004a", "planning-004b", "planning-004c"]
     outputs:
       final_quality_report: "final_quality_report.json"
     files_in_scope:
@@ -449,17 +410,15 @@ tasks:
     output_format: "final_quality_report.json"
     estimated_duration_minutes: 30
     note: "assumption: true - increased to meet task sizing policy"
-
   # Phase 11: Apply Fixes and Generate Final YAML
   - id: "planning-011"
     title: "Apply fixes and generate final Ralphy YAML"
     description: "Based on quality report recommendations:\n1. Apply automatic fixes where possible\n2. Flag issues requiring manual intervention\n3. Regenerate Ralphy YAML with improvements\n4. Create final version with quality score metadata\n\nOnly proceed if quality score ≥0.95."
-
     depends_on: ["planning-010"]
     outputs:
       final_ralphy_inputs: "final_ralphy_inputs.yaml"
     files_in_scope:
-      - "ralphy_inputs.yaml"  # Initial version
+      - "ralphy_inputs.yaml" # Initial version
       - "final_quality_report.json"
     style_anchors:
       - file: "docs/best-practices.md"
@@ -474,7 +433,6 @@ tasks:
     estimated_duration_minutes: 30
     note: "assumption: true - increased to meet task sizing policy"
     completion_signal: "<promise>PLANNING_COMPLETE</promise>"
-
 # Template Usage Instructions
 instructions: |
   This template generates validated Ralphy YAML inputs for implementation planning.
@@ -517,7 +475,6 @@ instructions: |
      - final_ralphy_inputs.yaml: Ready for Ralphy execution
      - final_quality_report.json: Detailed validation results
      - Intermediate analysis and validation reports
-
 # Research Compliance Summary
 research_compliance:
   style_anchors: "CRITICAL - 40%+ quality improvement"
@@ -528,10 +485,9 @@ research_compliance:
   context_positioning: "MEDIUM - Avoid 'lost in middle' problem"
   self_consistency: "MEDIUM - 30%+ error reduction"
   model_specific_strategies: "LOW - Implementation detail"
-
 # Expected Performance
 performance_targets:
-  total_duration_minutes: 190  # Sum of all task estimates (approx)
+  total_duration_minutes: 190 # Sum of all task estimates (approx)
   parallel_opportunities: "Limited (sequential analysis)"
   context_reduction_target: "80%+ vs naive approach"
   quality_score_target: ">=0.95"

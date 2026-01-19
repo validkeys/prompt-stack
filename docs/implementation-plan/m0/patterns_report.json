@@ -1,0 +1,314 @@
+{
+  "milestone": "m0",
+  "title": "Initial setup with requirements gathering phase",
+  "generated_at": "2026-01-19T09:00:00Z",
+  "based_on": "structured_analysis.json",
+
+  "patterns_identified": [
+    {
+      "id": "P-001",
+      "category": "cli_structure",
+      "name": "Go CLI scaffold with Cobra",
+      "description": "Minimal Cobra-based CLI structure with command hierarchy",
+      "confidence": 0.95,
+      "source": {
+        "file": "examples/style-anchor/cmd/mytool/main.go",
+        "lines": "1-50",
+        "snippet_pattern": "cobra.Command structure with Run functions"
+      },
+      "relevance_to_requirements": [
+        "FR-001: Scaffold Go CLI with Cobra framework",
+        "Plan and validate command patterns"
+      ],
+      "applicable_to_tasks": ["planning-003", "planning-004"]
+    },
+    {
+      "id": "P-002",
+      "category": "testing",
+      "name": "Go package testing with testify",
+      "description": "Table-driven test patterns for Go packages",
+      "confidence": 0.90,
+      "source": {
+        "file": "examples/style-anchor/pkg/greeter/greeter_test.go",
+        "lines": "1-30",
+        "snippet_pattern": "TestX functions with table-driven test cases"
+      },
+      "relevance_to_requirements": [
+        "Non-functional: Include basic unit tests",
+        "TDD workflow for implementation"
+      ],
+      "applicable_to_tasks": ["planning-003", "planning-008"]
+    },
+    {
+      "id": "P-003",
+      "category": "package_structure",
+      "name": "Minimal public package pattern",
+      "description": "Simple public package with exported functions and clear interfaces",
+      "confidence": 0.92,
+      "source": {
+        "file": "examples/style-anchor/pkg/greeter/greeter.go",
+        "lines": "1-20",
+        "snippet_pattern": "Exported functions with clear docstrings"
+      },
+      "relevance_to_requirements": [
+        "FR-002: Bundle Ralphy shell executor",
+        "Package design for executor integration"
+      ],
+      "applicable_to_tasks": ["planning-003", "planning-004"]
+    },
+    {
+      "id": "P-004",
+      "category": "style_anchors",
+      "name": "Style anchor selection and usage",
+      "description": "2-3 style anchors per task with specific reasons and file references",
+      "confidence": 0.98,
+      "source": {
+        "file": "docs/best-practices.md",
+        "lines": "6-8",
+        "snippet_pattern": "Always include 2–3 exemplary files as templates in prompts"
+      },
+      "relevance_to_requirements": [
+        "Global constraint: style_anchors_required: 2-3 per task",
+        "Critical for preventing architectural drift"
+      ],
+      "applicable_to_tasks": ["planning-003", "planning-004", "planning-005"]
+    },
+    {
+      "id": "P-005",
+      "category": "task_sizing",
+      "name": "Optimal task sizing range (30-150 minutes)",
+      "description": "Split work into atomic tasks to prevent context overflow",
+      "confidence": 0.95,
+      "source": {
+        "file": "docs/best-practices.md",
+        "lines": "10-12",
+        "snippet_pattern": "Split work into 30m–2.5h atomic tasks"
+      },
+      "relevance_to_requirements": [
+        "Global constraint: task_sizing_minutes: 30-150",
+        "Critical for AI model context management"
+      ],
+      "applicable_to_tasks": ["planning-003", "planning-006"]
+    },
+    {
+      "id": "P-006",
+      "category": "affirmative_constraints",
+      "name": "Affirmative language in constraints",
+      "description": "Use permitted actions explicitly (e.g., 'ONLY use: express, zod, prisma')",
+      "confidence": 0.88,
+      "source": {
+        "file": "docs/best-practices.md",
+        "lines": "14-16",
+        "snippet_pattern": "State permitted actions explicitly"
+      },
+      "relevance_to_requirements": [
+        "Global constraint: affirmative_constraints: true",
+        "40%+ better compliance with affirmative framing"
+      ],
+      "applicable_to_tasks": ["planning-004", "planning-007"]
+    },
+    {
+      "id": "P-007",
+      "category": "yaml_structure",
+      "name": "Ralphy YAML input structure",
+      "description": "Complete YAML structure with required fields for Ralphy inputs",
+      "confidence": 0.92,
+      "source": {
+        "file": "examples/multi-milestone-setup/planning/milestones/auth-v1.ralphy.yaml",
+        "lines": "1-80",
+        "snippet_pattern": "name, version, rules_file, tasks, style_anchors"
+      },
+      "relevance_to_requirements": [
+        "planning-004: Generate complete Ralphy YAML inputs",
+        "Must match docs/ralphy-inputs.schema.json"
+      ],
+      "applicable_to_tasks": ["planning-004", "planning-004a", "planning-004b"]
+    },
+    {
+      "id": "P-008",
+      "category": "validation",
+      "name": "Multi-layer enforcement strategy",
+      "description": "Layered verification: prompt → IDE → commit → CI → runtime",
+      "confidence": 0.90,
+      "source": {
+        "file": "docs/best-practices.md",
+        "lines": "3-5",
+        "snippet_pattern": "Models optimize locally; enforce global constraints with layered verification"
+      },
+      "relevance_to_requirements": [
+        "Global constraint: multi-layer enforcement",
+        "Critical for preventing drift"
+      ],
+      "applicable_to_tasks": ["planning-004", "planning-009"]
+    },
+    {
+      "id": "P-009",
+      "category": "prompt_positioning",
+      "name": "Critical specs at prompt edges",
+      "description": "Put critical specs, style anchors, and hard rules at the beginning and reiterate at the end",
+      "confidence": 0.85,
+      "source": {
+        "file": "docs/best-practices.md",
+        "lines": "49-50",
+        "snippet_pattern": "Put critical specs, style anchors, and hard rules at the beginning and reiterate them at the end"
+      },
+      "relevance_to_requirements": [
+        "Global constraint: context_positioning: 'critical-specs-at-edges'",
+        "Avoid 'lost in middle' problem"
+      ],
+      "applicable_to_tasks": ["planning-004"]
+    },
+    {
+      "id": "P-010",
+      "category": "runtime_validation",
+      "name": "Zod schema validation for external data",
+      "description": "Validate all external inputs with Zod schemas instead of type assertions",
+      "confidence": 0.87,
+      "source": {
+        "file": "docs/best-practices.md",
+        "lines": "42-43",
+        "snippet_pattern": "Validate all external inputs with Zod schemas"
+      },
+      "relevance_to_requirements": [
+        "allowed_dependencies: ['zod']",
+        "docs/ralphy-inputs.schema.json validation"
+      ],
+      "applicable_to_tasks": ["planning-004b", "planning-004c"]
+    }
+  ],
+
+  "style_anchors_by_relevance": {
+    "high_relevance": [
+      {
+        "file": "docs/best-practices.md",
+        "reason": "Core research-backed guidelines for style anchors, task sizing, and affirmative constraints",
+        "applicable_to": ["planning-003", "planning-004", "planning-005", "planning-006", "planning-007", "planning-009"],
+        "confidence_score": 0.98
+      },
+      {
+        "file": "docs/ralphy-inputs.schema.json",
+        "reason": "JSON Schema reference for Ralphy inputs validation",
+        "applicable_to": ["planning-004", "planning-004b"],
+        "confidence_score": 0.95
+      }
+    ],
+    "medium_relevance": [
+      {
+        "file": "examples/style-anchor/cmd/mytool/main.go",
+        "reason": "Concrete code anchor: CLI layout and Cobra structure for Go CLI scaffolding",
+        "applicable_to": ["planning-003", "planning-004"],
+        "confidence_score": 0.92
+      },
+      {
+        "file": "examples/style-anchor/pkg/greeter/greeter.go",
+        "reason": "Concrete code anchor: minimal public package structure",
+        "applicable_to": ["planning-003", "planning-004"],
+        "confidence_score": 0.90
+      },
+      {
+        "file": "examples/style-anchor/pkg/greeter/greeter_test.go",
+        "reason": "Test anchor: TDD pattern for simple package",
+        "applicable_to": ["planning-003", "planning-008"],
+        "confidence_score": 0.88
+      }
+    ],
+    "contextual_relevance": [
+      {
+        "file": "docs/initial-claude-conversation/split-files/05-jit-caching.md",
+        "reason": "JIT caching & pattern discovery examples for knowledge base queries",
+        "applicable_to": ["planning-002"],
+        "confidence_score": 0.85
+      },
+      {
+        "file": "docs/initial-claude-conversation/split-files/02-research-report-preventing-drift.md",
+        "reason": "Pattern examples for similar tasks and drift prevention",
+        "applicable_to": ["planning-002", "planning-005"],
+        "confidence_score": 0.85
+      },
+      {
+        "file": "docs/ralphy-yaml-spec.md",
+        "reason": "YAML spec examples for validation rules and structure",
+        "applicable_to": ["planning-004", "planning-004a", "planning-004b"],
+        "confidence_score": 0.83
+      },
+      {
+        "file": "examples/multi-milestone-setup/planning/milestones/auth-v1.ralphy.yaml",
+        "reason": "Complete Ralphy YAML example for reference structure",
+        "applicable_to": ["planning-004"],
+        "confidence_score": 0.82
+      }
+    ]
+  },
+
+  "common_pitfalls_to_avoid": [
+    {
+      "pitfall": "Insufficient style anchors per task",
+      "prevention": "Ensure 2-3 style anchors with specific reasons for each task",
+      "reference_pattern": "P-004"
+    },
+    {
+      "pitfall": "Tasks too large (context overflow)",
+      "prevention": "Size tasks to 30-150 minutes with clear single responsibility",
+      "reference_pattern": "P-005"
+    },
+    {
+      "pitfall": "Negative constraints",
+      "prevention": "Use affirmative language (e.g., 'ONLY use: zod' instead of 'Do not use: any')",
+      "reference_pattern": "P-006"
+    },
+    {
+      "pitfall": "Embedded secrets in YAML",
+      "prevention": "Reference secrets via vault/env placeholders only",
+      "reference_pattern": "P-010"
+    },
+    {
+      "pitfall": "Lost-in-middle problem",
+      "prevention": "Put critical specs at beginning and reiterate at end of prompts",
+      "reference_pattern": "P-009"
+    }
+  ],
+
+  "verification_criteria": {
+    "minimum_patterns_identified": 5,
+    "actual_patterns_identified": 10,
+    "minimum_confidence_score": 0.7,
+    "actual_min_confidence_score": 0.82,
+    "style_anchors_categorized": true,
+    "confidence_scores_above_threshold": true,
+    "meets_pre_commit_criteria": true
+  },
+
+  "recommendations": [
+    {
+      "priority": "high",
+      "recommendation": "Use Go CLI scaffolding pattern from examples/style-anchor/cmd/mytool/main.go as primary anchor for CLI tasks",
+      "rationale": "Provides concrete, working Cobra structure that matches FR-001"
+    },
+    {
+      "priority": "high",
+      "recommendation": "Apply 2-3 style anchors constraint strictly from planning-003 onwards",
+      "rationale": "Research shows 40%+ quality improvement; critical for drift prevention"
+    },
+    {
+      "priority": "medium",
+      "recommendation": "Use table-driven test pattern from greeter_test.go for all Go unit tests",
+      "rationale": "Matches best practices and provides clear test structure"
+    },
+    {
+      "priority": "medium",
+      "recommendation": "Validate generated YAML against docs/ralphy-inputs.schema.json before proceeding",
+      "rationale": "Ensures structural correctness early in the pipeline"
+    }
+  ],
+
+  "next_steps": {
+    "ready_for_task_breakdown": true,
+    "recommended_tasks_for_next_phase": ["planning-003: Break down requirements into optimally sized tasks"],
+    "key_patterns_to_apply": ["P-004", "P-005", "P-007"],
+    "key_style_anchors_to_include": [
+      "docs/best-practices.md",
+      "examples/style-anchor/cmd/mytool/main.go",
+      "examples/style-anchor/pkg/greeter/greeter.go"
+    ]
+  }
+}
