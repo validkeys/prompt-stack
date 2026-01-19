@@ -1,0 +1,258 @@
+{
+  "analysis_type": "structured_requirements_analysis",
+  "timestamp": "2026-01-19T17:30:00Z",
+  "requirements_file": "docs/implementation-plan/m1/requirements.md",
+  "milestone_id": "m1",
+  "milestone_title": "M2 — Repo Init & CLI scaffold (1-2 days)",
+  
+  "core_functional_requirements": [
+    {
+      "id": "FR-001",
+      "title": "Help command implementation",
+      "description": "Implement help command that lists core commands (init, plan, validate, review, build)",
+      "acceptance_criteria": ["AC-1"],
+      "priority": "high",
+      "complexity": "low"
+    },
+    {
+      "id": "FR-002",
+      "title": "Init command implementation",
+      "description": "Implement init command that creates .prompt-stack/config.yaml and .prompt-stack/knowledge.db",
+      "acceptance_criteria": ["AC-2"],
+      "priority": "high",
+      "complexity": "medium"
+    },
+    {
+      "id": "FR-003",
+      "title": "Project structure validation",
+      "description": "Verify project structure matches docs/requirements/project-structure.md spec",
+      "acceptance_criteria": [],
+      "priority": "medium",
+      "complexity": "low"
+    },
+    {
+      "id": "FR-004",
+      "title": "Core command stubs",
+      "description": "Implement plan, validate, review, build commands (stubs)",
+      "acceptance_criteria": [],
+      "priority": "medium",
+      "complexity": "low"
+    }
+  ],
+  
+  "non_functional_requirements": [
+    {
+      "category": "security",
+      "requirements": [
+        "No secrets written to database (AC-3)",
+        "Data classification: internal",
+        "Secrets included: false"
+      ]
+    },
+    {
+      "category": "performance",
+      "requirements": [
+        "CLI should respond quickly to commands",
+        "Init command should complete within reasonable time"
+      ]
+    },
+    {
+      "category": "maintainability",
+      "requirements": [
+        "Follow Go best practices",
+        "Use Cobra framework for CLI",
+        "Project structure must match specification"
+      ]
+    },
+    {
+      "category": "compatibility",
+      "requirements": [
+        "Works with SQLite for knowledge database",
+        "Git integration for repository initialization"
+      ]
+    }
+  ],
+  
+  "integration_points": [
+    {
+      "system": "OpenCode",
+      "integration_type": "execution_environment",
+      "description": "Ralphy shell executor runs within OpenCode environment",
+      "constraints": ["Must follow OpenCode rules and constraints"]
+    },
+    {
+      "system": "Git",
+      "integration_type": "repository_operations",
+      "description": "Repository initialization and structure validation",
+      "constraints": ["Read-only access to repository"]
+    },
+    {
+      "system": "SQLite",
+      "integration_type": "data_storage",
+      "description": "Knowledge database for storing patterns and templates",
+      "constraints": ["Local file-based database", "No secrets storage"]
+    }
+  ],
+  
+  "dependencies": [
+    {
+      "type": "external",
+      "name": "Go",
+      "version_constraint": ">=1.21",
+      "purpose": "Primary programming language"
+    },
+    {
+      "type": "external",
+      "name": "Cobra",
+      "version_constraint": "latest",
+      "purpose": "CLI framework"
+    },
+    {
+      "type": "external",
+      "name": "SQLite",
+      "version_constraint": "3.x",
+      "purpose": "Knowledge database"
+    },
+    {
+      "type": "internal",
+      "name": "docs/requirements/project-structure.md",
+      "purpose": "Project layout specification"
+    },
+    {
+      "type": "internal",
+      "name": "docs/style-markers.md",
+      "purpose": "Style guidance and coding standards"
+    },
+    {
+      "type": "internal",
+      "name": "examples/style-anchor/",
+      "purpose": "Go CLI project template reference"
+    }
+  ],
+  
+  "constraints": [
+    {
+      "type": "technical",
+      "constraint": "TDD preference with integration tests preferred",
+      "impact": "Testing approach must prioritize integration tests over unit tests"
+    },
+    {
+      "type": "technical",
+      "constraint": "Unit tests only where absolutely necessary",
+      "impact": "Minimal unit test coverage required"
+    },
+    {
+      "type": "security",
+      "constraint": "No secrets written to database",
+      "impact": "Must implement secrets scanning and validation"
+    },
+    {
+      "type": "timeline",
+      "constraint": "1-2 day implementation timeline",
+      "impact": "Tasks must be sized appropriately for rapid implementation"
+    }
+  ],
+  
+  "acceptance_criteria": [
+    {
+      "id": "AC-1",
+      "title": "Help command lists core commands",
+      "verification_method": "manual-review",
+      "success_criteria": "prompt-stack --help lists init, plan, validate, review, build commands",
+      "stakeholder_signoff": "required"
+    },
+    {
+      "id": "AC-2",
+      "title": "Init command creates required files",
+      "verification_method": "manual-review",
+      "success_criteria": "prompt-stack init creates .prompt-stack/config.yaml and .prompt-stack/knowledge.db",
+      "stakeholder_signoff": "required"
+    },
+    {
+      "id": "AC-3",
+      "title": "No secrets in database",
+      "verification_method": "manual-review",
+      "success_criteria": "Zero secrets in knowledge.db after init command",
+      "stakeholder_signoff": "required"
+    }
+  ],
+  
+  "deliverables": [
+    {
+      "name": "prompt-stack CLI binary",
+      "format": "binary",
+      "owner": "@kyledavis",
+      "due_date": "2026-01-21"
+    },
+    {
+      "name": "init command implementation",
+      "format": "go code",
+      "owner": "@kyledavis",
+      "due_date": "2026-01-21"
+    },
+    {
+      "name": ".prompt-stack/config.yaml",
+      "format": "yaml",
+      "owner": "@kyledavis",
+      "due_date": "2026-01-21"
+    },
+    {
+      "name": ".prompt-stack/knowledge.db",
+      "format": "sqlite",
+      "owner": "@kyledavis",
+      "due_date": "2026-01-21"
+    }
+  ],
+  
+  "style_anchors": [
+    {
+      "path": "examples/style-anchor/",
+      "type": "code_template",
+      "relevance": "high",
+      "purpose": "Go CLI project template for implementation reference"
+    },
+    {
+      "path": "docs/style-markers.md",
+      "type": "style_guide",
+      "relevance": "high",
+      "purpose": "Style guidance and coding standards"
+    },
+    {
+      "path": "docs/requirements/project-structure.md",
+      "type": "specification",
+      "relevance": "high",
+      "purpose": "Project layout specification for validation"
+    }
+  ],
+  
+  "quality_targets": [
+    {
+      "metric": "quality_score",
+      "threshold": ">=0.95",
+      "validation_method": "automated-test",
+      "description": "YAML syntax validation, JSON Schema validation, secrets scan, style anchors compliance, task sizing compliance, affirmative constraints validation, multi-layer enforcement validation"
+    }
+  ],
+  
+  "analysis_notes": [
+    "Requirements are well-structured with clear acceptance criteria",
+    "Focus on CLI scaffold implementation with minimal functionality",
+    "Security requirement: no secrets in database is critical",
+    "TDD approach preferred but with integration tests over unit tests",
+    "Timeline constraint: 1-2 days suggests tasks must be small and focused",
+    "Project structure validation is implicit requirement for all deliverables"
+  ],
+  
+  "ambiguities_flagged": [
+    {
+      "issue": "Definition of 'stubs' for plan, validate, review, build commands",
+      "impact": "Unclear how much functionality is required for command stubs",
+      "recommendation": "Clarify if stubs should have minimal placeholder implementation or full command structure"
+    },
+    {
+      "issue": "Scope of 'project structure matches spec' validation",
+      "impact": "Unclear what constitutes successful validation",
+      "recommendation": "Define specific validation criteria for project structure"
+    }
+  ]
+}

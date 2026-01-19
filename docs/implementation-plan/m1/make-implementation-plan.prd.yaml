@@ -62,6 +62,7 @@ tasks:
       pre_commit:
         - "All requirements categories identified"
         - "Ambiguities flagged in generation_log.md"
+    completed: true
 
   - id: "planning-002"
     title: "Retrieve relevant patterns from knowledge base"
