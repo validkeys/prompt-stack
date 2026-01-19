@@ -7,7 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var osExit = os.Exit
+// osExit is overridden in tests to avoid exiting the test process
+var osExit = func(code int) { os.Exit(code) }
 
 var rootCmd = &cobra.Command{
 	Use:   "prompt-stack",

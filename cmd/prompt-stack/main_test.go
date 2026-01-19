@@ -78,7 +78,8 @@ func TestRootCmd(t *testing.T) {
 	}
 }
 
-var osExit = os.Exit
+// osExit is overridden in tests to prevent process exit
+var osExit = func(code int) { os.Exit(code) }
 
 func TestCommandsExist(t *testing.T) {
 	commands := []struct {
