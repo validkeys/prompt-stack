@@ -1,0 +1,25 @@
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
+)
+
+var rootCmd = &cobra.Command{
+	Use:   "your-tool",
+	Short: "AI-assisted development workflow tool",
+	Long:  `A tool for generating and validating Ralphy YAML files with Plan/Build modes.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("AI-assisted development workflow tool")
+		cmd.Help()
+	},
+}
+
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+}
