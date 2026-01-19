@@ -279,6 +279,21 @@ func (v *TaskSizingValidator) Validate(inputPath string) (ComponentResult, error
 		return result, nil
 	}
 
+	// Try to parse the tool output (JSON) and adjust score if no tasks found
+	var parsed map[string]interface{}
+	if err := json.Unmarshal(output, &parsed); err == nil {
+		if v, ok := parsed["total_tasks"]; ok {
+			if f, ok := v.(float64); ok {
+				if int(f) == 0 {
+					// no tasks -> lower score
+					result.Score = 0.8
+				}
+			}
+		}
+		// include parsed output in details for diagnostics
+		result.Details = parsed
+	}
+
 	return result, nil
 }
 
