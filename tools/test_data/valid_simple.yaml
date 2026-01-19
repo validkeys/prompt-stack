@@ -1,0 +1,17 @@
+name: test
+version: 1.0.0
+rules_file: rules.md
+task_sizing:
+  min_minutes: 30
+  max_minutes: 150
+tdd:
+  required: false
+  test_command: go test
+model_preferences:
+  primary: opencode
+outputs:
+  allowed_file_edits:
+    - cmd/**
+  disallowed_file_edits:
+    - .github/**
+tasks: []

@@ -53,3 +53,14 @@
 - Go vet validation passed
 - Updated PRD to mark planning-004 as completed (completed: true)
 
+## 2026-01-19: Task planning-004a completed
+- Fixed validate_yaml.go: changed ValidateInterface to Validate for jsonschema v5 compatibility
+- Fixed ralphy_inputs.yaml: changed prompt_template.placeholders from array to object
+- Fixed docs/ralphy-inputs.schema.json: added missing 'tasks', 'global_constraints', 'parallel_groups' properties
+- Fixed docs/ralphy-inputs.schema.json: added 'tasks' to required fields
+- Created yaml_validation_report.json with validation results and fixes documented
+- Created comprehensive Go unit tests for validate_yaml tool (8 test functions, 23 subtests)
+- All tests passing (8/8, 23 subtests)
+- Go vet validation passed
+- Updated PRD to mark planning-004a as completed (completed: true)
+

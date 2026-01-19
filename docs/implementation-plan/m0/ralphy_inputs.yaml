@@ -34,8 +34,8 @@ prompt_template:
   prefix: "Project rules:\n{{rules_file}}\n\nStyle anchors: {{style_anchors}}\n\nTask:\n"
   suffix: "\nMake minimal changes. Run tests after each change. Commit when all tests pass."
   placeholders:
-    - rules_file
-    - style_anchors
+    rules_file: true
+    style_anchors: true
 model_preferences:
   primary: opencode
   review_model: gpt-4

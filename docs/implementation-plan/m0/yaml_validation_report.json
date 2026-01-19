@@ -1,0 +1,27 @@
+{
+  "validation_type": "yaml_syntax",
+  "status": "passed",
+  "timestamp": "2026-01-19T08:45:00Z",
+  "validator_tool": "tools/validate_yaml.go",
+  "file_validated": "docs/implementation-plan/m0/ralphy_inputs.yaml",
+  "schema_used": "docs/ralphy-inputs.schema.json",
+  "validation_details": {
+    "yaml_conversion": "success",
+    "json_conversion": "success",
+    "schema_validation": "success",
+    "fixes_applied": [
+      {
+        "issue": "prompt_template.placeholders was array, expected object",
+        "location": "docs/implementation-plan/m0/ralphy_inputs.yaml:36-38",
+        "fix": "Changed from array of strings to object with boolean values"
+      },
+      {
+        "issue": "Schema missing 'tasks', 'global_constraints', 'parallel_groups' definitions",
+        "location": "docs/ralphy-inputs.schema.json",
+        "fix": "Added 'tasks', 'global_constraints', and 'parallel_groups' properties to schema"
+      }
+    ]
+  },
+  "exit_code": 0,
+  "message": "validation OK"
+}

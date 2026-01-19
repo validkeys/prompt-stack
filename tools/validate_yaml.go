@@ -185,7 +185,7 @@ func loadAndConvertYAML(yamlPath string) (interface{}, error) {
 
 // validateAgainstSchema validates a document against a compiled JSON Schema.
 //
-// The validation uses the jsonschema library's ValidateInterface method, which
+// The validation uses the jsonschema library's Validate method, which
 // provides detailed error information including the location in the document that
 // failed validation and the specific schema constraint that was violated.
 //
@@ -205,7 +205,7 @@ func loadAndConvertYAML(yamlPath string) (interface{}, error) {
 //	    fmt.Printf("Validation failed: %v\n", err)
 //	}
 func validateAgainstSchema(schema *jsonschema.Schema, document interface{}) error {
-	if err := schema.ValidateInterface(document); err != nil {
+	if err := schema.Validate(document); err != nil {
 		return fmt.Errorf("validation failed: %w", err)
 	}
 	return nil

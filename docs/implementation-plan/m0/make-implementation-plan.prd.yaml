@@ -208,6 +208,7 @@ tasks:
         - "No YAML parsing errors or structural issues"
     output_format: "yaml_validation_report.json"
     estimated_duration_minutes: 30
+    completed: true
   # Phase 4b: Schema validation (new)
   - id: "planning-004b"
     title: "Validate generated Ralphy YAML against JSON Schema"

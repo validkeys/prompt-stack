@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Ralphy Inputs",
   "type": "object",
-  "required": ["name", "version", "rules_file", "task_sizing", "tdd", "model_preferences", "outputs"],
+  "required": ["name", "version", "rules_file", "task_sizing", "tdd", "model_preferences", "outputs", "tasks"],
   "properties": {
     "name": {"type": "string"},
     "description": {"type": "string"},
@@ -69,7 +69,60 @@
         "commit_policy": {"type": "object"}
       },
       "additionalProperties": false
-    }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "description": {"type": "string"},
+          "completed": {"type": "boolean"},
+          "files_in_scope": {"type": "array", "items": {"type": "string"}},
+          "style_anchors": {"type": "array", "items": {"type": "object"}},
+          "dependencies": {"type": "array", "items": {"type": "string"}},
+          "estimated_duration_minutes": {"type": "integer"},
+          "estimated_context_tokens": {"type": "integer"},
+          "single_responsibility": {"type": "string"},
+          "acceptance_criteria": {"type": "array", "items": {"type": "string"}},
+          "verification": {
+            "type": "object",
+            "properties": {
+              "pre_commit": {"type": "array", "items": {"type": "string"}},
+              "post_commit": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "global_constraints": {
+      "type": "object",
+      "properties": {
+        "forbidden_patterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "pattern": {"type": "string"},
+              "message": {"type": "string"}
+            }
+          }
+        },
+        "required_patterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "pattern": {"type": "string"},
+              "when": {"type": "string"}
+            }
+          }
+        },
+        "affirmative_constraints": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "parallel_groups": {"type": "object"}
   },
   "additionalProperties": false
 }
