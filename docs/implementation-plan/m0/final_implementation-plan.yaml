@@ -346,8 +346,41 @@ tasks:
         - "./dist/your-tool --help"
         - "make test"
 
+  # New task: integrate reusable validators into internal/validation and wire to CLI
+  - id: "m0-008"
+    title: "Integrate reusable validators into internal/validation"
+    description: "Refactor the M0 validation scripts and tools into an internal `internal/validation` package, expose validator via `your-tool validate` CLI, and produce standardized JSON reports. Wrap or migrate existing `tools/*` validators, add test fixtures, and ensure templates call the validator instead of generating validator code. This makes validators reusable across projects."
+    completed: false
+    files_in_scope:
+      - "internal/validation/**"
+      - "internal/cli/commands/validate.go"
+      - "tools/**"
+      - "docs/validation/validation-report.schema.json"
+      - "docs/validation/README.md"
+    style_anchors:
+      - file: "docs/requirements/project-structure.md"
+        reason: "Defines internal/validation location and CLI integration"
+      - file: "docs/best-practices.md"
+        reason: "Validation and research compliance guidelines"
+    dependencies: ["m0-002","m0-006"]
+    estimated_duration_minutes: 120
+    estimated_context_tokens: 800
+    single_responsibility: "Create reusable internal validator package and wire to CLI"
+    acceptance_criteria:
+      - "`your-tool validate` runs and returns exit code 0 on a passing plan (test: run against implementation-plan.yaml)"
+      - "Produces `./.your-tool/reports/final_quality_report.json` conforming to docs/validation/validation-report.schema.json"
+      - "Existing tools/ validators are wrapped or migrated and unit tests added under internal/validation/testdata"
+      - "Templates and prompts call `your-tool validate` instead of asking the AI to author validator code"
+      - "EventBus emits `beforeValidate` and `afterValidate` events during validation runs"
+    verification:
+      pre_commit:
+        - "go build ./internal/validation"
+        - "go test ./internal/validation"
+        - "your-tool validate --input docs/implementation-plan/m0/implementation-plan.yaml --out ./.your-tool/reports/final_quality_report.json"
+
 parallel_groups:
   m0-002: 1
   m0-003: 1
   m0-005: 2
   m0-006: 2
+  m0-008: 1
