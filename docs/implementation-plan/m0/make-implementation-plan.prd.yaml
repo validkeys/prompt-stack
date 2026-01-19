@@ -185,6 +185,7 @@ tasks:
         - "Affirmative constraints used"
     output_format: "ralphy_inputs.yaml"
     estimated_duration_minutes: 45
+    completed: true
   # Phase 4a: YAML syntax validation (new)
   - id: "planning-004a"
     title: "Validate YAML syntax using validator tool"

@@ -1,0 +1,317 @@
+name: prompt-stack
+description: AI-assisted development workflow tool with Plan/Build modes for generating and validating Ralphy YAML files
+version: 0.1.0
+rules_file: docs/opencode-rules.md
+style_anchors:
+  - docs/best-practices.md
+  - docs/ralphy-inputs.md
+  - examples/style-anchor/cmd/mytool/main.go
+allowed_dependencies:
+  - cobra
+  - better-sqlite3
+  - go
+task_sizing:
+  min_minutes: 30
+  max_minutes: 150
+  max_files: 5
+tdd:
+  required: false
+  test_command: go test -v ./...
+  failure_instruction: Return failing tests; do not modify tests.
+ci:
+  precommit:
+    - go vet ./...
+    - gofmt -l .
+    - go test ./...
+  ci_checks:
+    - go test -v ./...
+    - go vet ./...
+    - go build ./...
+drift_policy_ref: docs/drift-policy.md
+validation_schemas:
+  - docs/implementation-plan/m0/*.schema.json
+prompt_template:
+  prefix: "Project rules:\n{{rules_file}}\n\nStyle anchors: {{style_anchors}}\n\nTask:\n"
+  suffix: "\nMake minimal changes. Run tests after each change. Commit when all tests pass."
+  placeholders:
+    - rules_file
+    - style_anchors
+model_preferences:
+  primary: opencode
+  review_model: gpt-4
+  strategies:
+    - minimal-diff
+outputs:
+  allowed_file_edits:
+    - cmd/**
+    - pkg/**
+    - docs/implementation-plan/m0/**
+    - Makefile
+    - go.mod
+    - go.sum
+  disallowed_file_edits:
+    - .github/**
+    - scripts/**
+    - .your-tool/vendor/**
+  commit_policy:
+    prefix_rules:
+      - feat:
+      - fix:
+      - test:
+      - docs:
+    require_scope: true
+    require_conventional_commits: true
+
+global_constraints:
+  forbidden_patterns:
+    - pattern: "\\bany\\b"
+      message: "Use unknown with type guards instead"
+    - pattern: "@ts-ignore"
+      message: "Fix type errors properly"
+    - pattern: "eslint-disable"
+      message: "Address lint issues instead of disabling"
+    - pattern: "TODO:"
+      message: "Create a tracking issue for this work"
+  required_patterns:
+    - pattern: "import.*zod"
+      when: "validating_external_data"
+    - pattern: "export const.*Schema = z\\.object"
+      when: "creating_schemas"
+    - pattern: "export type.* = z\\.infer"
+      when: "extracting_types"
+    - pattern: "func Test.*\\(t \\*testing\\.T\\)"
+      when: "writing_tests"
+    - pattern: "t\\.Run\\("
+      when: "writing_table_driven_tests"
+  affirmative_constraints:
+    - "ALWAYS use table-driven tests in Go"
+    - "ALWAYS follow Go formatting conventions (gofmt)"
+    - "ALWAYS write docstrings for exported functions"
+    - "ALWAYS handle errors explicitly; never ignore them"
+    - "ALWAYS validate external inputs at entry points"
+    - "ONLY use: Go 1.x, Cobra, better-sqlite3"
+    - "ALWAYS run go vet before committing"
+    - "ALWAYS write unit tests for new code"
+
+tasks:
+  - id: "m0-001"
+    title: "Initialize Go project with module structure"
+    description: "Set up the basic project structure with Go module initialization. Create directory layout for cmd/, pkg/, tests/, and configuration files. This is the foundation task that enables all subsequent development."
+    completed: false
+    files_in_scope:
+      - "go.mod"
+      - "go.sum"
+      - "cmd/your-tool/main.go"
+      - "Makefile"
+      - ".gitignore"
+    style_anchors:
+      - file: "examples/style-anchor/cmd/mytool/main.go"
+        reason: "Concrete example of Go CLI structure with Cobra"
+      - file: "docs/best-practices.md"
+        reason: "Project structure and setup guidelines"
+    estimated_duration_minutes: 45
+    estimated_context_tokens: 800
+    single_responsibility: "Project initialization and scaffolding"
+    acceptance_criteria:
+      - "go mod init completes successfully"
+      - "Directory structure matches planned layout"
+      - "Main.go has basic Cobra root command"
+      - "Makefile has build and test targets"
+    verification:
+      pre_commit:
+        - "go mod tidy"
+        - "go build ./cmd/your-tool"
+        - "go fmt ./..."
+        - "go vet ./..."
+
+  - id: "m0-002"
+    title: "Implement core CLI commands with Cobra"
+    description: "Create the command hierarchy with plan, validate, review, build, and init commands. Each command should have basic help text and placeholder Run functions. This provides the CLI surface that will be filled in by subsequent tasks."
+    completed: false
+    files_in_scope:
+      - "cmd/your-tool/main.go"
+      - "cmd/your-tool/plan.go"
+      - "cmd/your-tool/validate.go"
+      - "cmd/your-tool/review.go"
+      - "cmd/your-tool/build.go"
+      - "cmd/your-tool/init.go"
+    style_anchors:
+      - file: "examples/style-anchor/cmd/mytool/main.go"
+        reason: "Cobra command structure and Run function patterns"
+      - file: "docs/best-practices.md"
+        reason: "CLI command naming and organization guidelines"
+      - file: "docs/requirements/main.md"
+        reason: "Reference for CLI command interface requirements"
+    dependencies: ["m0-001"]
+    estimated_duration_minutes: 60
+    estimated_context_tokens: 1200
+    single_responsibility: "CLI command structure and basic implementation"
+    acceptance_criteria:
+      - "--help shows all core commands"
+      - "--help exits with status 0"
+      - "Each command has placeholder Run function"
+      - "Commands follow consistent naming pattern"
+    verification:
+      pre_commit:
+        - "go build ./cmd/your-tool"
+        - "./your-tool --help"
+        - "go test ./cmd/your-tool"
+
+  - id: "m0-003"
+    title: "Bundle and integrate Ralphy shell executor"
+    description: "Create the executor package that manages the vendored ralphy.sh script. Implement materialization at runtime with dry-run mode that writes to report files. This enables the tool to orchestrate Ralphy execution even though full OpenCode integration is out of scope."
+    completed: false
+    files_in_scope:
+      - "pkg/executor/executor.go"
+      - "pkg/executor/dry_run.go"
+      - "your-tool/vendor/ralphy/ralphy.sh"
+      - ".your-tool/report.txt"
+      - ".your-tool/audit.log"
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Simple package structure with clear exports"
+      - file: "docs/best-practices.md"
+        reason: "Package design and export patterns"
+      - file: "docs/requirements/main.md"
+        reason: "Ralphy integration requirements and dry-run specification"
+    dependencies: ["m0-001"]
+    estimated_duration_minutes: 90
+    estimated_context_tokens: 1500
+    single_responsibility: "Ralphy executor integration and dry-run support"
+    acceptance_criteria:
+      - "ralphy.sh is embedded or vendored"
+      - "Dry-run mode writes to .your-tool/report.txt"
+      - "Dry-run mode writes to .your-tool/audit.log"
+      - "Executor can materialize script at runtime"
+    verification:
+      pre_commit:
+        - "go build ./pkg/executor"
+        - "go test ./pkg/executor"
+        - "go vet ./pkg/executor"
+
+  - id: "m0-004"
+    title: "Implement interactive requirements prompt"
+    description: "Create the interactive prompt system that asks one question at a time. Capture user responses, validate them, and save to planning input YAML. Save transcript of the interview for reference. This fulfills the FR-003 requirement for interactive requirements gathering."
+    completed: false
+    files_in_scope:
+      - "cmd/your-tool/init.go"
+      - "pkg/prompt/prompt.go"
+      - "pkg/prompt/questions.go"
+      - "docs/implementation-plan/m0/requirements-interview.md"
+      - "examples/requirements/templates/requirements-prompt.md"
+    style_anchors:
+      - file: "docs/best-practices.md"
+        reason: "Interactive CLI patterns and user experience guidelines"
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Simple function-based API pattern for prompt interactions"
+      - file: "docs/requirements/main.md"
+        reason: "Requirements prompt specification and interview flow"
+    dependencies: ["m0-002"]
+    estimated_duration_minutes: 75
+    estimated_context_tokens: 1400
+    single_responsibility: "Interactive requirements gathering system"
+    acceptance_criteria:
+      - "Prompt displays questions sequentially"
+      - "User responses are captured and validated"
+      - "Final output saves to YAML file matching template schema"
+      - "Transcript of interview is saved"
+    verification:
+      pre_commit:
+        - "go build ./pkg/prompt"
+        - "go test ./pkg/prompt"
+        - "go vet ./pkg/prompt"
+
+  - id: "m0-005"
+    title: "Create project documentation and README"
+    description: "Write comprehensive documentation including README with usage instructions, contributing guidelines, and architecture overview. Document the commands and their options. This ensures the project is approachable and maintainable."
+    completed: false
+    files_in_scope:
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "docs/architecture.md"
+      - "docs/commands.md"
+      - "docs/implementation-plan/m0/requirements.md"
+    style_anchors:
+      - file: "examples/style-anchor/README.md"
+        reason: "Example of clear, concise README structure"
+      - file: "docs/best-practices.md"
+        reason: "Documentation standards and guidelines"
+    dependencies: ["m0-002", "m0-004"]
+    estimated_duration_minutes: 45
+    estimated_context_tokens: 1000
+    single_responsibility: "Project documentation and user guides"
+    acceptance_criteria:
+      - "README describes tool purpose and core features"
+      - "Usage examples for each command"
+      - "Architecture overview explains components"
+      - "Contributing guidelines present"
+    verification:
+      pre_commit:
+        - "spelling check on docs/**"
+
+  - id: "m0-006"
+    title: "Add unit tests and testing infrastructure"
+    description: "Create unit tests for core packages using table-driven test patterns. Set up test runner and coverage reporting. Ensure tests can be run via Makefile. This fulfills the non-functional requirement for basic unit tests."
+    completed: false
+    files_in_scope:
+      - "cmd/your-tool/main_test.go"
+      - "pkg/executor/executor_test.go"
+      - "pkg/prompt/prompt_test.go"
+      - "Makefile"
+      - ".github/workflows/test.yml"
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter_test.go"
+        reason: "Table-driven test pattern for Go packages"
+      - file: "docs/best-practices.md"
+        reason: "Testing guidelines and TDD patterns"
+      - file: "docs/task-sizing.md"
+        reason: "Test sizing and structure guidance"
+    dependencies: ["m0-002", "m0-003", "m0-004"]
+    estimated_duration_minutes: 60
+    estimated_context_tokens: 1300
+    single_responsibility: "Testing infrastructure and unit test coverage"
+    acceptance_criteria:
+      - "Unit tests for all core packages"
+      - "Tests use table-driven pattern"
+      - "make test runs all tests"
+      - "Coverage reporting configured"
+    verification:
+      pre_commit:
+        - "go test -v -cover ./..."
+        - "go vet ./..."
+
+  - id: "m0-007"
+    title: "Complete build system and packaging configuration"
+    description: "Finalize Makefile with all build, test, and clean targets. Add build instructions and ensure to binary can be built with Go toolchain. Add versioning and release preparation. This completes the M0 deliverables."
+    completed: false
+    files_in_scope:
+      - "Makefile"
+      - "build.sh"
+      - ".github/workflows/release.yml"
+      - "cmd/your-tool/version.go"
+      - "dist/"
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Simple package structure reference for version package"
+      - file: "docs/best-practices.md"
+        reason: "Build system and automation guidelines"
+    dependencies: ["m0-001", "m0-006"]
+    estimated_duration_minutes: 30
+    estimated_context_tokens: 700
+    single_responsibility: "Build system and packaging"
+    acceptance_criteria:
+      - "make build creates working binary"
+      - "make test runs all tests"
+      - "make clean removes build artifacts"
+      - "Binary can be executed with --help"
+    verification:
+      pre_commit:
+        - "make build"
+        - "./dist/your-tool --help"
+        - "make test"
+
+parallel_groups:
+  m0-002: 1
+  m0-003: 1
+  m0-005: 2
+  m0-006: 2
