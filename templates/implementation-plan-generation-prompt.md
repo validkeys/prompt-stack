@@ -36,9 +36,10 @@ Prompt rules and behavior (agent must follow exactly)
 2. Read `requirements_file` fully and produce a concise 1-paragraph summary (one sentence summary + 2–3 bullet highlights: objectives, success metrics, constraints).
 3. Load `templates/planning-phase.prd-template.yaml` and use it as the authoritative structure. Replace placeholders (`{{...}}`) with concrete values derived from `requirements_file` and provided inputs.
 4. Generate a single `make-implementation-plan.prd.yaml` artifact (top-level sections: `metadata`, `global_constraints`, `tasks`, `instructions`, `validation`) that:
-   - Includes project `name`, `version`, `description`, and milestone data from the requirements file.
+   - Includes all schema-required top-level fields: `name`, `version`, `rules_file`, `task_sizing`, `tdd`, `model_preferences`, `outputs` (from `docs/ralphy-inputs.schema.json`).
+   - Includes project `description` and milestone data from the requirements file.
    - Embeds `requirements_file` under `files_in_scope` for all relevant phases (at minimum planning-001 and planning-004).
-   - Populates `style_anchors` with the provided anchors (2–3 per task) and records `file` plus `reason` for each entry.
+   - Populates `style_anchors` with 2–3 concrete anchors per task (prefer repository examples with code + tests + README) and records `file` plus `reason` for each entry.
    - Ensures each task has: `id`, `title`, `description`, `outputs`, `files_in_scope`, `style_anchors`, `estimated_duration_minutes`, `verification`, and any dependency references.
    - Applies `global_constraints` consistent with `templates/planning-phase.prd-template.yaml` (affirmative constraints, task sizing ranges, forbidden/required patterns).
    - Records inline validation and quality findings inside the same document (e.g. under `validation.reports` and `metadata.final_quality_report`).
@@ -75,6 +76,9 @@ prompt-stack plan docs/implementation-plan/<milestone>/requirements.md --method 
 
 # Preferred: run built-in validator to produce structured JSON summary and embed it back into the PRD
 prompt-stack validate --input docs/implementation-plan/<milestone>/implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out ./.prompt-stack/reports/{{milestone_id}}/validation.json
+
+# Validate YAML syntax and schema
+prompt-stack validate --input implementation-plan.yaml --schema docs/ralphy-inputs.schema.json
 ```
 
 Deliverable format & placeholders
@@ -87,6 +91,7 @@ Edge cases & remediation guidance (agent responsibilities)
 - If the requirements document is ambiguous or missing an objective/success metric: ask one clarifying question and record the Q/A in `generation_log.md`. If the user is unreachable, set a conservative assumption and mark it with `assumption: true` and provide the rationale.
 - If style anchors are not found in the repo, recommend 2–3 best-effort anchors from `docs/best-practices.md` sections and mark them as `assumption` in the YAML.
 - If large tasks (>150 minutes) are detected, automatically propose a split into smaller tasks and include both the proposed new tasks and a `split_reason` in `generation_log.md`.
+- If tasks are shorter than 30 minutes, either increase estimate or split them and record rationale in `generation_log.md`.
 
 Notes for reviewers (you)
 - This is a reusable template prompt. Review that the referenced files exist in the repo (`docs/ralphy-inputs.md`, `docs/ralphy-inputs.schema.json`, `docs/best-practices.md`, `tools/validate_yaml.go`) and adjust paths if your repo layout differs.

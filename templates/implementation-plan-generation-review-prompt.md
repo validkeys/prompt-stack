@@ -32,26 +32,29 @@ Agent directives
 Agent directives
 1. Confirm the PRD is the planning-phase artifact for the specified milestone and contains the expected top-level sections: `metadata`, `global_constraints`, `tasks`, `instructions`, `research_compliance`, `performance_targets`, and inline `validation` summaries. Flag missing sections.
 2. Validate metadata:
-   - Ensure `name`, `description`, `version`, `rules_file`, `style_anchors`, `allowed_dependencies`, `prompt_template`, `model_preferences`, and `outputs` fields exist where required by `docs/ralphy-inputs.md`.
+   - Ensure all schema-required top-level fields are present: `name`, `version`, `rules_file`, `task_sizing`, `tdd`, `model_preferences`, `outputs` (from `docs/ralphy-inputs.schema.json`).
+   - Ensure `description`, `style_anchors`, `allowed_dependencies`, `prompt_template` fields exist where required by `docs/ralphy-inputs.md`.
    - Check timestamps, generator identifiers, and `quality_target` fields for presence and plausibility.
    - Record any assumptions or defaults the template made; confirm they are flagged with `assumption: true` and include rationale.
 3. Inspect `global_constraints` for alignment with `docs/best-practices.md`:
-   - Style anchors required: 2–3 per task; confirm the rule exists and is restated at the end of the document.
+   - Style anchors required: 2–3 concrete anchors per task (prefer repository examples with code + tests + README); confirm the rule exists and is restated at the end of the document.
    - Task sizing window: 30–150 minutes; verify affirmative framing for all constraints.
-   - Forbidden/required pattern lists should apply to planning outputs; flag any constraint that targets implementation-only code (for example unconditional Zod import requirements).
+   - Forbidden/required pattern lists should apply to planning outputs; flag any constraint that targets implementation-only code (for example unconditional Zod import requirements). Ensure implementation-only patterns are scoped with `when: implementation_phase`.
 4. Walk each task entry:
-   - Confirm `id`, `title`, `description`, `outputs`, `files_in_scope`, `style_anchors` (2–3 unique anchors with reasons), `estimated_duration_minutes`, `verification`, and dependency data are present.
+   - Confirm `id`, `title`, `description`, `outputs`, `files_in_scope`, `style_anchors` (2–3 concrete anchors with reasons), `estimated_duration_minutes`, `verification`, and dependency data are present.
    - Check `files_in_scope` include `requirements_file` for relevant phases.
-   - Ensure durations fall within the task sizing window; flag outliers and recommend splits/merges.
+   - Ensure durations fall within the task sizing window (30–150 minutes); flag outliers and recommend splits/merges. If tasks are shorter than 30 minutes, check for rationale or increased estimate.
    - Confirm verification statements are affirmative ("Resolve ambiguity before completing" instead of "No ambiguity remaining").
 5. Analyze `style_anchors` across the document:
-   - Prefer concrete code or policy files over repeating research docs.
+   - Prefer concrete repository examples (code + tests + README) over repeating research docs.
    - Ensure anchors exist on disk or are marked with `assumption: true` plus justification.
    - Highlight any task with fewer than two anchors or with redundant references.
+   - Check that anchors include repository examples like `examples/style-anchor/pkg/greeter/greeter.go` when available.
 6. Review inline `validation` blocks:
    - Confirm validation summaries, schema checks, YAML syntax confirmations, secrets scan results, and quality gating are embedded inside the PRD; sidecar file references should only exist if the file also stores the summarized results inline.
    - If `validator_command` or `prompt-stack` is available, run the validator and compare its `final_quality_report.json`/`validation.json` against the PRD's inline summary; if discrepancies exist, prefer the validator's structured output and update the PRD accordingly (apply minimal edits and record rationale in the review output).
    - Cross-check `quality_score`, `issues`, and approval flag; recompute if weights (anchors 30%, sizing 25%, schema 20%, secrets 15%, affirmative constraints 10%) were misapplied.
+   - Verify that all inferred additions are marked with `assumption: true` and include rationale.
 7. Verify multi-layer enforcement requirements:
    - Prompt-level rules, IDE/LSP checks, pre-commit hooks, CI checks, runtime validation, and commit policy references should all appear.
    - Validate presence of `files_in_scope` limits and commit-per-task expectations.
