@@ -197,7 +197,7 @@ tasks:
   - id: "m0-003"
     title: "Bundle and integrate Ralphy shell executor"
     description: "Create the executor package that manages the vendored ralphy.sh script. Implement materialization at runtime with dry-run mode that writes to report files. This enables the tool to orchestrate Ralphy execution even though full OpenCode integration is out of scope."
-    completed: false
+    completed: true
     files_in_scope:
       - "pkg/executor/executor.go"
       - "pkg/executor/dry_run.go"
