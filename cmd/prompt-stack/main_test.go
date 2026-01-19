@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -78,9 +79,6 @@ func TestRootCmd(t *testing.T) {
 	}
 }
 
-// osExit is overridden in tests to prevent process exit
-var osExit = func(code int) { os.Exit(code) }
-
 func TestCommandsExist(t *testing.T) {
 	commands := []struct {
 		name string
@@ -135,17 +133,54 @@ func TestAllCommandsAvailable(t *testing.T) {
 
 func TestCommandsCompile(t *testing.T) {
 	tests := []struct {
-		name string
-		args []string
+		name  string
+		args  []string
+		setup func(t *testing.T) func()
 	}{
-		{"plan command compiles", []string{"plan"}},
-		{"validate command compiles", []string{"validate", "--input", "test.yaml"}},
-		{"review command compiles", []string{"review"}},
-		{"build command compiles", []string{"build"}},
+		{"plan command compiles", []string{"plan"}, nil},
+		{"validate command compiles", []string{"validate", "--input", "test.yaml"}, func(t *testing.T) func() {
+			// Create a temporary YAML file for validation
+			tmpDir := t.TempDir()
+			yamlPath := filepath.Join(tmpDir, "test.yaml")
+			yamlContent := `name: test
+description: Test YAML file
+tasks:
+  - name: test-task
+    description: Test task
+    implementation: echo "test"`
+
+			if err := os.WriteFile(yamlPath, []byte(yamlContent), 0644); err != nil {
+				t.Fatalf("failed to create test YAML file: %v", err)
+			}
+
+			// Change to temp directory so test.yaml is found
+			oldDir, err := os.Getwd()
+			if err != nil {
+				t.Fatalf("failed to get current directory: %v", err)
+			}
+
+			if err := os.Chdir(tmpDir); err != nil {
+				t.Fatalf("failed to change to temp directory: %v", err)
+			}
+
+			return func() {
+				os.Chdir(oldDir)
+			}
+		}},
+		{"review command compiles", []string{"review"}, nil},
+		{"build command compiles", []string{"build"}, nil},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			var cleanup func()
+			if tt.setup != nil {
+				cleanup = tt.setup(t)
+				if cleanup != nil {
+					defer cleanup()
+				}
+			}
+
 			buf := new(bytes.Buffer)
 			rootCmd.SetOut(buf)
 			rootCmd.SetErr(buf)
