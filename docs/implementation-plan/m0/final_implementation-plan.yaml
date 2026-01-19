@@ -163,7 +163,7 @@ tasks:
   - id: "m0-002"
     title: "Implement core CLI commands with Cobra"
     description: "Create the command hierarchy with plan, validate, review, build, and init commands. Each command should have basic help text and placeholder Run functions. This provides the CLI surface that will be filled in by subsequent tasks."
-    completed: false
+    completed: true
     files_in_scope:
       - "cmd/your-tool/main.go"
       - "cmd/your-tool/plan.go"

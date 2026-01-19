@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/spf13/cobra"
 )
 
 func TestRootCmd(t *testing.T) {
@@ -77,3 +79,84 @@ func TestRootCmd(t *testing.T) {
 }
 
 var osExit = os.Exit
+
+func TestCommandsExist(t *testing.T) {
+	commands := []struct {
+		name string
+		cmd  *cobra.Command
+	}{
+		{"plan", planCmd},
+		{"validate", validateCmd},
+		{"review", reviewCmd},
+		{"build", buildCmd},
+	}
+
+	for _, tc := range commands {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.cmd == nil {
+				t.Errorf("%s command is nil", tc.name)
+			}
+
+			if tc.cmd.Use == "" {
+				t.Errorf("%s command has empty Use field", tc.name)
+			}
+
+			if tc.cmd.Short == "" {
+				t.Errorf("%s command has empty Short field", tc.name)
+			}
+
+			if tc.cmd.Run == nil {
+				t.Errorf("%s command has nil Run function", tc.name)
+			}
+		})
+	}
+}
+
+func TestAllCommandsAvailable(t *testing.T) {
+	buf := new(bytes.Buffer)
+	rootCmd.SetOut(buf)
+	rootCmd.SetErr(buf)
+	rootCmd.SetArgs([]string{"--help"})
+
+	osExit = func(code int) {}
+	defer func() { osExit = os.Exit }()
+
+	_ = rootCmd.Execute()
+	output := buf.String()
+
+	requiredCommands := []string{"plan", "validate", "review", "build"}
+	for _, cmd := range requiredCommands {
+		if !strings.Contains(output, cmd) {
+			t.Errorf("help output should contain command %q", cmd)
+		}
+	}
+}
+
+func TestCommandsCompile(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+	}{
+		{"plan command compiles", []string{"plan"}},
+		{"validate command compiles", []string{"validate"}},
+		{"review command compiles", []string{"review"}},
+		{"build command compiles", []string{"build"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			rootCmd.SetOut(buf)
+			rootCmd.SetErr(buf)
+			rootCmd.SetArgs(tt.args)
+
+			osExit = func(code int) {}
+			defer func() { osExit = os.Exit }()
+
+			err := rootCmd.Execute()
+			if err != nil {
+				t.Errorf("command should compile without error, got %v", err)
+			}
+		})
+	}
+}
