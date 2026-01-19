@@ -56,46 +56,22 @@ Milestones (ordered)
   2. Insert a sample style anchor via CLI or small script; run `your-tool plan` and confirm anchor usage.
   3. Verify `task_history` rows are created after plan runs.
 
-5) M5 — Basic Validator and Review (non-AI) (2 days)
-- Goal: Implement YAML schema validation, simple research-practice checks (style anchors present, task sizing ranges, affirmative constraints) and a `review` command that returns a score and warnings.
-- Deliverables: `validator` + `reviewer` modules, `your-tool validate` and `your-tool review` working offline (no AI), JSON/text report output.
-- Acceptance criteria:
-  - `your-tool validate tasks.yaml` fails on broken schema; passes on valid YAML.
-  - `your-tool review tasks.yaml` outputs a quality score and lists any missing TDD/workflow warnings.
-- Manual test checklist:
-  1. Mutate `tasks.yaml` to violate a rule (e.g., no style anchors) and run `your-tool review` to see warning.
-  2. Add a TDD workflow to a task and confirm warning resolves.
 
-6) M6 — Ralphy Executor (MVP shell) + vendor bundling (3 days)
-- Goal: Implement `Executor` interface and `RalphyShellExecutor` that bundles `vendor/ralphy/ralphy.sh` using embed-like behavior (materialize script, make executable, run via `os/exec`), capture stdout/stderr to `report.txt` and `audit.log`.
-- Deliverables: executor module, `your-tool build` invokes Ralphy script in a dry-run mode and captures outputs.
+9a) M9a — Role-based Model Selection & Repo Config (2-4 days)
+- Goal: Add a repo-level `prompt-stack.yaml` that defines model profiles and roles; implement a docs page and basic validator. Enable the agent to map Ralphy tasks to roles and select an appropriate model via capability+cost scoring (advisory rollout).
+- Deliverables:
+  - `docs/prompt-stack-config.md` describing role-based design and examples.
+  - Example `prompt-stack.yaml` in repo root (example only).
+  - JSON Schema `docs/prompt-stack.schema.json` and a small `your-tool validate-config` validator CLI (advisory by default).
+  - Integration notes: how Ralphy should emit `intent`/`est_tokens`/`role_hint`.
 - Acceptance criteria:
-  - `your-tool build tasks.yaml --dry-run` runs the vendored ralphy.sh and returns structured output (or stubbed output) captured to `./.your-tool/report.txt` and `./.your-tool/audit.log`.
-  - Executor exposes `Capabilities()` including `supportsParallel` etc.
+  - `docs/prompt-stack-config.md` exists and is linked from `docs/index.md`.
+  - `prompt-stack.yaml` example validates against `docs/prompt-stack.schema.json`.
+  - `your-tool validate-config prompt-stack.yaml` returns pass/fail and logs the intended role->model mapping for at least one sample `tasks.yaml`.
 - Manual test checklist:
-  1. Run `your-tool build tasks.yaml --dry-run` and inspect `report.txt` and `audit.log` for expected content.
-  2. Verify the vendored `ralphy.sh` is executable at `./.your-tool/vendor/ralphy/ralphy.sh`.
-
-7) M7 — Build Mode: Commit-per-task + pre-flight checks (2-3 days)
-- Goal: Implement basic build orchestration: pre-flight checks (clean git tree), commit-per-task behavior (when enabled), verification hooks integration (run ESLint/tsc commands as configured), and enforcement of scope.
-- Deliverables: build orchestration wiring commits and verification steps; drift detection (files modified outside scope cause abort).
-- Acceptance criteria:
-  - `your-tool build tasks.yaml` on a sample repo with a clean tree executes tasks (simulated) and if `--commit-per-task` is set, creates atomic commits limited to `files_in_scope`.
-  - Build aborts if working tree is dirty.
-- Manual test checklist:
-  1. Create a sample git repo with initial commit; run `your-tool build tasks.yaml --dry-run` and inspect simulated commits.
-  2. Make an unrelated change outside any `files_in_scope` and verify build flags drift and aborts.
-  3. Toggle `--commit-per-task` and confirm commit behavior.
-
-8) M8 — Context Optimization (minimal viable features) (4-6 days)
-- Goal: Implement non-AI context optimizations that give high ROI: smart file filtering (ripgrep), line-range extraction, simple token estimation, and a context budget check that suggests splitting large tasks.
-- Deliverables: `context` module providing `file-filter`, `budget-calc`, and integration into `plan` and `review` flows.
-- Acceptance criteria:
-  - `your-tool plan` reports context reduction percentage and warns when budget > limit.
-  - `your-tool review` indicates budget usage per task.
-- Manual test checklist:
-  1. Run `your-tool plan` on a repo with many files; confirm top-N filtered files are used and reduction % is plausible.
-  2. Create a very large task and verify recommendation to split.
+  1. Add example `prompt-stack.yaml` to repo root; run `your-tool validate-config prompt-stack.yaml` and confirm pass.
+  2. Generate a sample `tasks.yaml` with Ralphy (or hand-edit) that includes `intent` and `est_tokens`; run the selection routine (locally simulated) and confirm it outputs selected model + reason.
+  3. Toggle role policy to `strict` in a role and run the validator to confirm it flags disallowed models (validator only; no CI enforcement yet).
 
 9) M9 — Hybrid & AI flow hooks (optional for MVP or staged next sprint) (2-3 weeks)
 - Goal: Add meta-PRD templates, Ralphy-based AI generation paths, AI validation and review stages (integrations with OpenCode/Anthropic/OpenAI), and auto-regenerate loop based on score thresholds.
@@ -113,8 +89,9 @@ Milestones (ordered)
   - `your-tool knowledge export` writes JSON; `import` restores patterns.
   - Provided CI templates run `your-tool validate` successfully in a sample environment.
 - Manual test checklist:
-  1. Export knowledge, remove patterns, re-import, and verify patterns return.
-  2. Install sample CI config in a test repo and run validate locally.
+ 1. Export knowledge, remove patterns, re-import, and verify patterns return.
+ 2. Install sample CI config in a test repo and run validate locally.
+
 
 Testing / QA approach
 - Manual-first: every milestone includes a short manual test checklist; require the author (you) to run through these before moving on.

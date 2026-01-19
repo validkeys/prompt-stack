@@ -6,6 +6,7 @@ A concise entry point for AI and humans to quickly find and inspect requirement-
 - `docs/requirements/architecture.md` — Compact, actionable architecture spec for the host CLI (plug-in points, lifecycle, core APIs). Distills decisions captured in the interview draft into implementable guidance.
 - `docs/requirements/architecture.interview.md` — Working architecture draft captured during the one-question-at-a-time interview. Contains rationale, incremental decisions, and implementation sketches.
 - `docs/requirements/milestones.md` — Test-oriented milestone plan that breaks requirements into an MVP path with deliverables and manual verification steps.
+- `docs/requirements/project-structure.md` — Preferred Go project layout: flat tree, internal domains, runtime artifact placement, test conventions.
 - `docs/requirements/interview.md` — Q&A tracker used to clarify business requirements; useful for rationale, open questions, and decision history.
 
 Notes:

@@ -1024,8 +1024,8 @@ your-tool init --install-hooks
 - **AI**: Anthropic SDK (Claude)
 
 ### Project Structure
+See `docs/requirements/project-structure.md` for the authoritative Go layout (flat tree, `cmd/` entrypoint, `internal/<domain>` packages, testing guardrails, runtime artifacts).
 
-```
 your-tool/
 ├── src/
 │   ├── cli/

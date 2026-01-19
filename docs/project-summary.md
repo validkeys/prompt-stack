@@ -63,11 +63,12 @@ OPENCODE (Implementation Layer)
 
 ## Tech Stack
 
-- Runtime: Node.js/Bun
-- Language: TypeScript
-- Database: SQLite (better-sqlite3)
-- CLI: Commander.js
-- AI: Anthropic SDK (Claude)
+- Runtime: Go (single static binary)
+- Language: Go 1.20+
+- Database: SQLite (mattn/go-sqlite3 or modernc/sqlite)
+- CLI: Cobra
+- AI: Direct SDKs/HTTP clients (Anthropic, OpenAI, OpenCode)
+- Plugin model: External executables (stdin/stdout RPC)
 - Target: Interactive CLI for senior developers
 
 ## Success Metrics

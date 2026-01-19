@@ -53,6 +53,7 @@ go 1.20
 
 require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.1.0
+	gopkg.in/yaml.v3 v3.0.1
 	sigs.k8s.io/yaml v1.3.0
 )
 

@@ -42,7 +42,7 @@ assumptions:
 
 # Deliverables (artifacts to produce)
 deliverables:
-  - ""    # e.g. task_breakdown.yaml, ralphy_inputs.yaml, quality_report.json
+  - ""    # e.g. task_breakdown.yaml, implementation-plan.yaml, quality_report.json
 
 # Tech and integrations (short)
 tech_stack:

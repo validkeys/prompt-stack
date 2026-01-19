@@ -21,6 +21,7 @@ style_anchors:
   - docs/best-practices.md
   - docs/ralphy-inputs.md
   - examples/style-anchor/cmd/mytool/main.go
+  - docs/requirements/project-structure.md
 allowed_dependencies:
   - cobra
   - better-sqlite3
@@ -142,6 +143,8 @@ tasks:
         reason: "Concrete example of Go CLI structure with Cobra"
       - file: "docs/best-practices.md"
         reason: "Project structure and setup guidelines"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Defines recommended project layout and package boundaries"
     estimated_duration_minutes: 45
     estimated_context_tokens: 800
     single_responsibility: "Project initialization and scaffolding"
@@ -174,6 +177,8 @@ tasks:
         reason: "CLI command naming and organization guidelines"
       - file: "docs/requirements/main.md"
         reason: "Reference for CLI command interface requirements"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Defines recommended project layout and package boundaries"
     dependencies: ["m0-001"]
     estimated_duration_minutes: 60
     estimated_context_tokens: 1200
@@ -206,6 +211,8 @@ tasks:
         reason: "Package design and export patterns"
       - file: "docs/requirements/main.md"
         reason: "Ralphy integration requirements and dry-run specification"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Defines recommended project layout and package boundaries"
     dependencies: ["m0-001"]
     estimated_duration_minutes: 90
     estimated_context_tokens: 1500
@@ -240,6 +247,8 @@ tasks:
         reason: "Simple function-based API pattern for prompt interactions"
       - file: "docs/requirements/main.md"
         reason: "Requirements prompt specification and interview flow"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Defines recommended project layout and package boundaries"
     dependencies: ["m0-002"]
     estimated_duration_minutes: 75
     estimated_context_tokens: 1400
@@ -272,6 +281,8 @@ tasks:
         reason: "Example of clear, concise README structure"
       - file: "docs/best-practices.md"
         reason: "Documentation standards and guidelines"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Defines recommended project layout and package boundaries"
     dependencies: ["m0-002", "m0-004"]
     estimated_duration_minutes: 45
     estimated_context_tokens: 1000
@@ -302,6 +313,8 @@ tasks:
         reason: "Testing guidelines and TDD patterns"
       - file: "docs/task-sizing.md"
         reason: "Test sizing and structure guidance"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Defines recommended project layout and package boundaries"
     dependencies: ["m0-002", "m0-003", "m0-004"]
     estimated_duration_minutes: 60
     estimated_context_tokens: 1300
@@ -331,6 +344,8 @@ tasks:
         reason: "Simple package structure reference for version package"
       - file: "docs/best-practices.md"
         reason: "Build system and automation guidelines"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Defines recommended project layout and package boundaries"
     dependencies: ["m0-001", "m0-006"]
     estimated_duration_minutes: 30
     estimated_context_tokens: 700

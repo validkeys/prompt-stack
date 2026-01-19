@@ -4,6 +4,7 @@
   - `docs/requirements/main.md` — Full requirements for the AI-Assisted Development Workflow Tool (Plan Mode, Build Mode, QA gates).
   - `docs/requirements/index.md` — Requirements entry: quick lookup referencing all requirements documents.
   - `docs/requirements/architecture.md` — Architecture, component separation, and data flows.
+  - `docs/requirements/project-structure.md` — Flat Go project layout spec: cmd entrypoint, internal domain packages, testing guardrails.
   - `docs/requirements/milestones.md` — Project milestones and delivery phases.
   - `docs/requirements/interview.md` — Stakeholder interview notes and action items.
   - `docs/requirements/architecture.interview.md` — Architecture interview notes and follow-ups.
@@ -20,6 +21,7 @@
   - `docs/ralphy-yaml-spec.md` — Ralphy YAML spec, examples, and validation rules.
   - `docs/ralphy-inputs.md` — Ralphy inputs checklist: required top-level fields the YAML generator must consume and an example.
   - `docs/ralphy-inputs.schema.json` — JSON Schema to validate Ralphy inputs (used to validate generated YAML before applying).
+  - `docs/prompt-stack-config.md` — Repo-level role-based model selection design, examples, and integration notes.
 
 - Origins & Research Conversation
   - `docs/initial-claude-conversation/split-files/01-initial-problem-statement.md` — Origin and initial problem statement.
