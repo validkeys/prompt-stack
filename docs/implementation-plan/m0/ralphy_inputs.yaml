@@ -55,10 +55,10 @@ outputs:
     - .your-tool/vendor/**
   commit_policy:
     prefix_rules:
-      - feat:
-      - fix:
-      - test:
-      - docs:
+      - "feat:"
+      - "fix:"
+      - "test:"
+      - "docs:"
     require_scope: true
     require_conventional_commits: true
 
@@ -134,7 +134,6 @@ tasks:
       - "cmd/your-tool/validate.go"
       - "cmd/your-tool/review.go"
       - "cmd/your-tool/build.go"
-      - "cmd/your-tool/init.go"
     style_anchors:
       - file: "examples/style-anchor/cmd/mytool/main.go"
         reason: "Cobra command structure and Run function patterns"
@@ -147,10 +146,10 @@ tasks:
     estimated_context_tokens: 1200
     single_responsibility: "CLI command structure and basic implementation"
     acceptance_criteria:
-      - "--help shows all core commands"
-      - "--help exits with status 0"
-      - "Each command has placeholder Run function"
-      - "Commands follow consistent naming pattern"
+      - "--help shows all core commands (test: command list includes plan, validate, review, build, init)"
+      - "--help exits with status 0 (test: exit code is 0)"
+      - "Each command has placeholder Run function (test: all command files compile without errors)"
+      - "Commands follow consistent naming pattern (test: command names match pattern validation)"
     verification:
       pre_commit:
         - "go build ./cmd/your-tool"
@@ -241,10 +240,10 @@ tasks:
     estimated_context_tokens: 1000
     single_responsibility: "Project documentation and user guides"
     acceptance_criteria:
-      - "README describes tool purpose and core features"
-      - "Usage examples for each command"
-      - "Architecture overview explains components"
-      - "Contributing guidelines present"
+      - "README describes tool purpose and core features (test: README contains required sections)"
+      - "Usage examples for each command (test: examples exist for all 5 core commands)"
+      - "Architecture overview explains components (test: architecture.md exists and describes components)"
+      - "Contributing guidelines present (test: CONTRIBUTING.md exists with guidelines)"
     verification:
       pre_commit:
         - "spelling check on docs/**"

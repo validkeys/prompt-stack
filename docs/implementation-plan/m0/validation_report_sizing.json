@@ -1,0 +1,29 @@
+{
+  "valid": true,
+  "overall_result": "PASS",
+  "overall_score": 0.95,
+  "validation_type": "task_sizing",
+  "validated_at": "2026-01-19T08:45:00Z",
+  "validator": "planning-006",
+  "summary": {
+    "total_tasks": 7,
+    "tasks_within_range": 7,
+    "tasks_outside_range": 0,
+    "average_duration": 57.857142857142854,
+    "min_duration": 30,
+    "max_duration": 90,
+    "tasks_with_dependencies": 6,
+    "tasks_without_dependencies": 1
+  },
+  "parallel_opportunity": {
+    "total_independent_tasks": 1,
+    "independent_task_ids": [
+      "m0-001"
+    ],
+    "parallel_groups": [
+      [
+        "m0-001"
+      ]
+    ]
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "report_type": "final_quality_report",
+  "timestamp": "2026-01-19T18:12:00Z",
+  "milestone": "m0",
+  "requirements_file": "docs/implementation-plan/m0/requirements.md",
+  "generated_yaml": "docs/implementation-plan/m0/ralphy_inputs.yaml",
+  "quality_score": 0.9485,
+  "approval_status": "NEEDS_REVISION",
+  "approval_reason": "Quality score 0.95 \u003c minimum threshold 0.95",
+  "issues": null,
+  "recommendations": [
+    {
+      "priority": "MEDIUM",
+      "action": "Review and address all validation issues",
+      "benefit": "Improve overall quality score and ensure approval"
+    },
+    {
+      "priority": "LOW",
+      "action": "Consider adding more project-specific style anchors",
+      "benefit": "Further reduce architectural drift risk"
+    }
+  ],
+  "validation_summary": {
+    "affirmative_constraints": "PASS",
+    "implementation_guidelines": "PASS",
+    "multi_layer_enforcement": "PASS",
+    "schema_validation": "PASS",
+    "secrets_scan": "PASS",
+    "style_anchors_compliance": "PASS",
+    "task_sizing_compliance": "PASS",
+    "yaml_syntax": "PASS"
+  },
+  "component_scores": {
+    "affirmative_constraints": {
+      "score": 0.85,
+      "reason": "Affirmative constraints validation",
+      "details": "Valid: true"
+    },
+    "implementation_guidelines": {
+      "score": 0.8,
+      "reason": "Implementation guidelines validation",
+      "details": "Valid: true"
+    },
+    "multi_layer_enforcement": {
+      "score": 0.95,
+      "reason": "Multi-layer enforcement validation",
+      "details": "Overall score: 0.95, Result: PASS"
+    },
+    "schema_compliance": {
+      "score": 1,
+      "reason": "JSON Schema compliance validation",
+      "details": "Valid: true"
+    },
+    "secrets_scan": {
+      "score": 1,
+      "reason": "Secrets scan validation",
+      "details": "Valid: true"
+    },
+    "style_anchors": {
+      "score": 0.92,
+      "reason": "Style anchors compliance validation",
+      "details": "Overall score: 0.92, Result: PASS"
+    },
+    "task_sizing": {
+      "score": 0.95,
+      "reason": "Task sizing compliance validation",
+      "details": "Overall score: 0.95, Result: PASS"
+    },
+    "yaml_syntax": {
+      "score": 1,
+      "reason": "YAML syntax validation",
+      "details": "Valid: true"
+    }
+  }
+}

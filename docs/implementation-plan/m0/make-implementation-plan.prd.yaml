@@ -420,6 +420,7 @@ tasks:
     output_format: "final_quality_report.json"
     estimated_duration_minutes: 30
     note: "assumption: true - increased to meet task sizing policy"
+    completed: true
   # Phase 11: Apply Fixes and Generate Final YAML
   - id: "planning-011"
     title: "Apply fixes and generate final Ralphy YAML"

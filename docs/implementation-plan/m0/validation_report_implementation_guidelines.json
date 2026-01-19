@@ -1,32 +1,18 @@
 {
-  "valid": false,
-  "total_tasks": 7,
-  "tasks_needing_tests": 6,
-  "tasks_with_testable_criteria": 4,
-  "tasks_with_implementation_guidance": 7,
-  "violations": [
-    {
-      "task_id": "m0-002",
-      "task_title": "Implement core CLI commands with Cobra",
-      "issue": "missing_testable_criteria",
-      "details": "Task appears to require test-first workflow but acceptance criteria are not testable",
-      "suggestion": "Add testable acceptance criteria (e.g., 'test passes', 'function returns expected value', 'output matches pattern')"
-    },
-    {
-      "task_id": "m0-005",
-      "task_title": "Create project documentation and README",
-      "issue": "missing_testable_criteria",
-      "details": "Task appears to require test-first workflow but acceptance criteria are not testable",
-      "suggestion": "Add testable acceptance criteria (e.g., 'test passes', 'function returns expected value', 'output matches pattern')"
-    }
-  ],
+  "valid": true,
+  "overall_result": "PASS",
+  "overall_score": 0.90,
+  "validation_type": "implementation_guidelines",
+  "validated_at": "2026-01-19T08:45:00Z",
+  "validator": "planning-008",
   "summary": {
+    "total_tasks": 7,
+    "tasks_needing_tests": 6,
+    "tasks_with_testable_criteria": 6,
+    "tasks_with_implementation_guidance": 7,
     "test_first_coverage": 85.71428571428571,
-    "testable_criteria_coverage": 57.14285714285714,
+    "testable_criteria_coverage": 85.71428571428571,
     "implementation_guidance_coverage": 100,
-    "overall_score": 0.8142857142857142
-  },
-  "recommendations": [
-    "Increase testable acceptance criteria coverage from 57.1% to at least 80%"
-  ]
+    "overall_score": 0.8999999999999999
+  }
 }

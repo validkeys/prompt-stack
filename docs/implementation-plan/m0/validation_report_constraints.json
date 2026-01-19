@@ -1,9 +1,14 @@
 {
   "valid": true,
-  "total_constraints": 17,
-  "affirmative_count": 12,
-  "negative_count": 0,
+  "overall_result": "PASS",
+  "overall_score": 0.71,
+  "validation_type": "affirmative_constraints",
+  "validated_at": "2026-01-19T08:45:00Z",
+  "validator": "planning-007",
   "summary": {
+    "total_constraints": 17,
+    "affirmative_count": 12,
+    "negative_count": 0,
     "affirmative_percentage": 70.58823529411765,
     "specific_constraints": 9,
     "vague_constraints": 8,
