@@ -7,7 +7,7 @@ Running the validator
 - Preferred: use the built-in validator via the main CLI:
 
   ```bash
-  your-tool validate --input implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out ./.your-tool/reports/final_quality_report.json
+  prompt-stack validate --input implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out ./.prompt-stack/reports/final_quality_report.json
   ```
 
 - The validator produces a JSON report that conforms to `docs/validation/validation-report.schema.json`.

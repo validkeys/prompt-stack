@@ -2,19 +2,19 @@
 
 ```bash
 # Initialize knowledge base for repo
-$ your-tool init
-Creates .your-tool/knowledge.db
+$ prompt-stack init
+Creates .prompt-stack/knowledge.db
 
 # Guided learning session
-$ your-tool learn --interactive
+$ prompt-stack learn --interactive
 Asks questions, scans codebase, builds cache
 
 # Automatic background analysis
-$ your-tool learn --auto
+$ prompt-stack learn --auto
 Silent analysis, no questions
 
 # Show what's cached
-$ your-tool knowledge list
+$ prompt-stack knowledge list
 Style Anchors:
   - AuthService.ts (service pattern)
   - user.schema.ts (Zod schema pattern)
@@ -31,27 +31,27 @@ File Patterns:
   - Tests: **/*.test.ts
 
 # Add specific reference
-$ your-tool knowledge add-anchor src/services/EmailService.ts \
+$ prompt-stack knowledge add-anchor src/services/EmailService.ts \
   --category service \
   --description "Email service with queuing"
 
 # Remove outdated reference
-$ your-tool knowledge remove-anchor src/old/LegacyAuth.ts
+$ prompt-stack knowledge remove-anchor src/old/LegacyAuth.ts
 
 # Export knowledge base (share with team)
-$ your-tool knowledge export > team-knowledge.json
+$ prompt-stack knowledge export > team-knowledge.json
 
 # Import knowledge base (onboard new dev)
-$ your-tool knowledge import team-knowledge.json
+$ prompt-stack knowledge import team-knowledge.json
 
 # Validate cached knowledge (files still exist?)
-$ your-tool knowledge validate
+$ prompt-stack knowledge validate
 ✓ 12/12 style anchors valid
 ✗ 2 standards reference deleted files
-  Recommend: your-tool knowledge clean
+  Recommend: prompt-stack knowledge clean
 
 # Search cached knowledge
-$ your-tool knowledge search "authentication"
+$ prompt-stack knowledge search "authentication"
 Found 3 matches:
   - AuthService.ts (style anchor)
   - "No any types" (standard)
@@ -109,7 +109,7 @@ const staleAnchors = await db.query(`
 
 if (staleAnchors.length > 0) {
   console.warn("⚠ 3 cached references point to deleted files");
-  console.log("Run: your-tool knowledge clean");
+  console.log("Run: prompt-stack knowledge clean");
 }
 ```
 
@@ -131,17 +131,17 @@ taskConfig.max_context_tokens = Math.ceil(avgContext * 1.2);
 
 ```bash
 # Developer 1 (senior) builds knowledge base
-$ your-tool learn --interactive
+$ prompt-stack learn --interactive
 [Answers all the questions, builds comprehensive cache]
 
-$ your-tool knowledge export > .your-tool/team-knowledge.json
-$ git add .your-tool/team-knowledge.json
+$ prompt-stack knowledge export > .prompt-stack/team-knowledge.json
+$ git add .prompt-stack/team-knowledge.json
 $ git commit -m "Add team coding knowledge base"
 $ git push
 
 # Developer 2 (junior) clones repo
 $ git clone repo
-$ your-tool knowledge import .your-tool/team-knowledge.json
+$ prompt-stack knowledge import .prompt-stack/team-knowledge.json
 
 ✓ Imported team knowledge:
   - 15 style anchors
@@ -149,7 +149,7 @@ $ your-tool knowledge import .your-tool/team-knowledge.json
   - 8 file patterns
 
 # Developer 2 immediately benefits from senior's knowledge
-$ your-tool plan "Add new feature"
+$ prompt-stack plan "Add new feature"
 ✓ Using team patterns automatically
 ✓ No questions needed
 ✓ Generated plan matches team standards
@@ -188,7 +188,7 @@ async function learnFromExecution(taskResult) {
   // If failed, identify missing knowledge
   if (!success && task.error.includes("unknown pattern")) {
     console.log("💡 This failure suggests missing knowledge");
-    console.log("Run: your-tool knowledge add-anchor <file>");
+    console.log("Run: prompt-stack knowledge add-anchor <file>");
   }
 }
 ```
@@ -197,19 +197,19 @@ async function learnFromExecution(taskResult) {
 
 ```bash
 # Option 1: Per-repo (in .gitignore)
-.your-tool/
+.prompt-stack/
   knowledge.db          # SQLite cache
   team-knowledge.json   # Exportable team knowledge (committed)
 
 # Option 2: Global with repo mapping
-~/.your-tool/
+~/.prompt-stack/
   knowledge.db          # All repos in one database
   
 # Hybrid (best approach)
-~/.your-tool/
+~/.prompt-stack/
   global-knowledge.db   # Cross-repo patterns
   
-.your-tool/
+.prompt-stack/
   repo-knowledge.db     # This repo's specific patterns
   team-knowledge.json   # Shareable subset
 ```
@@ -218,7 +218,7 @@ async function learnFromExecution(taskResult) {
 
 **Without JIT Discovery:**
 ```bash
-$ your-tool plan "Add feature"
+$ prompt-stack plan "Add feature"
 ERROR: Please specify:
   - Style anchor files (--anchor)
   - Coding standards (--standards)
@@ -229,7 +229,7 @@ ERROR: Please specify:
 
 **With JIT Discovery:**
 ```bash
-$ your-tool plan "Add feature"
+$ prompt-stack plan "Add feature"
 
 ❓ Quick question: Do you have similar code? [Y/n]
 > Y

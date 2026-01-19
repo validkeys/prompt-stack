@@ -16,7 +16,7 @@ Generated PRD document for milestone M0 ("Initial setup with requirements gather
 4. **Quality Gates**: Set minimum quality score target of 0.95 for approval
 
 ### Assumptions
-1. **Knowledge DB**: Marked `.your-tool/knowledge.db` with `assumption: true` since it may not exist yet (will be created during M0 implementation)
+1. **Knowledge DB**: Marked `.prompt-stack/knowledge.db` with `assumption: true` since it may not exist yet (will be created during M0 implementation)
 2. **Validator Tool**: YAML validator (`tools/validate_yaml.go`) exists but may have dependency issues
 3. **Reference Documents**: All required reference docs exist in repository (`docs/best-practices.md`, `docs/ralphy-inputs.schema.json`, etc.)
 4. **Style Anchor Files**: All referenced style anchor files exist and are accessible
@@ -40,7 +40,7 @@ Based on initial assessment:
 
 ```bash
 # Generate candidate plan (code path)
-your-tool plan docs/implementation-plan/m0/requirements.md --method code --output docs/implementation-plan/m0/ralphy_inputs.yaml
+prompt-stack plan docs/implementation-plan/m0/requirements.md --method code --output docs/implementation-plan/m0/ralphy_inputs.yaml
 
 # Validate generated YAML (if validator works)
 cd tools && go run validate_yaml.go -s ../docs/ralphy-inputs.schema.json -f ../docs/implementation-plan/m0/ralphy_inputs.yaml

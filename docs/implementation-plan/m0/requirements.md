@@ -18,7 +18,7 @@ success_metrics:
   - metric: "Requirements output"
     target: "Produces docs/implementation-plan/m0/requirements.md matching template schema"
   - metric: "Executor dry-run"
-    target: "Writes ./.your-tool/report.txt and ./.your-tool/audit.log"
+    target: "Writes ./.prompt-stack/report.txt and ./.prompt-stack/audit.log"
 
 requirements_file: "docs/implementation-plan/m0/requirements.md"
 
@@ -56,10 +56,10 @@ assumptions:
 deliverables:
   - "docs/implementation-plan/m0/requirements.md"
   - "docs/implementation-plan/m0/requirements-interview.md"
-  - "cmd/your-tool/main.go (Cobra scaffold)"
-  - ".your-tool/vendor/ralphy/ralphy.sh (materialized at runtime)"
+  - "cmd/prompt-stack/main.go (Cobra scaffold)"
+  - ".prompt-stack/vendor/ralphy/ralphy.sh (materialized at runtime)"
   - "Makefile, README.md, and basic unit tests"
-  - ".your-tool/report.txt and .your-tool/audit.log (after dry-run)"
+  - ".prompt-stack/report.txt and .prompt-stack/audit.log (after dry-run)"
 
 tech_stack:
   languages: ["Go"]
@@ -78,9 +78,9 @@ repo_access:
   read_only: false
 
 execution_resources:
-  knowledge_db_path: ".your-tool/knowledge.db"
+  knowledge_db_path: ".prompt-stack/knowledge.db"
   yaml_validator: "tools/validate_yaml.go"
-  ralphy_script: ".your-tool/vendor/ralphy/ralphy.sh"
+  ralphy_script: ".prompt-stack/vendor/ralphy/ralphy.sh"
 
 validation_assets:
   - "docs/ralphy-inputs.schema.json"
@@ -125,4 +125,4 @@ stakeholders:
 
 usage: |
   # Generate a candidate plan (code path)
-  your-tool plan docs/implementation-plan/m0/requirements.md --method code --output planning/milestones/m0.ralphy.yaml
+  prompt-stack plan docs/implementation-plan/m0/requirements.md --method code --output planning/milestones/m0.ralphy.yaml

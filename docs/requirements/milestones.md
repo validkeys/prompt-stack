@@ -16,44 +16,44 @@ Milestones (ordered)
 - Acceptance criteria:
   - A requirements input file exists at `planning/inputs/requirements.input.md` and follows the project's input template.
   - The example prompt and templates used to gather requirements are committed under `docs/requirements/templates/`.
-  - `your-tool plan planning/inputs/requirements.input.md --method code` produces a syntactically valid `tasks.yaml` candidate (code-generation path only; no AI required).
+  - `prompt-stack plan planning/inputs/requirements.input.md --method code` produces a syntactically valid `tasks.yaml` candidate (code-generation path only; no AI required).
 - Manual test checklist:
    1. Run the requirements prompt (copy the template from `templates/requirements-gathering-prompt.md`) interactively and save output to `planning/inputs/requirements.input.md`.
-  2. Run `your-tool plan planning/inputs/requirements.input.md --method code` and verify `tasks.yaml` is produced.
+  2. Run `prompt-stack plan planning/inputs/requirements.input.md --method code` and verify `tasks.yaml` is produced.
   3. Confirm `docs/requirements/main.md` references this milestone and contains the example prompt or link to `docs/requirements/templates/`.
 
 2) M2 — Repo Init & CLI scaffold (1-2 days)
 - Goal: Basic repo + CLI surface implemented; commands wired but minimal behavior.
-- Deliverables: `your-tool` CLI scaffold, `init`, `plan`, `validate`, `review`, `build` commands (stubs), project layout and `./.your-tool/` default structure.
+- Deliverables: `prompt-stack` CLI scaffold, `init`, `plan`, `validate`, `review`, `build` commands (stubs), project layout and `./.prompt-stack/` default structure.
 - Acceptance criteria:
-  - `your-tool --help` lists core commands.
-  - `your-tool init` creates `./.your-tool/config.yaml` and `./.your-tool/knowledge.db` (empty) and prints instructions.
+  - `prompt-stack --help` lists core commands.
+  - `prompt-stack init` creates `./.prompt-stack/config.yaml` and `./.prompt-stack/knowledge.db` (empty) and prints instructions.
 - Manual test checklist:
-  1. Run `your-tool --help` and inspect listed commands.
-  2. Run `your-tool init` in a sample repo; verify files created under `./.your-tool/`.
+  1. Run `prompt-stack --help` and inspect listed commands.
+  2. Run `prompt-stack init` in a sample repo; verify files created under `./.prompt-stack/`.
   3. Confirm no secrets are written to the DB.
 
 3) M3 — Requirements Parser + Template-based Plan Mode (2-4 days)
 - Goal: Implement requirements parser and template-based YAML generation (code generation fast path).
 - Deliverables: `plan` command that takes `requirements.md` or prompt string and writes a `tasks.yaml` using templates and cached defaults.
 - Acceptance criteria:
-  - `your-tool plan requirements.md` produces syntactically valid `tasks.yaml` matching the Enhanced YAML Structure examples.
+  - `prompt-stack plan requirements.md` produces syntactically valid `tasks.yaml` matching the Enhanced YAML Structure examples.
   - Basic validation step (schema) runs and succeeds for generated YAML.
 - Manual test checklist:
-  1. Prepare a simple `requirements.md` and run `your-tool plan requirements.md`.
+  1. Prepare a simple `requirements.md` and run `prompt-stack plan requirements.md`.
   2. Open `tasks.yaml`; verify top-level fields: `metadata`, `global_constraints`, `tasks`.
-  3. Run `your-tool validate tasks.yaml` — expect pass.
-  4. Confirm that `./.your-tool/audit.log` includes an entry for the generation run.
+  3. Run `prompt-stack validate tasks.yaml` — expect pass.
+  4. Confirm that `./.prompt-stack/audit.log` includes an entry for the generation run.
 
 4) M4 — SQLite knowledge DB + caching (2-3 days)
 - Goal: Add a small SQLite schema and store/lookup simple patterns (style anchors, coding rules).
 - Deliverables: `knowledge` module with `database` and `patterns` APIs; plan uses cached anchors when present.
 - Acceptance criteria:
-  - `your-tool init` creates/initializes `knowledge.db` with core tables.
-  - `your-tool plan` uses cached anchors when available and logs cache hits in `audit.log`.
+  - `prompt-stack init` creates/initializes `knowledge.db` with core tables.
+  - `prompt-stack plan` uses cached anchors when available and logs cache hits in `audit.log`.
 - Manual test checklist:
-  1. Run `your-tool init` and inspect `./.your-tool/knowledge.db` (sqlite3 CLI or `sqlitebrowser`).
-  2. Insert a sample style anchor via CLI or small script; run `your-tool plan` and confirm anchor usage.
+  1. Run `prompt-stack init` and inspect `./.prompt-stack/knowledge.db` (sqlite3 CLI or `sqlitebrowser`).
+  2. Insert a sample style anchor via CLI or small script; run `prompt-stack plan` and confirm anchor usage.
   3. Verify `task_history` rows are created after plan runs.
 
 
@@ -62,14 +62,14 @@ Milestones (ordered)
 - Deliverables:
   - `docs/prompt-stack-config.md` describing role-based design and examples.
   - Example `prompt-stack.yaml` in repo root (example only).
-  - JSON Schema `docs/prompt-stack.schema.json` and a small `your-tool validate-config` validator CLI (advisory by default).
+  - JSON Schema `docs/prompt-stack.schema.json` and a small `prompt-stack validate-config` validator CLI (advisory by default).
   - Integration notes: how Ralphy should emit `intent`/`est_tokens`/`role_hint`.
 - Acceptance criteria:
   - `docs/prompt-stack-config.md` exists and is linked from `docs/index.md`.
   - `prompt-stack.yaml` example validates against `docs/prompt-stack.schema.json`.
-  - `your-tool validate-config prompt-stack.yaml` returns pass/fail and logs the intended role->model mapping for at least one sample `tasks.yaml`.
+  - `prompt-stack validate-config prompt-stack.yaml` returns pass/fail and logs the intended role->model mapping for at least one sample `tasks.yaml`.
 - Manual test checklist:
-  1. Add example `prompt-stack.yaml` to repo root; run `your-tool validate-config prompt-stack.yaml` and confirm pass.
+  1. Add example `prompt-stack.yaml` to repo root; run `prompt-stack validate-config prompt-stack.yaml` and confirm pass.
   2. Generate a sample `tasks.yaml` with Ralphy (or hand-edit) that includes `intent` and `est_tokens`; run the selection routine (locally simulated) and confirm it outputs selected model + reason.
   3. Toggle role policy to `strict` in a role and run the validator to confirm it flags disallowed models (validator only; no CI enforcement yet).
 
@@ -77,17 +77,17 @@ Milestones (ordered)
 - Goal: Add meta-PRD templates, Ralphy-based AI generation paths, AI validation and review stages (integrations with OpenCode/Anthropic/OpenAI), and auto-regenerate loop based on score thresholds.
 - Deliverables: `ai-generator`, `ai-validator`, templates in `templates/`, `--method ai|hybrid` flag behavior.
 - Acceptance criteria:
-  - `your-tool plan --method hybrid` runs code path then AI-review; when score < threshold, triggers AI regeneration.
+  - `prompt-stack plan --method hybrid` runs code path then AI-review; when score < threshold, triggers AI regeneration.
 - Manual test checklist:
   1. Run hybrid plan with networked AI providers (or mocked) and confirm the flow and score-driven regeneration.
   2. Confirm `review-report.json` is produced and saved.
 
 10) M10 — Knowledge export/import, team sharing, and simple CI templates (2 days)
-- Goal: Provide `knowledge export`/`import`, sample CI workflow for validate/review, and `your-tool init --install-hooks` wiring.
+- Goal: Provide `knowledge export`/`import`, sample CI workflow for validate/review, and `prompt-stack init --install-hooks` wiring.
 - Deliverables: CLI knowledge commands, `.github/workflows/validate-plan.yml` template, optional Husky hook installer.
 - Acceptance criteria:
-  - `your-tool knowledge export` writes JSON; `import` restores patterns.
-  - Provided CI templates run `your-tool validate` successfully in a sample environment.
+  - `prompt-stack knowledge export` writes JSON; `import` restores patterns.
+  - Provided CI templates run `prompt-stack validate` successfully in a sample environment.
 - Manual test checklist:
  1. Export knowledge, remove patterns, re-import, and verify patterns return.
  2. Install sample CI config in a test repo and run validate locally.

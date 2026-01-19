@@ -28,7 +28,7 @@ Pluggability goals and patterns
   - GitProvider (commit, branch, hooks)
   - StorageProvider (SQLite, optional remote cache)
   - PromptStore (templates, meta-PRDs)
-- Plugin discovery: filesystem-based (`./plugins` or `.your-tool/plugins`), plus executable manifest files for discoverability
+- Plugin discovery: filesystem-based (`./plugins` or `.prompt-stack/plugins`), plus executable manifest files for discoverability
 - Plugin lifecycle: install -> register -> enable -> health-check -> run -> uninstall
 - Versioning: plugin semver + declared host-api-minimum-version
 - Security: run plugins with least privilege; require explicit consent for network or repo-mutating operations; prefer signed/trusted plugins for remote installs
@@ -46,7 +46,7 @@ Plugin API (sketch)
 - Host exposes eventBus events: beforePlan, afterPlan, beforeTask, taskSucceeded, taskFailed, beforeCommit, afterCommit
 
 CLI & config
-- Project config: repo-root `.your-tool/config.yaml` (opt-in from `your-tool init`); allows enabling/disabling plugins and setting provider preferences
+- Project config: repo-root `.prompt-stack/config.yaml` (opt-in from `prompt-stack init`); allows enabling/disabling plugins and setting provider preferences
 - Global defaults: environment variables, OS secret stores for API keys (never stored in DB)
 - Interactive mode: one-question-at-a-time UX in CLI; support `--auto` to skip questions and `--interactive` to force them
 
@@ -96,17 +96,17 @@ Interview (recorded answers)
   - MVP note: no plugin ecosystem work required for MVP beyond reserving the interfaces and a minimal discovery mechanism (can be feature-flagged).
 
 - Q3 (knowledge DB scope): Chosen: 1) Per-repo by default
-  - Default path: `./.your-tool/knowledge.db`
+  - Default path: `./.prompt-stack/knowledge.db`
   - Rationale: portable with repo; easy mental model; enables team sharing by committing/exporting selected knowledge artifacts (not secrets).
   - Note: still support `--global-cache` (or config) later if you want cross-repo warm caches.
 
-- Q4 (config + runtime artifacts): Chosen: 1) Per-repo `.your-tool/`
+- Q4 (config + runtime artifacts): Chosen: 1) Per-repo `.prompt-stack/`
   - Default paths:
-    - Config: `./.your-tool/config.yaml`
-    - Knowledge DB: `./.your-tool/knowledge.db`
-    - Audit log: `./.your-tool/audit.log`
-    - Reports: `./.your-tool/reports/` (e.g. `review-report.json`, `report.txt`)
-    - Task traces: `./.your-tool/task-trace/` (optional)
+    - Config: `./.prompt-stack/config.yaml`
+    - Knowledge DB: `./.prompt-stack/knowledge.db`
+    - Audit log: `./.prompt-stack/audit.log`
+    - Reports: `./.prompt-stack/reports/` (e.g. `review-report.json`, `report.txt`)
+    - Task traces: `./.prompt-stack/task-trace/` (optional)
   - Rationale: everything needed to understand/reproduce a run lives with the repo; supports working from different directories without relying on global state.
 
 - Q5 (MCP integration posture): Chosen: 1) Optional connectors
@@ -131,7 +131,7 @@ Interview (recorded answers)
 
 - Q10 (Ralphy acquisition): Chosen: 3) Bundle Ralphy with this tool
   - Feasibility: yes; Ralphy is currently a shell script (`ralphy.sh`) so bundling means vendoring the script (and any required assets/config templates) into this repo and making the Go binary able to materialize + execute it.
-  - Pinning: because upstream has no releases, bundle a pinned commit hash and provide an explicit upgrade command later (e.g. `your-tool ralphy upgrade`).
+  - Pinning: because upstream has no releases, bundle a pinned commit hash and provide an explicit upgrade command later (e.g. `prompt-stack ralphy upgrade`).
   - Platform note: the bundled Ralphy remains a bash toolchain, so it requires a POSIX shell and dependencies like `jq` (and optionally `yq`, `gh`, etc.).
 
 - Q11 (bundling mechanism): Chosen: bundle `ralphy.sh`, but keep an abstraction boundary
@@ -150,7 +150,7 @@ Executor abstraction (required)
 
 Bundling approach (MVP)
 - Use Go `embed` to ship `vendor/ralphy/ralphy.sh` in the binary.
-- On run, extract to `./.your-tool/vendor/ralphy/ralphy.sh`, ensure executable, then invoke it.
+- On run, extract to `./.prompt-stack/vendor/ralphy/ralphy.sh`, ensure executable, then invoke it.
 - Capture stdout/stderr for audit + `report.txt` and parse structured signals when available.
 
 - Q12 (shell dependency posture): Chosen: 1) macOS + Linux only for MVP

@@ -52,7 +52,7 @@ Testing approach (unit, integration, TDD?):
 
 Definition of done for milestone 1 (acceptance criteria):
 - `examples/requirements/inputs/requirements.input.md` exists and follows the template.
-- `your-tool plan examples/requirements/inputs/requirements.input.md --method code` produces a `tasks.yaml` candidate.
+- `prompt-stack plan examples/requirements/inputs/requirements.input.md --method code` produces a `tasks.yaml` candidate.
 - Documentation references updated and point to `examples/requirements`.
 
 Notes / examples / reference links:

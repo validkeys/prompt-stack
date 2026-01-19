@@ -48,9 +48,9 @@
 - `internal/plugins`: Plugin host, discovery, manifests, event bus. Subdirs: `registry`, `loader`, `sandbox` as needed.
 - `internal/audit`: Append-only audit log writer, report aggregation, compliance artifacts.
 - `internal/telemetry`: Metrics, timing, cost tracking; optional sink adapters.
-- `internal/config`: Config loading/merging (defaults, repo `.your-tool/config.yaml`, env overrides).
+- `internal/config`: Config loading/merging (defaults, repo `.prompt-stack/config.yaml`, env overrides).
 - `internal/shared`: Cross-cutting primitives (errors, logging interfaces, token budgeting helpers). Keep small; prefer domain-specific packages when possible.
-- `configs/`: Sample `.your-tool/config.yaml`, plugin manifests, default policy bundles.
+- `configs/`: Sample `.prompt-stack/config.yaml`, plugin manifests, default policy bundles.
 - `examples/`: Requirements samples, milestone manifests, demo YAML (mirrors `docs/requirements`).
 - `scripts/`: Developer automation (`fmt`, lint, release); shell scripts must be invoked via Make targets.
 
@@ -68,8 +68,8 @@
 - Shared mocks/utilities live in `internal/shared/testsupport` to avoid leaking helpers into production code.
 
 ## Generated & Runtime Artifacts
-- Runtime state (knowledge DB, audit logs, task traces, vendored Ralphy script) lives under `./.your-tool/`; never inside `internal/`.
-- Add `internal/executor/ralphy/embed.go` (Go `embed`) to ship the pinned `ralphy.sh`; extraction happens at runtime into `.your-tool/vendor/ralphy/`.
+- Runtime state (knowledge DB, audit logs, task traces, vendored Ralphy script) lives under `./.prompt-stack/`; never inside `internal/`.
+- Add `internal/executor/ralphy/embed.go` (Go `embed`) to ship the pinned `ralphy.sh`; extraction happens at runtime into `.prompt-stack/vendor/ralphy/`.
 - CLI reports write to `reports/` (relative to repo root) consistent with requirements.
 
 ## Alignment with Requirements

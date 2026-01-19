@@ -23,7 +23,7 @@ Adapter contracts (examples)
 - CodeImplementer (OpenCode), GitProvider, StorageProvider, PromptStore
 
 Plugin model & discovery
-- Filesystem-discoverable plugins (e.g. `./plugins`, `./.your-tool/plugins`) and executable manifests for discoverability.
+- Filesystem-discoverable plugins (e.g. `./plugins`, `./.prompt-stack/plugins`) and executable manifests for discoverability.
 - Minimal manifest fields: `{ id, name, description, version, hostApiVersion, provides, configSchema }`.
 - Protocols: plugins are separate executables communicating over stdin/stdout RPC (JSON-RPC or protobuf encouraged) — host provides logger/db/eventBus handles.
 - Discovery/lifecycle: install → register → enable → health-check → run → uninstall.
@@ -41,12 +41,12 @@ Host eventBus (hook points)
 - Example events the host emits: `beforePlan`, `afterPlan`, `beforeTask`, `taskSucceeded`, `taskFailed`, `beforeCommit`, `afterCommit`.
 
 CLI & config
-- Project config: repo-root `./.your-tool/config.yaml` (opt-in from `your-tool init`); allows enabling/disabling plugins and setting provider preferences.
+- Project config: repo-root `./.prompt-stack/config.yaml` (opt-in from `prompt-stack init`); allows enabling/disabling plugins and setting provider preferences.
 - Global defaults: environment variables and OS secret stores for API keys (never stored in DB).
 - Interactive UX: one-question-at-a-time with `--auto` (skip questions) and `--interactive` (force questions) flags.
 
 Persistence & defaults
-- Default per-repo layout under `./.your-tool/`:
+- Default per-repo layout under `./.prompt-stack/`:
   - `config.yaml`, `knowledge.db`, `audit.log`, `reports/`, `task-trace/`, `vendor/ralphy/`.
 - SQLite primary store; `StorageProvider` interface allows remote replacement.
 - Key tables (example): `codebase_knowledge`, `style_anchors`, `coding_standards`, `task_history`, `plugin_registry`, `audit_log`.
@@ -68,13 +68,13 @@ Executor strategy (MVP)
   - `Capabilities() -> { ... }`
 - Capabilities should include at minimum: `supportsParallel`, `supportsBranchPerTask`, `supportsCommitPerTask`, `supportsValidationOnly`.
 - Implementations:
-  - `RalphyShellExecutor` (MVP): embed `vendor/ralphy/ralphy.sh` via Go `embed`, extract to `./.your-tool/vendor/ralphy/ralphy.sh`, ensure executable, invoke via `os/exec`, capture stdout/stderr for audit and parsing structured signals when available.
+  - `RalphyShellExecutor` (MVP): embed `vendor/ralphy/ralphy.sh` via Go `embed`, extract to `./.prompt-stack/vendor/ralphy/ralphy.sh`, ensure executable, invoke via `os/exec`, capture stdout/stderr for audit and parsing structured signals when available.
   - `RalphyGoExecutor` (future): native Go port honoring same interface for Windows and improved portability.
 
 Bundling approach (MVP)
 - Use Go `embed` to ship `vendor/ralphy/ralphy.sh` in the binary.
-- On run, materialize to `./.your-tool/vendor/ralphy/ralphy.sh`, make executable, and invoke.
-- Pin the bundled Ralphy to a commit hash and provide an upgrade command (e.g. `your-tool ralphy upgrade`) to update the vendored script.
+- On run, materialize to `./.prompt-stack/vendor/ralphy/ralphy.sh`, make executable, and invoke.
+- Pin the bundled Ralphy to a commit hash and provide an upgrade command (e.g. `prompt-stack ralphy upgrade`) to update the vendored script.
 - Capture and persist stdout/stderr to `report.txt` and `audit.log`; parse structured outputs when the script emits machine-readable signals.
 - Document POSIX dependency expectations (e.g., `bash`, `jq`, optional `yq`, `gh`).
 
@@ -92,12 +92,12 @@ Context & discovery
 - Discovery flows: MCP connector, document ingestion, and interactive interrogation when confidence is low.
 
 Key implementation choices (from interview)
-1) Language: Go (single static binary, concurrency). 2) Plugins: external executables. 3) Knowledge DB: per-repo `./.your-tool/knowledge.db`. 4) Per-repo runtime artifacts in `./.your-tool/`. 5) MCP: optional connectors. 6) Branch-per-task: default OFF. 7) Commit-per-task: default ON. 8) Plan Mode: AI-first with template fallback. 9) Ralphy: hard dependency, bundled for MVP. 10) Bundle `ralphy.sh` and expose Executor interface. 11) MVP platforms: macOS + Linux. 12) Default engine: OpenCode (`--opencode`). 13) AI integrations: direct SDKs; MCP optional.
+1) Language: Go (single static binary, concurrency). 2) Plugins: external executables. 3) Knowledge DB: per-repo `./.prompt-stack/knowledge.db`. 4) Per-repo runtime artifacts in `./.prompt-stack/`. 5) MCP: optional connectors. 6) Branch-per-task: default OFF. 7) Commit-per-task: default ON. 8) Plan Mode: AI-first with template fallback. 9) Ralphy: hard dependency, bundled for MVP. 10) Bundle `ralphy.sh` and expose Executor interface. 11) MVP platforms: macOS + Linux. 12) Default engine: OpenCode (`--opencode`). 13) AI integrations: direct SDKs; MCP optional.
 
 Where this came from
 - See `docs/requirements/architecture.interview.md` for the full working draft and the recorded interview rationale.
 
 Next steps
 1) Review and approve this concise spec or request changes (reply with specific areas to expand).
-2) If approved: create an initial Go module, add `Executor` and `AIProvider` interface sketches, and scaffold `./.your-tool/` layout.
+2) If approved: create an initial Go module, add `Executor` and `AIProvider` interface sketches, and scaffold `./.prompt-stack/` layout.
 3) Optional: commit `docs/requirements/architecture.md` and link it from `docs/requirements/main.md`.

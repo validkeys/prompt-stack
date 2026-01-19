@@ -35,7 +35,7 @@ Required fields to gather (map these to `templates/planning-phase.input.yaml`)
 - objectives (1-5)
 - success_metrics (metric + target)
 - project_metadata: `name` and `version` (semantic version)
-- execution_resources: paths for knowledge DB, validators, or key scripts (e.g. `.your-tool/knowledge.db`, `tools/validate_yaml.go`)
+- execution_resources: paths for knowledge DB, validators, or key scripts (e.g. `.prompt-stack/knowledge.db`, `tools/validate_yaml.go`)
 - validation_assets: schema/spec files the plan should reference (e.g. `docs/ralphy-inputs.schema.json`)
 - quality_targets: quality/acceptance thresholds (e.g. quality_score >= 0.95)
 
@@ -80,7 +80,7 @@ Finalization
 
 ```bash
 # Generate a candidate plan (code path)
-your-tool plan docs/implementation-plan/<milestone>/requirements.md --method code --output planning/milestones/<id>.ralphy.yaml
+prompt-stack plan docs/implementation-plan/<milestone>/requirements.md --method code --output planning/milestones/<id>.ralphy.yaml
 ```
 
 Notes and best practices

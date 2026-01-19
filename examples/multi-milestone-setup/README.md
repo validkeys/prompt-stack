@@ -46,9 +46,9 @@ timeline:
 Example commands
 
 - Generate single milestone (recommended):
-  `your-tool plan planning/inputs/auth-v1.input.yaml --method hybrid --review --output planning/milestones/auth-v1.ralphy.yaml`
+  `prompt-stack plan planning/inputs/auth-v1.input.yaml --method hybrid --review --output planning/milestones/auth-v1.ralphy.yaml`
 
 - Manifest-driven integration check:
-  `your-tool plan --manifest planning/manifest.yaml --integration-check`
+  `prompt-stack plan --manifest planning/manifest.yaml --integration-check`
 
 Copy these files into your repo and adapt paths as needed.

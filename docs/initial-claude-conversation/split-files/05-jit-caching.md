@@ -13,7 +13,7 @@ This solves a major pain point: **how do you build up knowledge about a codebase
 
 ### First Run (Learning Phase)
 ```bash
-$ your-tool plan "Build authentication system"
+$ prompt-stack plan "Build authentication system"
 
 ⚠ First time analyzing this codebase
 Let's build a knowledge base together...
@@ -54,7 +54,7 @@ Building task plan with learned patterns...
 
 ### Second Run (Using Cache)
 ```bash
-$ your-tool plan "Build notification system"
+$ prompt-stack plan "Build notification system"
 
 ✓ Loaded cached knowledge (3 patterns, 5 style anchors)
 ✓ Auto-detected similar patterns to AuthService
@@ -153,7 +153,7 @@ CREATE TABLE user_preferences (
 
 ### 1. **Progressive Interrogation**
 ```bash
-$ your-tool plan "Add payment processing"
+$ prompt-stack plan "Add payment processing"
 
 Analyzing requirements... payment processing detected
 
@@ -195,7 +195,7 @@ Knowledge base updated. Generating optimized plan...
 ### 2. **Automatic Pattern Learning**
 ```bash
 # Tool silently analyzes codebase in background
-$ your-tool learn --background
+$ prompt-stack learn --background
 
 Analyzing codebase patterns...
 ✓ Detected 12 service files → extracted service pattern
@@ -209,7 +209,7 @@ Cached 47 patterns without user input
 
 ### 3. **Smart File Suggestion**
 ```bash
-$ your-tool plan "Add user roles"
+$ prompt-stack plan "Add user roles"
 
 Analyzing... 'user roles' likely needs authorization patterns
 
@@ -230,7 +230,7 @@ Should I add user.types.ts as a style anchor? [Y/n] Y
 
 ### 4. **Incremental Refinement**
 ```bash
-$ your-tool plan "Add search feature"
+$ prompt-stack plan "Add search feature"
 
 Using cached knowledge:
   ✓ 5 service patterns
@@ -249,7 +249,7 @@ $ ralphy.sh --yaml tasks.yaml
 
 # Task failed due to missing Elasticsearch setup
 
-$ your-tool refine tasks.yaml --task 2 --learn-from-failure
+$ prompt-stack refine tasks.yaml --task 2 --learn-from-failure
 
 Learning from failure...
 ❓ What search technology do you use?

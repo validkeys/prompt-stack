@@ -10,11 +10,11 @@ Initial context (required inputs)
 - `requirements_file` (path): path to the saved milestone requirements file (YAML or markdown) you should read and consume.
 - `milestone_id` (slug): short identifier (example: `m0`, `m1`). Used to name outputs and paths.
 - `output_dir` (path): where to save generated artifacts. Default: `docs/implementation-plan/<milestone>/`.
-- `knowledge_db_path` (path): optional path to knowledge DB. Default: `./.your-tool/knowledge.db`.
+- `knowledge_db_path` (path): optional path to knowledge DB. Default: `./.prompt-stack/knowledge.db`.
 - `style_anchors` (list): 2–3 canonical file paths or URLs used as style anchors (each with a one-line reason). If omitted, search repo for candidate anchors but record them as `assumption` in the output.
 - `reference_docs` (list, optional): prioritized documents (paths or URLs) that codify project rules, quality gates, or research. If not provided, inspect the repository index (for example `docs/index.md`) or ask for recommended references before generating outputs.
 - `temp_artifacts_dir` (path): where to write temporary/sidecar artifacts created during generation (validation JSON, schema reports, generated tests, helper code, secrets-scan outputs). Default: `./.prompt-stack/reports/{{milestone_id}}/` (create subfolders per milestone).
-- `validator_command` (string, optional): path or invocation to repository validator. Default: `your-tool validate`. If provided (or if `your-tool` is present in PATH), the generator must prefer and call the validator instead of producing new validator code.
+- `validator_command` (string, optional): path or invocation to repository validator. Default: `prompt-stack validate`. If provided (or if `prompt-stack` is present in PATH), the generator must prefer and call the validator instead of producing new validator code.
 - (No `prd_output_path` input): the agent will place the final PRD document alongside the provided `requirements_file` as `make-implementation-plan.prd.yaml`.
 
 References (consult these files in the repo)
@@ -49,8 +49,8 @@ Prompt rules and behavior (agent must follow exactly)
 9. Output artifact to write to disk: a single `make-implementation-plan.prd.yaml` file saved to `output_dir` (no secondary copies or sidecar reports in that folder). Additionally, produce `implementation-plan.yaml` (the final execution plan) saved to `output_dir`. All validation, schema, and secrets-scan notes must be embedded inside the YAML under `validation.reports` or `metadata.assumptions`.
 
 Validator integration (new)
-- If a repository validator exists (recommended) prefer it over generating validator code in the PRD flow. Default command: `your-tool validate`.
-- Behavior when `validator_command` or `your-tool` is available:
+- If a repository validator exists (recommended) prefer it over generating validator code in the PRD flow. Default command: `prompt-stack validate`.
+- Behavior when `validator_command` or `prompt-stack` is available:
   - Run the validator after generating `implementation-plan.yaml`:
     `{{validator_command}} --input {{output_dir}}/implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out {{temp_artifacts_dir}}/validation.json`
   - Read `validation.json` and embed a concise summary into `validation.reports` and `metadata.final_quality_report` in the PRD.
@@ -66,10 +66,10 @@ Usage snippet (also include in generated `make-implementation-plan.prd.yaml` com
 
 ```
 # Generate the plan (code path)
-your-tool plan docs/implementation-plan/<milestone>/requirements.md --method code --output docs/implementation-plan/<milestone>/implementation-plan.yaml
+prompt-stack plan docs/implementation-plan/<milestone>/requirements.md --method code --output docs/implementation-plan/<milestone>/implementation-plan.yaml
 
 # Preferred: run built-in validator to produce structured JSON summary and embed it back into the PRD
-your-tool validate --input docs/implementation-plan/<milestone>/implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out ./.prompt-stack/reports/{{milestone_id}}/validation.json
+prompt-stack validate --input docs/implementation-plan/<milestone>/implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out ./.prompt-stack/reports/{{milestone_id}}/validation.json
 ```
 
 Deliverable format & placeholders

@@ -49,7 +49,7 @@ A7: recommend
 Notes: User asked for recommendations on access and security defaults.
 
 Recommended Access & Security Defaults:
-- API keys: store in OS-provided secret stores or require env vars; avoid persisting in the knowledge DB. Provide `your-tool auth` to configure keys.
+- API keys: store in OS-provided secret stores or require env vars; avoid persisting in the knowledge DB. Provide `prompt-stack auth` to configure keys.
 - Execution: default to local execution; optional remote mode with explicit opt-in and TLS + token auth.
 - Repo permissions: read/write only when running Build Mode; require user confirmation before commits/branches. Use minimal scopes for CI tokens.
 - Audit logs: local append-only log; optional remote telemetry with explicit opt-in. Record actions like plan generation, AI review results, build runs, and commits (timestamp, user, git-sha).

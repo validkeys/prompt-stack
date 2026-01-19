@@ -2,7 +2,7 @@
 
 A concise entry point for AI and humans to quickly find and inspect requirement-related documents. Each entry links to the source document and includes a one-line description for fast lookup.
 
-- `docs/requirements/main.md` — Core business and product requirements. Primary reference for the CLI behavior, user flows, style anchors, example usage (`your-tool plan ...`), and non-functional constraints.
+- `docs/requirements/main.md` — Core business and product requirements. Primary reference for the CLI behavior, user flows, style anchors, example usage (`prompt-stack plan ...`), and non-functional constraints.
 - `docs/requirements/architecture.md` — Compact, actionable architecture spec for the host CLI (plug-in points, lifecycle, core APIs). Distills decisions captured in the interview draft into implementable guidance.
 - `docs/requirements/architecture.interview.md` — Working architecture draft captured during the one-question-at-a-time interview. Contains rationale, incremental decisions, and implementation sketches.
 - `docs/requirements/milestones.md` — Test-oriented milestone plan that breaks requirements into an MVP path with deliverables and manual verification steps.

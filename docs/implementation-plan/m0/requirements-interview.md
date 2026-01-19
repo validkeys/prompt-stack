@@ -32,9 +32,9 @@ A:
 Q: How will we measure success? Give metrics and targets (e.g., quality score, delivery dates, performance targets).
 
 A: 
-- CLI `--help` and `your-tool --help` list core commands and exit with code 0.
-- `your-tool plan` produces a populated `docs/implementation-plan/m0/requirements.md` matching `templates/planning-phase.input.yaml` fields (schema validation pass).
-- Ralphy executor dry-run succeeds and writes `./.your-tool/report.txt` and `./.your-tool/audit.log`.
+- CLI `--help` and `prompt-stack --help` list core commands and exit with code 0.
+- `prompt-stack plan` produces a populated `docs/implementation-plan/m0/requirements.md` matching `templates/planning-phase.input.yaml` fields (schema validation pass).
+- Ralphy executor dry-run succeeds and writes `./.prompt-stack/report.txt` and `./.prompt-stack/audit.log`.
 - Performance: code-generation `plan --method code` under 5s on dev machine; file scanning <5s for ~1000 files.
 - Acceptance: review score >= 0.9 (if review step run); manual checklist passes (see milestone doc).
 
@@ -77,10 +77,10 @@ Q: What deliverables do you expect? (e.g., task_breakdown.yaml, quality_report.j
 A:
 - `docs/implementation-plan/m0/requirements.md` — filled planning-phase.input.yaml content (YAML).
 - `docs/implementation-plan/m0/requirements-interview.md` — full Q/A transcript (already being recorded).
-- `./cmd/your-tool/` or `./cmd/your-tool/main.go` — initial Cobra CLI scaffold.
-- `./.your-tool/vendor/ralphy/ralphy.sh` materialization at runtime (bundled via embed).
+- `./cmd/prompt-stack/` or `./cmd/prompt-stack/main.go` — initial Cobra CLI scaffold.
+- `./.prompt-stack/vendor/ralphy/ralphy.sh` materialization at runtime (bundled via embed).
 - Minimal `Makefile`, `README.md`, and basic unit tests under `./internal/...` or `./pkg/...`.
-- `./.your-tool/report.txt` and `./.your-tool/audit.log` produced by executor dry-run.
+- `./.prompt-stack/report.txt` and `./.prompt-stack/audit.log` produced by executor dry-run.
 
 Q: Do you have desired timelines or dates? (start / target completion) — provide if you have them; otherwise say "assumption: start now, complete in 1–3 days."
 

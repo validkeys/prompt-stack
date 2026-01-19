@@ -126,7 +126,7 @@ Step 4: Generate Review Report
 **Execution Flow**:
 
 ```bash
-$ your-tool build tasks.yaml
+$ prompt-stack build tasks.yaml
 
 Pre-flight checks:
   ✓ YAML validation passed
@@ -347,11 +347,11 @@ Note: For concrete OpenCode integration patterns (LSP setup, MCP servers, custom
 **Team Knowledge Sharing**:
 ```bash
 # Senior dev exports knowledge
-$ your-tool knowledge export > .your-tool/team-knowledge.json
+$ prompt-stack knowledge export > .prompt-stack/team-knowledge.json
 $ git commit -m "Add team patterns"
 
 # Junior dev imports
-$ your-tool knowledge import .your-tool/team-knowledge.json
+$ prompt-stack knowledge import .prompt-stack/team-knowledge.json
 ✓ Immediate benefit from senior's knowledge
 ```
 
@@ -459,7 +459,7 @@ tasks:
 # Includes full research compliance
 
 metadata:
-  generated_by: "your-tool v2.0"
+  generated_by: "prompt-stack v2.0"
   method: "ai-generation"
   quality_score: 0.96
   review_status: "APPROVED"
@@ -591,31 +591,31 @@ function calculateBudget(task) {
 
 ```bash
 # Initialize repo
-$ your-tool init
+$ prompt-stack init
 
 # Plan Mode: Generate YAML
-$ your-tool plan requirements.md [--method code|ai|hybrid]
+$ prompt-stack plan requirements.md [--method code|ai|hybrid]
 
 # Plan Mode: Validate YAML
-$ your-tool validate tasks.yaml
+$ prompt-stack validate tasks.yaml
 
 # Plan Mode: Review against research
-$ your-tool review tasks.yaml
+$ prompt-stack review tasks.yaml
 
 # Build Mode: Execute YAML
-$ your-tool build tasks.yaml
+$ prompt-stack build tasks.yaml
 
 # Knowledge Management
-$ your-tool knowledge <list|export|import|search>
+$ prompt-stack knowledge <list|export|import|search>
 
 # Refinement
-$ your-tool refine tasks.yaml --task <id>
+$ prompt-stack refine tasks.yaml --task <id>
 ```
 
 ### Detailed: Plan Mode
 
 ```bash
-$ your-tool plan [requirements] [options]
+$ prompt-stack plan [requirements] [options]
 
 Options:
   --method <code|ai|hybrid>    Generation method (default: hybrid)
@@ -629,22 +629,22 @@ Options:
 
 Examples:
   # Hybrid mode (recommended)
-  $ your-tool plan requirements.md
+  $ prompt-stack plan requirements.md
   
   # Fast code generation
-  $ your-tool plan "Add auth" --method code
+  $ prompt-stack plan "Add auth" --method code
   
   # High-quality AI generation
-  $ your-tool plan requirements.md --method ai --review
+  $ prompt-stack plan requirements.md --method ai --review
   
   # Automated batch processing
-  $ your-tool plan batch.txt --auto --method code
+  $ prompt-stack plan batch.txt --auto --method code
 ```
 
 ### Detailed: Build Mode
 
 ```bash
-$ your-tool build <yaml> [options]
+$ prompt-stack build <yaml> [options]
 
 Options:
   --parallel <n>        Number of parallel agents (default: 3)
@@ -654,19 +654,19 @@ Options:
 
 Examples:
   # Standard execution
-  $ your-tool build tasks.yaml
+  $ prompt-stack build tasks.yaml
   
   # Dry run first
-  $ your-tool build tasks.yaml --dry-run
+  $ prompt-stack build tasks.yaml --dry-run
   
   # Continue failed execution
-  $ your-tool build tasks.yaml --continue
+  $ prompt-stack build tasks.yaml --continue
 ```
 
 ### AI Review Command
 
 ```bash
-$ your-tool review <yaml> [options]
+$ prompt-stack review <yaml> [options]
 
 Reviews YAML against research best practices.
 
@@ -764,7 +764,7 @@ tasks:
 ```bash
 # In plan mode with --review:
 
-$ your-tool plan requirements.md --method hybrid --review
+$ prompt-stack plan requirements.md --method hybrid --review
 
 ⚡ Generating YAML (hybrid mode)...
 ✓ Generated candidate YAML (5 seconds)
@@ -878,11 +878,11 @@ Execute with build mode? [Y/n]
 - Acceptance criteria:
   - A requirements input file exists at `examples/requirements/inputs/requirements.input.md` and follows the project's input template.
   - The example prompt and templates used to gather requirements are committed under `docs/requirements/templates/`.
-  - `your-tool plan examples/requirements/inputs/requirements.input.md --method code` produces a syntactically valid `tasks.yaml` candidate (code-generation path only; no AI required).
+  - `prompt-stack plan examples/requirements/inputs/requirements.input.md --method code` produces a syntactically valid `tasks.yaml` candidate (code-generation path only; no AI required).
   - The requirements document (`docs/requirements/main.md`) includes the example prompt and links to the templates.
 - Manual test checklist:
   1. Run the requirements prompt (copy the template from `examples/requirements/templates/requirements-prompt.md`) interactively and save output to `examples/requirements/inputs/requirements.input.md`.
-  2. Run `your-tool plan examples/requirements/inputs/requirements.input.md --method code` and verify `tasks.yaml` is produced.
+  2. Run `prompt-stack plan examples/requirements/inputs/requirements.input.md --method code` and verify `tasks.yaml` is produced.
   3. Confirm `docs/requirements/main.md` references this milestone and contains the example prompt or link to `docs/requirements/templates/`.
 
 ### Phase 1: MVP (1-2 weeks)
@@ -952,16 +952,16 @@ Execute with build mode? [Y/n]
 **Plan Mode**:
 ```bash
 # Generate YAML (AI method)
-your-tool plan → meta-PRD → ralphy.sh → tasks.yaml
+prompt-stack plan → meta-PRD → ralphy.sh → tasks.yaml
 
 # Review YAML
-your-tool review → review-PRD → ralphy.sh → report.json
+prompt-stack review → review-PRD → ralphy.sh → report.json
 ```
 
 **Build Mode**:
 ```bash
 # Execute YAML
-your-tool build → ralphy.sh → code implementation
+prompt-stack build → ralphy.sh → code implementation
 ```
 
 ### With OpenCode
@@ -975,7 +975,7 @@ OpenCode follows YAML constraints
 **Direct** (optional):
 ```bash
 # Export custom commands
-your-tool export-commands --format opencode
+prompt-stack export-commands --format opencode
 → Creates .opencode/commands/*.md
 ```
 
@@ -985,7 +985,7 @@ See detailed OpenCode integration patterns, recommended configurations, and exam
 
 **Hooks Installation**:
 ```bash
-your-tool init --install-hooks
+prompt-stack init --install-hooks
 → Creates .husky/pre-commit with zero-warning checks
 ```
 
@@ -1000,10 +1000,10 @@ your-tool init --install-hooks
 ```yaml
 # .github/workflows/validate-plan.yml
 - name: Validate YAML
-  run: your-tool validate tasks.yaml --strict
+  run: prompt-stack validate tasks.yaml --strict
 
 - name: Review against research
-  run: your-tool review tasks.yaml --strict
+  run: prompt-stack review tasks.yaml --strict
 ```
 
 ---
@@ -1026,7 +1026,7 @@ your-tool init --install-hooks
 ### Project Structure
 See `docs/requirements/project-structure.md` for the authoritative Go layout (flat tree, `cmd/` entrypoint, `internal/<domain>` packages, testing guardrails, runtime artifacts).
 
-your-tool/
+prompt-stack/
 ├── src/
 │   ├── cli/
 │   │   └── commands/
@@ -1073,7 +1073,7 @@ This project supports iterative planning by treating each milestone as a first-c
 
 - Per-milestone planning files: store a single concise input per milestone (follow `templates/planning-phase.input.yaml`) and generate one Ralphy YAML per milestone. Keep each milestone focused so AI context budgets remain small.
 - Use a small project manifest to declare milestone order and cross-milestone dependencies (the manifest is lightweight and only references per-milestone input files).
-- Run Plan Mode per milestone during development (`your-tool plan <milestone.input.yaml>`) and run a separate integration pass when you need a full-project view or cross-milestone validation.
+- Run Plan Mode per milestone during development (`prompt-stack plan <milestone.input.yaml>`) and run a separate integration pass when you need a full-project view or cross-milestone validation.
 - Enforce per-milestone quality gates (YAML syntax, schema, secrets scan, style-anchor and sizing validations). Only promote a milestone to `APPROVED` once it meets the quality target.
 - Store artifacts under `planning/` or `examples/multi-milestone-setup/` for clarity (see the concise example in `examples/multi-milestone-setup`).
 
@@ -1091,10 +1091,10 @@ Example layout (recommended):
 CLI examples:
 
 - Generate a single milestone (hybrid + review):
-  `your-tool plan planning/inputs/auth-v1.input.yaml --method hybrid --review --output planning/milestones/auth-v1.ralphy.yaml`
+  `prompt-stack plan planning/inputs/auth-v1.input.yaml --method hybrid --review --output planning/milestones/auth-v1.ralphy.yaml`
 
 - Run a manifest-driven integration check (validate ordering and cross-milestone constraints):
-  `your-tool plan --manifest planning/manifest.yaml --integration-check`
+  `prompt-stack plan --manifest planning/manifest.yaml --integration-check`
 
 See `examples/multi-milestone-setup` for a concrete minimal example you can copy and adapt.
 
@@ -1104,7 +1104,7 @@ See `examples/multi-milestone-setup` for a concrete minimal example you can copy
 
 ```bash
 $ cd my-project
-$ your-tool init
+$ prompt-stack init
 
 ✓ Created knowledge base
 ✓ Cached 15 patterns (3 minutes)
@@ -1112,7 +1112,7 @@ $ your-tool init
 $ cat requirements.md
 # Add user authentication with JWT
 
-$ your-tool plan requirements.md
+$ prompt-stack plan requirements.md
 
 ❓ Do you have auth code? > yes
 📂 Use AuthService.ts as anchor? > yes
@@ -1125,7 +1125,7 @@ $ your-tool plan requirements.md
 
 ✓ Saved to tasks.yaml
 
-$ your-tool build tasks.yaml
+$ prompt-stack build tasks.yaml
 
 Pre-flight: ✓
 Executing with Ralphy...
@@ -1138,20 +1138,20 @@ Executing with Ralphy...
 ### Example 2: Second Time (Zero Questions)
 
 ```bash
-$ your-tool plan "Add notification system"
+$ prompt-stack plan "Add notification system"
 
 ✓ Using cached patterns (0 questions)
 ⚡ Generated (5s)
 ✓ Review score: 0.96
 
-$ your-tool build tasks.yaml
+$ prompt-stack build tasks.yaml
   ✓ 6/6 tasks complete
 ```
 
 ### Example 3: AI Generation for Complex Task
 
 ```bash
-$ your-tool plan complex-refactor.md --method ai
+$ prompt-stack plan complex-refactor.md --method ai
 
 🤖 AI generation mode...
   Generating meta-PRD...
@@ -1164,23 +1164,23 @@ $ your-tool plan complex-refactor.md --method ai
 ✓ High-quality YAML (45s)
 🔍 Review score: 0.98
 
-$ your-tool build tasks.yaml
+$ prompt-stack build tasks.yaml
 ```
 
 ### Example 4: Failed Task Refinement
 
 ```bash
-$ your-tool build tasks.yaml
+$ prompt-stack build tasks.yaml
 
 Task 3 failed: Missing JWT config
 
-$ your-tool refine tasks.yaml --task 3 \
+$ prompt-stack refine tasks.yaml --task 3 \
   --add-context "Need JWT_SECRET in env"
 
 ✓ Updated task 3
 ✓ Added configuration setup subtask
 
-$ your-tool build tasks.yaml --continue
+$ prompt-stack build tasks.yaml --continue
   ✓ Task 3 (retry): Complete
 ```
 
@@ -1277,8 +1277,8 @@ These recommendations are strongly encouraged but not required for MVP. They are
 
 1) Persistent project rules file (CLAUDE.md / .cursor/rules/) — nice to have
 
-- Description: A repo-level rules file that your-tool loads at the start of Plan/Build sessions to provide persistent global constraints (style anchors, forbidden patterns, affirmative rules).
-- Suggested example (to be created by `your-tool init` as an opt-in flag):
+- Description: A repo-level rules file that prompt-stack loads at the start of Plan/Build sessions to provide persistent global constraints (style anchors, forbidden patterns, affirmative rules).
+- Suggested example (to be created by `prompt-stack init` as an opt-in flag):
 
 ```yaml
 # CLAUDE.md - Project rules loaded for every Plan/Build session
@@ -1304,7 +1304,7 @@ if grep -R --line-number -E "//\s*eslint-disable|@ts-ignore" src | grep -q .; th
 fi
 ```
 
-These two items can be surfaced in `your-tool init --install-hooks` as optional opts and wired into `your-tool review` and CI templates.
+These two items can be surfaced in `prompt-stack init --install-hooks` as optional opts and wired into `prompt-stack review` and CI templates.
 
 ---
 
