@@ -13,6 +13,8 @@ Initial context (required inputs)
 - `knowledge_db_path` (path): optional path to knowledge DB. Default: `./.your-tool/knowledge.db`.
 - `style_anchors` (list): 2–3 canonical file paths or URLs used as style anchors (each with a one-line reason). If omitted, search repo for candidate anchors but record them as `assumption` in the output.
 - `reference_docs` (list, optional): prioritized documents (paths or URLs) that codify project rules, quality gates, or research. If not provided, inspect the repository index (for example `docs/index.md`) or ask for recommended references before generating outputs.
+- `temp_artifacts_dir` (path): where to write temporary/sidecar artifacts created during generation (validation JSON, schema reports, generated tests, helper code, secrets-scan outputs). Default: `./.prompt-stack/reports/{{milestone_id}}/` (create subfolders per milestone).
+- `validator_command` (string, optional): path or invocation to repository validator. Default: `your-tool validate`. If provided (or if `your-tool` is present in PATH), the generator must prefer and call the validator instead of producing new validator code.
 - (No `prd_output_path` input): the agent will place the final PRD document alongside the provided `requirements_file` as `make-implementation-plan.prd.yaml`.
 
 References (consult these files in the repo)
@@ -37,27 +39,43 @@ Prompt rules and behavior (agent must follow exactly)
    - Records inline validation and quality findings inside the same document (e.g. under `validation.reports` and `metadata.final_quality_report`).
 5. For any missing but required inputs (style anchors, knowledge_db_path, schema references, or `reference_docs`), add the field with an `assumption:` note and set a sensible default. Mark those placeholders in the YAML with `assumption: true` and include a short justification inside the same document.
 6. Inline validation steps (performed by the agent) must summarize their findings within the `validation` section of the YAML rather than emitting external files.
+6.a. All temporary or sidecar artifacts produced by the generator (intermediate JSON reports, schema validation artifacts, generated test files or helper code, secrets-scan outputs, etc.) MUST be written to `temp_artifacts_dir` (organize by milestone) and MUST NOT be written into `output_dir` or `docs/implementation-plan/<milestone>/`.
+6.b. The only files created in `output_dir` are:
+   - `make-implementation-plan.prd.yaml` (the PRD)
+   - `implementation-plan.yaml` (the final execution plan for downstream execution)
+6.c. Summaries of validation and scans must be embedded inside the PRD under `validation.reports` and `metadata.assumptions`; full sidecar artifacts may be stored in `temp_artifacts_dir` for debugging or CI inspection.
 7. Quality gates (the generated YAML must meet these or the agent should flag warnings and produce a remedial plan) should be documented inline under `validation.gates`.
 8. Produce a `final_quality_report` summary block within the YAML metadata including: `quality_score` (0.0–1.0), `issues` (list), and `approval` flag (`APPROVED` if >= 0.95, else `NEEDS_REVISION`). Provide a short explanation of how the score was computed (weights: anchors 30%, sizing 25%, schema 20%, secrets 15%, affirmative constraints 10%).
-9. Output artifact to write to disk: a single `make-implementation-plan.prd.yaml` file saved to `output_dir` (no secondary copies or sidecar reports). All validation, schema, and secrets-scan notes must be embedded inside the YAML under `validation.reports` or `metadata.assumptions`, and the file name must not vary between runs.
+9. Output artifact to write to disk: a single `make-implementation-plan.prd.yaml` file saved to `output_dir` (no secondary copies or sidecar reports in that folder). Additionally, produce `implementation-plan.yaml` (the final execution plan) saved to `output_dir`. All validation, schema, and secrets-scan notes must be embedded inside the YAML under `validation.reports` or `metadata.assumptions`.
+
+Validator integration (new)
+- If a repository validator exists (recommended) prefer it over generating validator code in the PRD flow. Default command: `your-tool validate`.
+- Behavior when `validator_command` or `your-tool` is available:
+  - Run the validator after generating `implementation-plan.yaml`:
+    `{{validator_command}} --input {{output_dir}}/implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out {{temp_artifacts_dir}}/validation.json`
+  - Read `validation.json` and embed a concise summary into `validation.reports` and `metadata.final_quality_report` in the PRD.
+  - Do NOT invent or output full validator source code when the validator CLI is available.
+- Behavior when validator is not present:
+  - Perform inline syntactic/schema checks and produce a validator *spec* (interface, expected report shape, and test fixtures) and write the spec to `temp_artifacts_dir` marked with `assumption: true` and `todo: implement validator as internal/validation`.
 
 Suggested output path (default)
 - `docs/implementation-plan/<milestone>/make-implementation-plan.prd.yaml`
+- `docs/implementation-plan/<milestone>/implementation-plan.yaml` (final execution plan)
 
 Usage snippet (also include in generated `make-implementation-plan.prd.yaml` comments or metadata):
 
 ```
 # Generate the plan (code path)
-your-tool plan docs/implementation-plan/<milestone>/requirements.md --method code --output docs/implementation-plan/<milestone>/make-implementation-plan.prd.yaml
+your-tool plan docs/implementation-plan/<milestone>/requirements.md --method code --output docs/implementation-plan/<milestone>/implementation-plan.yaml
 
-# Optional: run validator (write findings back into validation section)
-./tools/validate_yaml.go docs/implementation-plan/<milestone>/make-implementation-plan.prd.yaml
+# Preferred: run built-in validator to produce structured JSON summary and embed it back into the PRD
+your-tool validate --input docs/implementation-plan/<milestone>/implementation-plan.yaml --schema docs/ralphy-inputs.schema.json --out ./.prompt-stack/reports/{{milestone_id}}/validation.json
 ```
 
 Deliverable format & placeholders
 - The prompt consumer should replace or accept runtime mappings for these placeholders:
-  - `{{requirements_file}}`, `{{milestone_id}}`, `{{output_dir}}`, `{{knowledge_db_path}}`, `{{style_anchor_*}}`.
-- The produced YAML must be valid UTF-8, adhere to the schema at `docs/ralphy-inputs.schema.json`, and store validation notes, assumptions, and quality scoring inline (no external sidecar files).
+  - `{{requirements_file}}`, `{{milestone_id}}`, `{{output_dir}}`, `{{knowledge_db_path}}`, `{{style_anchor_*}}`, `{{temp_artifacts_dir}}`, `{{validator_command}}`.
+- The produced YAML must be valid UTF-8, adhere to the schema at `docs/ralphy-inputs.schema.json`, and store validation notes, assumptions, and quality scoring inline (no external sidecar files required for summary).
 
 
 Edge cases & remediation guidance (agent responsibilities)
@@ -71,4 +89,4 @@ Notes for reviewers (you)
 
 ---
 
-End of prompt template. Use this as `docs/requirements/templates/implementation-plan-generation-prompt.md` for generating Ralphy planning inputs from milestone requirements. 
+End of prompt template. Use this as `docs/requirements/templates/implementation-plan-generation-prompt.md` for generating Ralphy planning inputs from milestone requirements.

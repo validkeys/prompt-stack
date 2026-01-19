@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Validation Report",
+  "description": "Standardized validation report produced by internal/validation. Consumed by AI review, CI, and templates.",
+  "type": "object",
+  "required": ["report_type","timestamp","overall_score","overall_result","component_scores"],
+  "properties": {
+    "report_type": { "type": "string", "const": "final_quality_report" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "milestone": { "type": "string" },
+    "requirements_file": { "type": "string" },
+    "generated_yaml": { "type": "string" },
+    "overall_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+    "overall_result": { "type": "string", "enum": ["PASS","WARN","FAIL","APPROVED","NEEDS_REVISION"] },
+    "approval_status": { "type": "string" },
+    "approval_reason": { "type": "string" },
+    "issues": {
+      "type": ["array","null"],
+      "items": {
+        "type": "object",
+        "required": ["id","severity","path","message"],
+        "properties": {
+          "id": { "type": "string" },
+          "severity": { "type": "string", "enum": ["CRITICAL","HIGH","MEDIUM","LOW"] },
+          "component": { "type": "string" },
+          "path": { "type": "string" },
+          "message": { "type": "string" },
+          "fix_suggestion": { "type": "string" }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "priority": { "type": "string" },
+          "action": { "type": "string" },
+          "benefit": { "type": "string" }
+        }
+      }
+    },
+    "validation_summary": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "component_scores": {
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "type": "object",
+          "properties": {
+            "score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "reason": { "type": "string" },
+            "details": { "type": ["string","object","null"] }
+          },
+          "required": ["score"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "generator": { "type": "string" },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "quality_target": { "type": "number" }
+      }
+    }
+  },
+  "additionalProperties": true
+}

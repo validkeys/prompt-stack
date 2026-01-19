@@ -11,6 +11,8 @@ Initial context (required inputs)
 - `additional_refs` (list, optional): extra documents that should influence review (for example drift policy, TDD checklist).
 - `commit_policy_doc` (path, optional): doc describing commit, branch, or drift rules (default: `docs/drift-policy.md`).
 - `task_sizing_doc` (path, optional): task-sizing research (default: `docs/task-sizing.md`).
+- `temp_artifacts_dir` (path): where temporary/sidecar artifacts produced during generation are stored (validation JSON, schema reports, generated tests, helper code, secrets-scan outputs). Default: `./.prompt-stack/reports/{{milestone_id}}/`.
+- `validator_command` (string, optional): path or invocation to repository validator. If provided (or if `your-tool` is present in PATH), prefer running the validator and consuming its structured JSON output instead of regenerating validation code.
 
 References (load before review)
 - `prd_path`
@@ -21,6 +23,7 @@ References (load before review)
 - `commit_policy_doc`
 - `task_sizing_doc`
 - Any `additional_refs`
+- `temp_artifacts_dir` (if present) — reviewer should consult full sidecar artifacts here when deeper inspection is required (schema_validation_report.json, secrets_scan_report.json, generated helper code).
 
 Agent directives
 1. Confirm the PRD is the planning-phase artifact for the specified milestone and contains the expected top-level sections: `metadata`, `global_constraints`, `tasks`, `instructions`, `research_compliance`, `performance_targets`, and inline `validation` summaries. Flag missing sections.
@@ -43,6 +46,7 @@ Agent directives
    - Highlight any task with fewer than two anchors or with redundant references.
 6. Review inline `validation` blocks:
    - Confirm validation summaries, schema checks, YAML syntax confirmations, secrets scan results, and quality gating are embedded inside the PRD; sidecar file references should only exist if the file also stores the summarized results inline.
+   - If `validator_command` or `your-tool` is available, run the validator and compare its `final_quality_report.json`/`validation.json` against the PRD's inline summary; if discrepancies exist, prefer the validator's structured output and update the PRD accordingly (apply minimal edits and record rationale in the review output).
    - Cross-check `quality_score`, `issues`, and approval flag; recompute if weights (anchors 30%, sizing 25%, schema 20%, secrets 15%, affirmative constraints 10%) were misapplied.
 7. Verify multi-layer enforcement requirements:
    - Prompt-level rules, IDE/LSP checks, pre-commit hooks, CI checks, runtime validation, and commit policy references should all appear.
