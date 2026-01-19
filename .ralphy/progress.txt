@@ -101,3 +101,14 @@
 - Created validation_report_sizing.json with detailed analysis
 - Go vet validation passed, gofmt formatting correct
 - Updated PRD to mark planning-006 as completed (completed: true)
+
+## 2026-01-19: Task planning-007 completed
+- Created affirmative constraints validation tool in tools/validate_constraints/validate.go
+- Tool validates: affirmative language usage, negative phrasing detection, constraint specificity
+- Created comprehensive test suite with 7 test functions covering all validation scenarios
+- All tests passing (7/7 test functions)
+- Validated actual ralphy_inputs.yaml: found and fixed 1 negative phrasing violation
+- Current status: 0 negative instances, 70.6% affirmative phrasing, 9/17 specific constraints
+- Created validation_report_constraints.json with detailed analysis
+- Go vet validation passed, gofmt formatting correct
+- Updated PRD to mark planning-007 as completed (completed: true)

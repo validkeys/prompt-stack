@@ -1,0 +1,17 @@
+{
+  "valid": true,
+  "total_constraints": 17,
+  "affirmative_count": 12,
+  "negative_count": 0,
+  "summary": {
+    "affirmative_percentage": 70.58823529411765,
+    "specific_constraints": 9,
+    "vague_constraints": 8,
+    "pattern_references": 1
+  },
+  "recommendations": [
+    "Increase affirmative phrasing from 70.6% to 100%",
+    "Make 8 vague constraints more specific and actionable",
+    "Reference existing patterns and examples in more constraints"
+  ]
+}

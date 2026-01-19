@@ -332,6 +332,7 @@ tasks:
     output_format: "validation_report_constraints.json"
     estimated_duration_minutes: 30
     note: "assumption: true - shorter duration increased to meet task sizing policy"
+    completed: true
   # Phase 8: AI Validation - Implementation Guidelines Compliance (planning only — no tests generated)
   - id: "planning-008"
     title: "Validate implementation guidelines inclusion"

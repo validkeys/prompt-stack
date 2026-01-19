@@ -67,9 +67,9 @@ global_constraints:
     - pattern: "\\bany\\b"
       message: "Use unknown with type guards instead"
     - pattern: "@ts-ignore"
-      message: "Fix type errors properly"
+      message: "Fix type errors with proper type annotations"
     - pattern: "eslint-disable"
-      message: "Address lint issues instead of disabling"
+      message: "Address lint issues by fixing the underlying code problems"
     - pattern: "TODO:"
       message: "Create a tracking issue for this work"
   required_patterns:
@@ -87,9 +87,9 @@ global_constraints:
     - "ALWAYS use table-driven tests in Go"
     - "ALWAYS follow Go formatting conventions (gofmt)"
     - "ALWAYS write docstrings for exported functions"
-    - "ALWAYS handle errors explicitly; never ignore them"
+    - "ALWAYS handle errors explicitly; always check and propagate errors"
     - "ALWAYS validate external inputs at entry points"
-    - "ONLY use: Go 1.x, Cobra, better-sqlite3"
+    - "USE only these dependencies: Go 1.x, Cobra, better-sqlite3"
     - "ALWAYS run go vet before committing"
     - "ALWAYS write unit tests for new code"
 
