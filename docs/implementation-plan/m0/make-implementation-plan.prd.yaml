@@ -159,7 +159,7 @@ tasks:
     description: "Create the final Ralphy YAML inputs file that includes:\n1. Project metadata (name, description, version)\n2. Global constraints and standards\n3. Task definitions with style anchors\n4. Verification steps (pre-commit, post-commit)\n5. Context optimization specifications\n6. Model preferences and strategies\n\nFollow the structure defined in docs/ralphy-inputs.md and ensure produced outputs are declared in 'outputs' for downstream tasks."
     depends_on: ["planning-003"]
     outputs:
-      ralphy_inputs: "ralphy_inputs.yaml"
+      ralphy_inputs: "implementation-plan.yaml"
     files_in_scope:
       - "task_breakdown.yaml" # From planning-003
       - "docs/ralphy-inputs.md" # Input specification
@@ -183,7 +183,7 @@ tasks:
         - "All required fields present"
         - "Style anchors (2-3) per task"
         - "Affirmative constraints used"
-    output_format: "ralphy_inputs.yaml"
+    output_format: "implementation-plan.yaml"
     estimated_duration_minutes: 45
     completed: true
   # Phase 4a: YAML syntax validation (new)
@@ -194,7 +194,7 @@ tasks:
     outputs:
       yaml_validation: "yaml_validation_report.json"
     files_in_scope:
-      - "ralphy_inputs.yaml"
+      - "implementation-plan.yaml"
       - "tools/validate_yaml.go"
       - "docs/ralphy-yaml-spec.md"
     style_anchors:
@@ -217,7 +217,7 @@ tasks:
     outputs:
       schema_validation: "schema_validation_report.json"
     files_in_scope:
-      - "ralphy_inputs.yaml"
+      - "implementation-plan.yaml"
       - "docs/ralphy-inputs.schema.json"
       - "docs/ralphy-yaml-spec.md"
     style_anchors:
@@ -239,7 +239,7 @@ tasks:
     outputs:
       secrets_scan: "secrets_scan_report.json"
     files_in_scope:
-      - "ralphy_inputs.yaml"
+      - "implementation-plan.yaml"
       - "docs/requirements/main.md"
     verification:
       pre_commit:
@@ -247,6 +247,7 @@ tasks:
         - "Any required secrets are referenced via vault or env placeholders"
     output_format: "secrets_scan_report.json"
     estimated_duration_minutes: 30
+    completed: true
   # Phase 5: AI Validation - Style Anchors Compliance
   - id: "planning-005"
     title: "Validate style anchors compliance"
@@ -255,7 +256,7 @@ tasks:
     outputs:
       anchors_validation: "validation_report_anchors.json"
     files_in_scope:
-      - "ralphy_inputs.yaml"
+      - "implementation-plan.yaml"
       - "docs/best-practices.md:164-170" # Style anchors research section
     style_anchors:
       - file: "docs/initial-claude-conversation/split-files/02-research-report-preventing-drift.md"
@@ -278,6 +279,7 @@ tasks:
         - "Anchor reasons are specific (not generic)"
     output_format: "validation_report_anchors.json"
     estimated_duration_minutes: 30
+    completed: true
   # Phase 6: AI Validation - Task Sizing Compliance
   - id: "planning-006"
     title: "Validate task sizing compliance"
@@ -286,7 +288,7 @@ tasks:
     outputs:
       sizing_validation: "validation_report_sizing.json"
     files_in_scope:
-      - "ralphy_inputs.yaml"
+      - "implementation-plan.yaml"
       - "docs/task-sizing.md" # Task sizing heuristics
     style_anchors:
       - file: "docs/task-sizing.md"
@@ -311,7 +313,7 @@ tasks:
     outputs:
       constraints_validation: "validation_report_constraints.json"
     files_in_scope:
-      - "ralphy_inputs.yaml"
+      - "implementation-plan.yaml"
       - "docs/best-practices.md:178-183" # Affirmative constraints research
     style_anchors:
       - file: "docs/best-practices.md"
@@ -343,7 +345,7 @@ tasks:
     outputs:
       implementation_guidelines_validation: "validation_report_implementation_guidelines.json"
     files_in_scope:
-      - "ralphy_inputs.yaml"
+      - "implementation-plan.yaml"
       - "docs/best-practices.md" # Implementation guidance reference
     style_anchors:
       - file: "docs/best-practices.md"
@@ -363,7 +365,7 @@ tasks:
     outputs:
       enforcement_validation: "validation_report_enforcement.json"
     files_in_scope:
-      - "ralphy_inputs.yaml"
+      - "implementation-plan.yaml"
       - "docs/best-practices.md:184-193" # Multi-layer enforcement research
       - "docs/opencode-rules.md"
       - "docs/requirements/main.md"
@@ -420,9 +422,9 @@ tasks:
     description: "Based on quality report recommendations:\n1. Apply automatic fixes where possible\n2. Flag issues requiring manual intervention\n3. Regenerate Ralphy YAML with improvements\n4. Create final version with quality score metadata\n\nOnly proceed if quality score ≥0.95."
     depends_on: ["planning-010"]
     outputs:
-      final_ralphy_inputs: "final_ralphy_inputs.yaml"
+      final_ralphy_inputs: "final_implementation-plan.yaml"
     files_in_scope:
-      - "ralphy_inputs.yaml" # Initial version
+      - "implementation-plan.yaml" # Initial version
       - "final_quality_report.json"
     style_anchors:
       - file: "docs/best-practices.md"
@@ -433,7 +435,7 @@ tasks:
         - "Critical issues resolved"
         - "All warnings addressed or justified"
         - "Final YAML passes all validations (yaml syntax, schema, secrets, constraints)"
-    output_format: "final_ralphy_inputs.yaml"
+    output_format: "final_implementation-plan.yaml"
     estimated_duration_minutes: 30
     note: "assumption: true - increased to meet task sizing policy"
     completion_signal: "<promise>PLANNING_COMPLETE</promise>"
@@ -449,7 +451,7 @@ instructions: |
      - planning-001 outputs.structured_analysis => structured_analysis.json
      - planning-002 outputs.patterns_report => patterns_report.json
      - planning-003 outputs.task_breakdown => task_breakdown.yaml
-     - planning-004 outputs.ralphy_inputs => ralphy_inputs.yaml
+     - planning-004 outputs.ralphy_inputs => implementation-plan.yaml
      - planning-004a outputs.yaml_validation => yaml_validation_report.json
      - planning-004b outputs.schema_validation => schema_validation_report.json
      - planning-004c outputs.secrets_scan => secrets_scan_report.json
@@ -463,7 +465,7 @@ instructions: |
   4. Execution flow:
      - Run tasks sequentially according to dependencies
      - Each task validates its output before proceeding
-     - Final output: final_ralphy_inputs.yaml (quality ≥0.95)
+     - Final output: final_implementation-plan.yaml (quality ≥0.95)
 
   5. Quality gates:
      - Style anchors: 2-3 per task (critical)
@@ -476,7 +478,7 @@ instructions: |
      - Final YAML MUST pass JSON Schema validation in docs/ralphy-inputs.schema.json
 
   6. Output artifacts:
-     - final_ralphy_inputs.yaml: Ready for Ralphy execution
+     - final_implementation-plan.yaml: Ready for Ralphy execution
      - final_quality_report.json: Detailed validation results
      - Intermediate analysis and validation reports
 # Research Compliance Summary
