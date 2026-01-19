@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ralphy Inputs",
+  "type": "object",
+  "required": ["name", "version", "rules_file", "task_sizing", "tdd", "model_preferences", "outputs"],
+  "properties": {
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "rules_file": {"type": "string"},
+    "style_anchors": {"type": "array", "items": {"type": "string"}},
+    "allowed_dependencies": {"type": "array", "items": {"type": "string"}},
+    "task_sizing": {
+      "type": "object",
+      "required": ["min_minutes", "max_minutes"],
+      "properties": {
+        "min_minutes": {"type": "integer", "minimum": 1},
+        "max_minutes": {"type": "integer", "minimum": 1},
+        "max_files": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "tdd": {
+      "type": "object",
+      "required": ["required", "test_command"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "test_command": {"oneOf": [{"type":"string"}, {"type":"array", "items": {"type":"string"}}]},
+        "failure_instruction": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "ci": {
+      "type": "object",
+      "properties": {
+        "precommit": {"type": "array", "items": {"type": "string"}},
+        "ci_checks": {"type": "array", "items": {"type": "string"}},
+        "count_eslint_disable": {"oneOf": [{"type":"boolean"}, {"type":"integer"}]}
+      },
+      "additionalProperties": false
+    },
+    "drift_policy_ref": {"type": "string"},
+    "validation_schemas": {"type": "array", "items": {"type": "string"}},
+    "prompt_template": {
+      "type": "object",
+      "properties": {
+        "prefix": {"type": "string"},
+        "suffix": {"type": "string"},
+        "placeholders": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "model_preferences": {
+      "type": "object",
+      "required": ["primary"],
+      "properties": {
+        "primary": {"type": "string"},
+        "review_model": {"type": "string"},
+        "strategies": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["allowed_file_edits", "disallowed_file_edits"],
+      "properties": {
+        "allowed_file_edits": {"type": "array", "items": {"type": "string"}},
+        "disallowed_file_edits": {"type": "array", "items": {"type": "string"}},
+        "commit_policy": {"type": "object"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
