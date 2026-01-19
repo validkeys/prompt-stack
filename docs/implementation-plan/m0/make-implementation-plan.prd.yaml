@@ -152,6 +152,7 @@ tasks:
         - "Style anchors assigned (2-3 per task)"
     output_format: "task_breakdown.yaml"
     estimated_duration_minutes: 60
+    completed: true
   # Phase 4: Generate Ralphy YAML Inputs
   - id: "planning-004"
     title: "Generate complete Ralphy YAML inputs"

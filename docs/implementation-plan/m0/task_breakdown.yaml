@@ -1,0 +1,286 @@
+# Task Breakdown for Milestone M0
+# Generated: 2026-01-19T09:30:00Z
+# Based on: structured_analysis.json, patterns_report.json
+# Follows: docs/task-sizing.md (30-150 minute tasks)
+
+metadata:
+  milestone: "m0"
+  title: "Initial setup with requirements gathering phase"
+  breakdown_generated_at: "2026-01-19T09:30:00Z"
+  based_on:
+    - "docs/implementation-plan/m0/structured_analysis.json"
+    - "docs/implementation-plan/m0/patterns_report.json"
+    - "docs/task-sizing.md"
+  sizing_policy:
+    min_minutes: 30
+    max_minutes: 150
+    max_files: 5
+  style_anchor_policy: "2-3 anchors per task"
+
+# Tasks for M0 implementation
+tasks:
+  # Task 1: Project scaffold
+  - id: "m0-001"
+    title: "Initialize Go project with module structure"
+    description: |
+      Set up the basic project structure with Go module initialization.
+      Create directory layout for cmd/, pkg/, tests/, and configuration files.
+      This is the foundation task that enables all subsequent development.
+    estimated_duration_minutes: 45
+    files_in_scope:
+      - "go.mod"
+      - "go.sum"
+      - "cmd/your-tool/main.go"
+      - "Makefile"
+      - ".gitignore"
+    style_anchors:
+      - file: "examples/style-anchor/cmd/mytool/main.go"
+        reason: "Concrete example of Go CLI structure with Cobra"
+      - file: "docs/best-practices.md"
+        reason: "Project structure and setup guidelines"
+    dependencies: []
+    estimated_context_tokens: 800
+    single_responsibility: "Project initialization and scaffolding"
+    acceptance_criteria:
+      - "go mod init completes successfully"
+      - "Directory structure matches planned layout"
+      - "Main.go has basic Cobra root command"
+      - "Makefile has build and test targets"
+
+  # Task 2: CLI command structure
+  - id: "m0-002"
+    title: "Implement core CLI commands with Cobra"
+    description: |
+      Create the command hierarchy with plan, validate, review, build, and init commands.
+      Each command should have basic help text and placeholder Run functions.
+      This provides the CLI surface that will be filled in by subsequent tasks.
+    estimated_duration_minutes: 60
+    files_in_scope:
+      - "cmd/your-tool/main.go"
+      - "cmd/your-tool/plan.go"
+      - "cmd/your-tool/validate.go"
+      - "cmd/your-tool/review.go"
+      - "cmd/your-tool/build.go"
+      - "cmd/your-tool/init.go"
+    style_anchors:
+      - file: "examples/style-anchor/cmd/mytool/main.go"
+        reason: "Cobra command structure and Run function patterns"
+      - file: "docs/best-practices.md"
+        reason: "CLI command naming and organization guidelines"
+      - file: "docs/requirements/main.md"
+        reason: "Reference for CLI command interface requirements"
+    dependencies: ["m0-001"]
+    estimated_context_tokens: 1200
+    single_responsibility: "CLI command structure and basic implementation"
+    acceptance_criteria:
+      - "--help shows all core commands"
+      - "--help exits with status 0"
+      - "Each command has placeholder Run function"
+      - "Commands follow consistent naming pattern"
+
+  # Task 3: Ralphy executor integration
+  - id: "m0-003"
+    title: "Bundle and integrate Ralphy shell executor"
+    description: |
+      Create the executor package that manages the vendored ralphy.sh script.
+      Implement materialization at runtime with dry-run mode that writes to report files.
+      This enables the tool to orchestrate Ralphy execution even though full OpenCode integration is out of scope.
+    estimated_duration_minutes: 90
+    files_in_scope:
+      - "pkg/executor/executor.go"
+      - "pkg/executor/dry_run.go"
+      - "your-tool/vendor/ralphy/ralphy.sh"
+      - ".your-tool/report.txt"
+      - ".your-tool/audit.log"
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Simple package structure with clear exports"
+      - file: "docs/best-practices.md"
+        reason: "Package design and export patterns"
+      - file: "docs/requirements/main.md"
+        reason: "Ralphy integration requirements and dry-run specification"
+    dependencies: ["m0-001"]
+    estimated_context_tokens: 1500
+    single_responsibility: "Ralphy executor integration and dry-run support"
+    acceptance_criteria:
+      - "ralphy.sh is embedded or vendored"
+      - "Dry-run mode writes to .your-tool/report.txt"
+      - "Dry-run mode writes to .your-tool/audit.log"
+      - "Executor can materialize script at runtime"
+
+  # Task 4: Requirements prompt implementation
+  - id: "m0-004"
+    title: "Implement interactive requirements prompt"
+    description: |
+      Create the interactive prompt system that asks one question at a time.
+      Capture user responses, validate them, and save to planning input YAML.
+      Save transcript of the interview for reference.
+      This fulfills the FR-003 requirement for interactive requirements gathering.
+    estimated_duration_minutes: 75
+    files_in_scope:
+      - "cmd/your-tool/init.go"
+      - "pkg/prompt/prompt.go"
+      - "pkg/prompt/questions.go"
+      - "docs/implementation-plan/m0/requirements-interview.md"
+      - "examples/requirements/templates/requirements-prompt.md"
+    style_anchors:
+      - file: "docs/best-practices.md"
+        reason: "Interactive CLI patterns and user experience guidelines"
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Simple function-based API pattern for prompt interactions"
+      - file: "docs/requirements/main.md"
+        reason: "Requirements prompt specification and interview flow"
+    dependencies: ["m0-002"]
+    estimated_context_tokens: 1400
+    single_responsibility: "Interactive requirements gathering system"
+    acceptance_criteria:
+      - "Prompt displays questions sequentially"
+      - "User responses are captured and validated"
+      - "Final output saves to YAML file matching template schema"
+      - "Transcript of interview is saved"
+
+  # Task 5: Project documentation
+  - id: "m0-005"
+    title: "Create project documentation and README"
+    description: |
+      Write comprehensive documentation including README with usage instructions,
+      contributing guidelines, and architecture overview. Document the commands
+      and their options. This ensures the project is approachable and maintainable.
+    estimated_duration_minutes: 45
+    files_in_scope:
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "docs/architecture.md"
+      - "docs/commands.md"
+      - "docs/implementation-plan/m0/requirements.md"
+    style_anchors:
+      - file: "examples/style-anchor/README.md"
+        reason: "Example of clear, concise README structure"
+      - file: "docs/best-practices.md"
+        reason: "Documentation standards and guidelines"
+    dependencies: ["m0-002", "m0-004"]
+    estimated_context_tokens: 1000
+    single_responsibility: "Project documentation and user guides"
+    acceptance_criteria:
+      - "README describes tool purpose and core features"
+      - "Usage examples for each command"
+      - "Architecture overview explains components"
+      - "Contributing guidelines present"
+
+  # Task 6: Testing infrastructure
+  - id: "m0-006"
+    title: "Add unit tests and testing infrastructure"
+    description: |
+      Create unit tests for core packages using table-driven test patterns.
+      Set up test runner and coverage reporting. Ensure tests can be run via Makefile.
+      This fulfills the non-functional requirement for basic unit tests.
+    estimated_duration_minutes: 60
+    files_in_scope:
+      - "cmd/your-tool/main_test.go"
+      - "pkg/executor/executor_test.go"
+      - "pkg/prompt/prompt_test.go"
+      - "Makefile"
+      - ".github/workflows/test.yml"
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter_test.go"
+        reason: "Table-driven test pattern for Go packages"
+      - file: "docs/best-practices.md"
+        reason: "Testing guidelines and TDD patterns"
+      - file: "docs/task-sizing.md"
+        reason: "Test sizing and structure guidance"
+    dependencies: ["m0-002", "m0-003", "m0-004"]
+    estimated_context_tokens: 1300
+    single_responsibility: "Testing infrastructure and unit test coverage"
+    acceptance_criteria:
+      - "Unit tests for all core packages"
+      - "Tests use table-driven pattern"
+      - "make test runs all tests"
+      - "Coverage reporting configured"
+
+  # Task 7: Build system and packaging
+  - id: "m0-007"
+    title: "Complete build system and packaging configuration"
+    description: |
+      Finalize Makefile with all build, test, and clean targets.
+      Add build instructions and ensure the binary can be built with Go toolchain.
+      Add versioning and release preparation. This completes the M0 deliverables.
+    estimated_duration_minutes: 30
+    files_in_scope:
+      - "Makefile"
+      - "build.sh"
+      - ".github/workflows/release.yml"
+      - "cmd/your-tool/version.go"
+      - "dist/"
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Simple package structure reference for version package"
+      - file: "docs/best-practices.md"
+        reason: "Build system and automation guidelines"
+    dependencies: ["m0-001", "m0-006"]
+    estimated_context_tokens: 700
+    single_responsibility: "Build system and packaging"
+    acceptance_criteria:
+      - "make build creates working binary"
+      - "make test runs all tests"
+      - "make clean removes build artifacts"
+      - "Binary can be executed with --help"
+
+# Task Dependencies Graph
+dependencies:
+  acyclic: true
+  levels:
+    - level: 1
+      tasks: ["m0-001"]
+    - level: 2
+      tasks: ["m0-002", "m0-003"]
+    - level: 3
+      tasks: ["m0-004"]
+    - level: 4
+      tasks: ["m0-005", "m0-006"]
+    - level: 5
+      tasks: ["m0-007"]
+
+# Sizing Summary
+sizing_summary:
+  total_tasks: 7
+  total_estimated_minutes: 405
+  min_task_duration_minutes: 30
+  max_task_duration_minutes: 90
+  avg_task_duration_minutes: 57.8
+  within_sizing_policy: true
+  parallel_execution_opportunities:
+    - level_2: ["m0-002", "m0-003"]
+    - level_4: ["m0-005", "m0-006"]
+
+# Style Anchors Summary
+style_anchors_summary:
+  total_anchors_assigned: 18
+  avg_anchors_per_task: 2.57
+  meets_policy: true
+  policy_range: "2-3 anchors per task"
+
+# Context Budget Summary
+context_budget_summary:
+  total_estimated_tokens: 7900
+  avg_tokens_per_task: 1128
+  max_tokens_per_task: 1500
+  max_allowed_per_task: 5000
+  all_within_budget: true
+
+# Compliance with Sizing Policy
+compliance:
+  task_duration_range: "30-90 minutes (policy: 30-150)"
+  files_per_task_range: "2-5 files (policy: max 5)"
+  style_anchors_per_task: "2-3 anchors (policy: 2-3)"
+  dependencies_acyclic: true
+  clear_single_responsibility: true
+  meets_all_criteria: true
+
+# Notes
+notes:
+  - "Tasks designed for M0 milestone scope (1-3 days)"
+  - "All tasks can be executed sequentially or in parallel by dependency level"
+  - "Each task has clear acceptance criteria for verification"
+  - "Style anchors selected from patterns_report.json with high relevance"
+  - "Context budgets estimated conservatively; actual may vary"
+  - "Test infrastructure (m0-006) uses table-driven pattern from codebase"
