@@ -40,9 +40,28 @@ constraints:
 assumptions:
   - ""
 
-# Deliverables (artifacts to produce)
+# Deliverables (artifacts to produce) — structured
+# Each deliverable should include minimal metadata so downstream tools can act on them.
 deliverables:
-  - ""    # e.g. task_breakdown.yaml, implementation-plan.yaml, quality_report.json
+  - name: ""           # short artifact name (required)
+    description: ""    # one-sentence description (required)
+    owner: ""          # name/email/handle responsible
+    format: ""         # e.g. yaml, json, tar.gz, docx
+    due: ""            # YYYY-MM-DD or 'asap'
+    acceptance_ids:    # optional list of acceptance_criteria IDs this deliverable satisfies
+      - ""
+  - ""    # legacy single-string entry supported for backward compatibility
+
+# Acceptance criteria — user-facing verification rules
+acceptance_criteria:
+  - id: ""                       # short id (e.g. AC-1)
+    title: ""                    # one-line title
+    scenario: ""                 # brief user scenario or context
+    expected_outcome: ""         # explicit, measurable expectation
+    validation_method: ""        # how to verify (e.g. automated-test, manual-review, smoke-test)
+    stakeholder_signoff: ""      # name/email or 'required/optional'
+    related_deliverables:        # list of deliverable names/ids this AC applies to
+      - ""
 
 # Tech and integrations (short)
 tech_stack:

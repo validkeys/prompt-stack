@@ -43,7 +43,8 @@ Helpful additional fields (ask when available)
 - background
 - constraints and assumptions
 - scope: in_scope / out_of_scope
-- deliverables
+- deliverables (capture structured fields: name, description, owner, format, due)
+
 - timeline.start_date and timeline.target_completion
 - testing expectations
 - data_classification / secrets_included
@@ -62,11 +63,11 @@ Suggested question sequence (ask in order, but follow up when answers need clari
 11. "What should be included in scope for this milestone?"
 12. "What is explicitly out of scope?"
 13. "Any critical constraints or assumptions? (security, infra, timelines)"
-14. "What deliverables do you expect? (e.g., task_breakdown.yaml, quality_report.json)"
+14. "What deliverables do you expect? For each deliverable capture: name, one-line description, owner (name/email), format (yaml/json/docx), and desired due date. Example: {name: task_breakdown.yaml, description: task list, owner: alice@example.com, format: yaml, due: 2026-02-01}"
 15. "Do you have desired timelines or dates? (start / target completion)"
 16. "Testing requirements: unit tests, integration, TDD preference?"
 17. "Any privacy, compliance, or secrets handling notes?"
-18. "Are there quality/acceptance thresholds we must meet (e.g., quality score >= 0.95)?"
+18. "Are there quality/acceptance thresholds we must meet (e.g., quality score >= 0.95)? For each threshold, also describe how it will be validated (automated test, manual review, smoke test)."
 
 Style anchor guidance
 - Request concrete file paths or URLs for anchors and a short reason for relevance.

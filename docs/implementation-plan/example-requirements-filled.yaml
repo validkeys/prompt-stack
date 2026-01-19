@@ -1,0 +1,109 @@
+id: "m1"
+title: "Example Milestone: Add CI Quality Gate"
+short_description: "Add an automated CI quality gate that validates Ralphy YAML and runs unit tests before merge."
+background: "This milestone adds automated checks to catch YAML drift and run unit tests in CI."
+
+objectives:
+  - "Integrate YAML validator into CI"
+  - "Ensure unit tests run and pass before merge"
+
+success_metrics:
+  - metric: "plan_quality_score"
+    target: "0.95"
+
+requirements_file: "docs/implementation-plan/m1/requirements.md"
+style_anchors:
+  - "docs/best-practices.md"
+  - "src/CI/.github/workflows/ci.yaml"
+
+timeline:
+  start_date: "2026-01-20"
+  target_completion: "2026-02-05"
+
+scope:
+  in_scope:
+    - "CI validator integration"
+    - "unit test enforcement"
+  out_of_scope:
+    - "e2e tests"
+
+constraints:
+  - "Use existing CI runner"
+assumptions:
+  - "Repo has a working test suite"
+
+deliverables:
+  - name: "ci_validator_config.yaml"
+    description: "CI configuration for Ralphy YAML validation"
+    owner: "alice@example.com"
+    format: "yaml"
+    due: "2026-01-27"
+    acceptance_ids:
+      - "AC-1"
+  - name: "quality_report.json"
+    description: "Report summarizing validation results and test coverage"
+    owner: "bob@example.com"
+    format: "json"
+    due: "2026-02-05"
+    acceptance_ids:
+      - "AC-2"
+
+acceptance_criteria:
+  - id: "AC-1"
+    title: "YAML validation in CI"
+    scenario: "When a PR is opened with modified Ralphy YAML"
+    expected_outcome: "CI fails if YAML does not pass schema validation"
+    validation_method: "automated-test"
+    stakeholder_signoff: "alice@example.com"
+    related_deliverables:
+      - "ci_validator_config.yaml"
+  - id: "AC-2"
+    title: "Unit tests enforced"
+    scenario: "When a PR is opened"
+    expected_outcome: "All unit tests pass in CI before merge"
+    validation_method: "green CI"
+    stakeholder_signoff: "bob@example.com"
+    related_deliverables:
+      - "quality_report.json"
+
+tech_stack:
+  languages: ["go"]
+  frameworks: ["cobra"]
+  infra: ["github_actions"]
+
+integrations:
+  - system: "github"
+    notes: "Use GitHub Actions to run validators"
+
+attachments:
+  - "docs/ralphy-inputs.schema.json"
+repo_access:
+  repo: "git@github.com:example/repo.git"
+  read_only: true
+
+testing:
+  require_unit_tests: true
+  require_integration_tests: true
+  require_e2e: false
+  qa_gates:
+    - "code review"
+    - "green CI"
+
+data_classification: "internal"
+secrets_included: false
+
+confirmations:
+  - "I provided a valid requirements_file path"
+  - "I included 1-3 style_anchor files or code anchors"
+  - "I granted read access to the repo if code discovery is required"
+
+hints:
+  prefer_affirmative_constraints: true
+  preferred_task_size_minutes: 30-120
+  required_top_level_fields:
+    - id
+    - title
+    - short_description
+    - requirements_file
+    - style_anchors
+    - stakeholders.product_owner
