@@ -83,6 +83,7 @@ tasks:
       pre_commit:
         - "At least 3 relevant patterns identified"
         - "Style anchors categorized by relevance"
+    completed: true
 
   - id: "planning-003"
     title: "Break down requirements into optimally sized tasks"
