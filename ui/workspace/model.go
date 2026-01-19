@@ -4,12 +4,26 @@
 package workspace
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kyledavis/prompt-stack/internal/editor"
 )
+
+// Auto-save message types
+type autoSaveMsg struct {
+	timerID int
+}
+type saveSuccessMsg struct{}
+type saveErrorMsg struct {
+	err error
+}
+type clearSaveStatusMsg struct{}
 
 // Model represents text editor workspace.
 // It integrates editor components to provide text editing functionality.
@@ -22,6 +36,11 @@ type Model struct {
 	height       int
 	statusBar    statusBar
 	isReadOnly   bool
+
+	// Auto-save state
+	autoSaveTimerID int
+	saveStatus      string
+	saveError       string
 }
 
 type statusBar struct {
@@ -40,6 +59,11 @@ func New() Model {
 		width:        0,
 		height:       0,
 		isReadOnly:   false,
+
+		// Auto-save state
+		autoSaveTimerID: 0,
+		saveStatus:      "",
+		saveError:       "",
 	}
 }
 
@@ -110,14 +134,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			newModel.buffer.Delete()
 			newModel = newModel.markDirty()
 			newModel = newModel.updateStatusBar()
-			return newModel, nil
+			return newModel.scheduleAutoSave()
 
 		case tea.KeyEnter:
 			newModel := m
 			newModel.buffer.Insert('\n')
 			newModel = newModel.markDirty()
 			newModel = newModel.updateStatusBar()
-			return newModel, nil
+			return newModel.scheduleAutoSave()
 
 		case tea.KeyTab:
 			// Navigate to next placeholder
@@ -131,7 +155,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				newModel = m.insertTab()
 				newModel = newModel.markDirty()
 				newModel = newModel.updateStatusBar()
-				return newModel, nil
+				return newModel.scheduleAutoSave()
 			}
 
 		case tea.KeyShiftTab:
@@ -143,7 +167,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			newModel := m.insertRune(' ')
 			newModel = newModel.markDirty()
 			newModel = newModel.updateStatusBar()
-			return newModel, nil
+			return newModel.scheduleAutoSave()
 
 		case tea.KeyRunes:
 			// Check for 'i' to enter placeholder edit mode
@@ -157,7 +181,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			newModel := m.insertRunes(msg.Runes)
 			newModel = newModel.markDirty()
 			newModel = newModel.updateStatusBar()
-			return newModel, nil
+			return newModel.scheduleAutoSave()
 		}
 
 	case tea.WindowSizeMsg:
@@ -166,6 +190,47 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		newModel.height = msg.Height
 		newModel.viewport.Width = msg.Width
 		newModel.viewport.Height = msg.Height - 1 // Leave room for status bar
+		return newModel, nil
+
+	case autoSaveMsg:
+		// Ignore stale timer messages
+		if msg.timerID != m.autoSaveTimerID {
+			return m, nil
+		}
+		// Set saving status
+		newModel := m
+		newModel.saveStatus = "saving"
+		// Perform save in a command to avoid blocking
+		return newModel, tea.Cmd(func() tea.Msg {
+			err := newModel.saveToHistory()
+			if err != nil {
+				return saveErrorMsg{err}
+			}
+			return saveSuccessMsg{}
+		})
+
+	case saveSuccessMsg:
+		newModel := m
+		newModel.saveStatus = "saved"
+		newModel.fileManager = newModel.fileManager.ClearModified()
+		// Clear saved status after 2 seconds
+		return newModel, tea.Tick(2*time.Second, func(t time.Time) tea.Msg {
+			return clearSaveStatusMsg{}
+		})
+
+	case saveErrorMsg:
+		newModel := m
+		newModel.saveStatus = "error"
+		newModel.saveError = msg.err.Error()
+		// Clear error status after 5 seconds
+		return newModel, tea.Tick(5*time.Second, func(t time.Time) tea.Msg {
+			return clearSaveStatusMsg{}
+		})
+
+	case clearSaveStatusMsg:
+		newModel := m
+		newModel.saveStatus = ""
+		newModel.saveError = ""
 		return newModel, nil
 	}
 
@@ -214,9 +279,54 @@ func (m Model) markDirty() Model {
 	return newModel
 }
 
+// scheduleAutoSave schedules an auto-save timer.
+func (m Model) scheduleAutoSave() (Model, tea.Cmd) {
+	newModel := m
+	newModel.autoSaveTimerID++
+	timerID := newModel.autoSaveTimerID
+	return newModel, tea.Tick(500*time.Millisecond, func(t time.Time) tea.Msg {
+		return autoSaveMsg{timerID: timerID}
+	})
+}
+
 // saveToFile saves the composition to a markdown file.
 func (m Model) saveToFile() error {
 	return m.fileManager.Save(m.buffer.Content())
+}
+
+// saveToHistory saves the composition to the history directory.
+func (m Model) saveToHistory() error {
+	// Get history directory path
+	historyDir, err := getHistoryDirectory()
+	if err != nil {
+		return fmt.Errorf("failed to get history directory: %w", err)
+	}
+
+	// Create directory if it doesn't exist
+	if err := os.MkdirAll(historyDir, 0755); err != nil {
+		return fmt.Errorf("failed to create history directory: %w", err)
+	}
+
+	// Generate timestamped filename
+	filename := time.Now().Format("2006-01-02_15-04-05") + ".md"
+	filepath := filepath.Join(historyDir, filename)
+
+	// Write content
+	content := m.buffer.Content()
+	if err := os.WriteFile(filepath, []byte(content), 0644); err != nil {
+		return fmt.Errorf("failed to write history file: %w", err)
+	}
+
+	return nil
+}
+
+// getHistoryDirectory returns the path to the history directory.
+func getHistoryDirectory() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("failed to get home directory: %w", err)
+	}
+	return filepath.Join(home, ".promptstack", "data", ".history"), nil
 }
 
 // adjustViewport adjusts the viewport to keep the cursor visible.

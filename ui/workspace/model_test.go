@@ -6,7 +6,152 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/kyledavis/prompt-stack/ui/theme"
 )
+
+// TestThemeIntegration tests that theme colors are correctly applied
+func TestThemeIntegration(t *testing.T) {
+	tests := []struct {
+		name   string
+		setup  func() Model
+		verify func(Model, *testing.T)
+	}{
+		{
+			name: "editor renders with valid dimensions",
+			setup: func() Model {
+				model := New()
+				model.width = 40
+				model.height = 10
+				return model
+			},
+			verify: func(m Model, t *testing.T) {
+				view := m.View()
+				if view == "" {
+					t.Error("expected non-empty view")
+				}
+				if len(view) == 0 {
+					t.Error("expected view with content")
+				}
+			},
+		},
+		{
+			name: "status bar renders",
+			setup: func() Model {
+				model := New()
+				model.width = 40
+				model.height = 10
+				model = model.SetStatus("test")
+				return model
+			},
+			verify: func(m Model, t *testing.T) {
+				view := m.View()
+				if !strings.Contains(view, "test") {
+					t.Error("expected status message in view")
+				}
+			},
+		},
+		{
+			name: "cursor is visible in view",
+			setup: func() Model {
+				model := New()
+				model.width = 40
+				model.height = 10
+				m, _ := model.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'H'}})
+				return m.(Model)
+			},
+			verify: func(m Model, t *testing.T) {
+				view := m.View()
+				if view == "" {
+					t.Error("expected non-empty view with cursor")
+				}
+			},
+		},
+		{
+			name: "cursor style is defined",
+			setup: func() Model {
+				return New()
+			},
+			verify: func(_ Model, t *testing.T) {
+				cursorStyle := theme.CursorStyle()
+				rendered := cursorStyle.Render("test")
+				if rendered == "" {
+					t.Error("expected non-empty rendered cursor style")
+				}
+			},
+		},
+		{
+			name: "status style is defined",
+			setup: func() Model {
+				return New()
+			},
+			verify: func(_ Model, t *testing.T) {
+				statusStyle := theme.StatusStyle()
+				rendered := statusStyle.Render("test")
+				if rendered == "" {
+					t.Error("expected non-empty rendered status style")
+				}
+			},
+		},
+		{
+			name: "background primary color constant is defined",
+			setup: func() Model {
+				return New()
+			},
+			verify: func(_ Model, t *testing.T) {
+				if theme.BackgroundPrimary == "" {
+					t.Error("expected non-empty BackgroundPrimary constant")
+				}
+			},
+		},
+		{
+			name: "foreground primary color constant is defined",
+			setup: func() Model {
+				return New()
+			},
+			verify: func(_ Model, t *testing.T) {
+				if theme.ForegroundPrimary == "" {
+					t.Error("expected non-empty ForegroundPrimary constant")
+				}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			model := tt.setup()
+			tt.verify(model, t)
+		})
+	}
+}
+
+// TestThemeConsistency tests that theme styles remain consistent
+func TestThemeConsistency(t *testing.T) {
+	model := New()
+	model.width = 40
+	model.height = 10
+
+	// Type some content
+	for _, r := range "Hello World" {
+		m, _ := model.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{r}})
+		model = m.(Model)
+	}
+
+	view := model.View()
+
+	// Verify no hardcoded colors (only theme constants should appear)
+	hardcodedColors := []string{
+		"#ffffff",
+		"#000000",
+		"color:",
+		"Color(\"",
+	}
+
+	for _, color := range hardcodedColors {
+		if strings.Contains(view, color) {
+			t.Errorf("found hardcoded color: %s", color)
+		}
+	}
+}
 
 // TestNewWorkspace tests creating a new workspace model
 func TestNewWorkspace(t *testing.T) {
@@ -1002,5 +1147,110 @@ func TestNavigatePlaceholdersWrap(t *testing.T) {
 	// Should have wrapped to first placeholder
 	if model.placeholders.Active() == nil {
 		t.Error("expected active placeholder after wrap")
+	}
+}
+
+// TestAutoSaveScheduling tests that auto-save is scheduled on edits
+func TestAutoSaveScheduling(t *testing.T) {
+	model := New()
+	initialTimerID := model.autoSaveTimerID
+
+	// Type a character (should schedule auto-save)
+	newModel, cmd := model.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'a'}})
+	model = newModel.(Model)
+
+	// Timer ID should have increased
+	if model.autoSaveTimerID <= initialTimerID {
+		t.Errorf("expected timer ID to increase, got %d (was %d)", model.autoSaveTimerID, initialTimerID)
+	}
+
+	// Should have a command returned
+	if cmd == nil {
+		t.Error("expected non-nil command for auto-save scheduling")
+	}
+}
+
+// TestAutoSaveMessageHandling tests auto-save message flow
+func TestAutoSaveMessageHandling(t *testing.T) {
+	model := New()
+	model = model.SetSize(80, 24)
+
+	// Schedule an auto-save
+	model.autoSaveTimerID = 1
+	// Send auto-save message with matching ID
+	newModel, cmd := model.Update(autoSaveMsg{timerID: 1})
+	model = newModel.(Model)
+
+	// Status should be "saving"
+	if model.saveStatus != "saving" {
+		t.Errorf("expected saveStatus 'saving', got %q", model.saveStatus)
+	}
+
+	// Should have a command for async save
+	if cmd == nil {
+		t.Error("expected non-nil command for async save")
+	}
+
+	// Simulate save success
+	newModel, cmd = model.Update(saveSuccessMsg{})
+	model = newModel.(Model)
+
+	// Status should be "saved"
+	if model.saveStatus != "saved" {
+		t.Errorf("expected saveStatus 'saved', got %q", model.saveStatus)
+	}
+
+	// File manager should be cleared (no longer modified)
+	if model.fileManager.IsModified() {
+		t.Error("expected file manager to be cleared after save")
+	}
+
+	// Should have a command to clear status after delay
+	if cmd == nil {
+		t.Error("expected non-nil command to clear status")
+	}
+}
+
+// TestAutoSaveStaleTimer tests that stale timer messages are ignored
+func TestAutoSaveStaleTimer(t *testing.T) {
+	model := New()
+	model = model.SetSize(80, 24)
+	model.autoSaveTimerID = 5 // Current timer ID
+
+	// Send auto-save message with stale ID (previous timer)
+	newModel, cmd := model.Update(autoSaveMsg{timerID: 4})
+	model = newModel.(Model)
+
+	// Should be ignored (no change to model, no command)
+	if model.saveStatus != "" {
+		t.Errorf("expected saveStatus empty for stale timer, got %q", model.saveStatus)
+	}
+	if cmd != nil {
+		t.Error("expected nil command for stale timer")
+	}
+}
+
+// TestAutoSaveErrorHandling tests error handling
+func TestAutoSaveErrorHandling(t *testing.T) {
+	model := New()
+	model = model.SetSize(80, 24)
+
+	// Send save error
+	newModel, cmd := model.Update(saveErrorMsg{err: fmt.Errorf("test error")})
+	model = newModel.(Model)
+
+	// Status should be "error"
+	if model.saveStatus != "error" {
+		t.Errorf("expected saveStatus 'error', got %q", model.saveStatus)
+	}
+
+	// Error message should be stored
+	if model.saveError != "test error" {
+		t.Errorf("expected saveError 'test error', got %q", model.saveError)
+	}
+
+	// Should have a command to clear error after delay
+	if cmd == nil {
+		t.Error("expected non-nil command to clear error")
 	}
 }

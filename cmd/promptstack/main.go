@@ -8,8 +8,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kyledavis/prompt-stack/internal/platform/bootstrap"
 	"github.com/kyledavis/prompt-stack/internal/platform/logging"
-	"github.com/kyledavis/prompt-stack/ui/app"
 	"github.com/kyledavis/prompt-stack/ui/theme/examples"
+	"github.com/kyledavis/prompt-stack/ui/workspace"
 	"go.uber.org/zap"
 )
 
@@ -51,14 +51,14 @@ func run() error {
 
 	logger.Info("PromptStack initialized successfully")
 
-	// Create the app model
-	appModel := app.New()
+	// Create workspace model
+	workspaceModel := workspace.New()
 
 	// Log TUI startup
 	logger.Info("Starting TUI")
 
 	// Create and run the Bubble Tea program with alt screen
-	program := tea.NewProgram(appModel, tea.WithAltScreen())
+	program := tea.NewProgram(workspaceModel, tea.WithAltScreen())
 	if _, err := program.Run(); err != nil {
 		logger.Error("TUI error", zap.Error(err))
 		return fmt.Errorf("tui error: %w", err)

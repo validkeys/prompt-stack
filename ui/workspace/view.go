@@ -41,8 +41,10 @@ func (m Model) View() string {
 	// Combine rendered lines
 	content := strings.Join(renderedLines, "\n")
 
-	// Style editor
+	// Style editor with theme colors
 	editorStyle := lipgloss.NewStyle().
+		Background(lipgloss.Color(theme.BackgroundPrimary)).
+		Foreground(lipgloss.Color(theme.ForegroundPrimary)).
 		Width(m.width).
 		Height(availableHeight).
 		Padding(0, 1)
@@ -100,9 +102,7 @@ func (m Model) renderCursorLine(lines []string, visibleIndex int) string {
 				}
 
 				// Style cursor
-				cursorStyle := lipgloss.NewStyle().
-					Background(lipgloss.Color(theme.CursorBackground)).
-					Foreground(lipgloss.Color(theme.CursorForeground))
+				cursorStyle := theme.CursorStyle()
 
 				if cursorPosInEdit < len(editValue) {
 					return before + cursorStyle.Render(string(editValue[cursorPosInEdit])) + editValue[cursorPosInEdit+1:] + after
@@ -121,9 +121,7 @@ func (m Model) renderCursorLine(lines []string, visibleIndex int) string {
 	after := line[cursorX:]
 
 	// Style cursor
-	cursorStyle := lipgloss.NewStyle().
-		Background(lipgloss.Color(theme.CursorBackground)).
-		Foreground(lipgloss.Color(theme.CursorForeground))
+	cursorStyle := theme.CursorStyle()
 
 	if cursorX < len(line) {
 		return before + cursorStyle.Render(string(line[cursorX])) + after
@@ -187,6 +185,19 @@ func (m Model) renderStatusBar() string {
 	// Auto-save indicator
 	if m.fileManager.IsModified() {
 		parts = append(parts, "Modified")
+	}
+
+	// Save status
+	if m.saveStatus != "" {
+		statusText := m.saveStatus
+		if m.saveStatus == "error" && m.saveError != "" {
+			statusText = "Error: " + m.saveError
+			// Truncate long error messages
+			if len(statusText) > 40 {
+				statusText = statusText[:37] + "..."
+			}
+		}
+		parts = append(parts, statusText)
 	}
 
 	// Character and line counts
