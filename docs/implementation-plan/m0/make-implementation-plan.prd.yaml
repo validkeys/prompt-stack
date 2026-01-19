@@ -443,6 +443,7 @@ tasks:
     output_format: "final_implementation-plan.yaml"
     estimated_duration_minutes: 30
     note: "assumption: true - increased to meet task sizing policy"
+    completed: true
     completion_signal: "<promise>PLANNING_COMPLETE</promise>"
 # Template Usage Instructions
 instructions: |

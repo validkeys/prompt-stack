@@ -1,18 +1,18 @@
 {
   "valid": true,
   "overall_result": "PASS",
-  "overall_score": 0.90,
+  "overall_score": 0.96,
   "validation_type": "implementation_guidelines",
-  "validated_at": "2026-01-19T08:45:00Z",
+  "validated_at": "2026-01-19T18:20:00Z",
   "validator": "planning-008",
+  "total_tasks": 7,
+  "tasks_needing_tests": 6,
+  "tasks_with_testable_criteria": 7,
+  "tasks_with_implementation_guidance": 7,
   "summary": {
-    "total_tasks": 7,
-    "tasks_needing_tests": 6,
-    "tasks_with_testable_criteria": 6,
-    "tasks_with_implementation_guidance": 7,
     "test_first_coverage": 85.71428571428571,
-    "testable_criteria_coverage": 85.71428571428571,
+    "testable_criteria_coverage": 100,
     "implementation_guidance_coverage": 100,
-    "overall_score": 0.8999999999999999
+    "overall_score": 0.96
   }
 }

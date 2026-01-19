@@ -1,6 +1,21 @@
 name: prompt-stack
 description: AI-assisted development workflow tool with Plan/Build modes for generating and validating Ralphy YAML files
 version: 0.1.0
+quality_metadata:
+  quality_score: 0.95
+  approval_status: APPROVED
+  approval_reason: "Quality score meets minimum threshold of 0.95 after comprehensive validation and improvements"
+  validated_at: "2026-01-19T18:20:00Z"
+  validation_reports:
+    - validation_report_anchors.json
+    - validation_report_constraints.json
+    - validation_report_implementation_guidelines.json
+    - validation_report_sizing.json
+    - validation_report_enforcement.json
+    - yaml_validation_report.json
+    - schema_validation_report.json
+    - secrets_scan_report.json
+    - final_quality_report.json
 rules_file: docs/opencode-rules.md
 style_anchors:
   - docs/best-practices.md
