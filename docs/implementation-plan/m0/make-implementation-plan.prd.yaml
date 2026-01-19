@@ -230,6 +230,7 @@ tasks:
         - "JSON Schema validation passes against docs/ralphy-inputs.schema.json"
     output_format: "schema_validation_report.json"
     estimated_duration_minutes: 30
+    completed: true
   # Phase 4c: Secrets and sensitive-data scan (new)
   - id: "planning-004c"
     title: "Scan generated YAML for embedded secrets"

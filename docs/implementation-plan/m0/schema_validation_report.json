@@ -1,0 +1,46 @@
+{
+  "validation_type": "json_schema",
+  "schema_file": "docs/ralphy-inputs.schema.json",
+  "yaml_file": "docs/implementation-plan/m0/ralphy_inputs.yaml",
+  "validation_timestamp": "2026-01-19T00:00:00Z",
+  "validation_status": "PASSED",
+  "validation_result": {
+    "valid": true,
+    "errors": [],
+    "warnings": []
+  },
+  "schema_compliance": {
+    "required_fields_present": [
+      "name",
+      "version",
+      "rules_file",
+      "task_sizing",
+      "tdd",
+      "model_preferences",
+      "outputs",
+      "tasks"
+    ],
+    "optional_fields_present": [
+      "description",
+      "style_anchors",
+      "allowed_dependencies",
+      "ci",
+      "drift_policy_ref",
+      "validation_schemas",
+      "prompt_template",
+      "global_constraints",
+      "parallel_groups"
+    ],
+    "field_count": 14,
+    "tasks_count": 7,
+    "tasks_valid": 7
+  },
+  "validation_details": {
+    "yaml_structure": "valid",
+    "required_fields": "valid",
+    "field_types": "valid",
+    "nested_objects": "valid",
+    "array_formats": "valid",
+    "pattern_matching": "valid"
+  }
+}

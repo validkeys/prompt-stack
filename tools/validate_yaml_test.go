@@ -330,6 +330,101 @@ func TestYAMLValidationReportContent(t *testing.T) {
 	}
 }
 
+func TestSchemaValidationReportStructure(t *testing.T) {
+	reportPath := "../docs/implementation-plan/m0/schema_validation_report.json"
+
+	data, err := ioutil.ReadFile(reportPath)
+	if err != nil {
+		t.Fatalf("Failed to read schema validation report: %v", err)
+	}
+
+	var report map[string]interface{}
+	if err := json.Unmarshal(data, &report); err != nil {
+		t.Fatalf("Failed to parse schema validation report: %v", err)
+	}
+
+	requiredFields := []string{
+		"validation_type",
+		"schema_file",
+		"yaml_file",
+		"validation_timestamp",
+		"validation_status",
+		"validation_result",
+		"schema_compliance",
+		"validation_details",
+	}
+
+	for _, field := range requiredFields {
+		if _, ok := report[field]; !ok {
+			t.Errorf("Schema validation report missing required field: %s", field)
+		}
+	}
+
+	if report["validation_type"] != "json_schema" {
+		t.Errorf("Expected validation_type 'json_schema', got %v", report["validation_type"])
+	}
+
+	result := report["validation_result"].(map[string]interface{})
+	if result["valid"].(bool) != true {
+		t.Errorf("Expected validation_result.valid to be true, got %v", result["valid"])
+	}
+
+	errors := result["errors"].([]interface{})
+	if len(errors) != 0 {
+		t.Errorf("Expected zero errors, got %d: %v", len(errors), errors)
+	}
+}
+
+func TestSchemaValidationReportContent(t *testing.T) {
+	reportPath := "../docs/implementation-plan/m0/schema_validation_report.json"
+
+	data, err := ioutil.ReadFile(reportPath)
+	if err != nil {
+		t.Fatalf("Failed to read schema validation report: %v", err)
+	}
+
+	var report map[string]interface{}
+	if err := json.Unmarshal(data, &report); err != nil {
+		t.Fatalf("Failed to parse schema validation report: %v", err)
+	}
+
+	compliance := report["schema_compliance"].(map[string]interface{})
+
+	requiredFields := compliance["required_fields_present"].([]interface{})
+	requiredFieldNames := []string{"name", "version", "rules_file", "task_sizing", "tdd", "model_preferences", "outputs", "tasks"}
+	for _, field := range requiredFieldNames {
+		found := false
+		for _, f := range requiredFields {
+			if f == field {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("Required field %s not found in compliance report", field)
+		}
+	}
+
+	tasksCount := compliance["tasks_count"].(float64)
+	if tasksCount != 7 {
+		t.Errorf("Expected 7 tasks, got %v", tasksCount)
+	}
+
+	tasksValid := compliance["tasks_valid"].(float64)
+	if tasksValid != 7 {
+		t.Errorf("Expected 7 valid tasks, got %v", tasksValid)
+	}
+
+	details := report["validation_details"].(map[string]interface{})
+	if details["yaml_structure"] != "valid" {
+		t.Errorf("Expected yaml_structure 'valid', got %v", details["yaml_structure"])
+	}
+
+	if details["required_fields"] != "valid" {
+		t.Errorf("Expected required_fields 'valid', got %v", details["required_fields"])
+	}
+}
+
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(s) > len(substr) && containsHelper(s, substr))
 }
