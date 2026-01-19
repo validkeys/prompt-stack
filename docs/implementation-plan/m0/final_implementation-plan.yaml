@@ -269,7 +269,7 @@ tasks:
   - id: "m0-005"
     title: "Create project documentation and README"
     description: "Write comprehensive documentation including README with usage instructions, contributing guidelines, and architecture overview. Document the commands and their options. This ensures the project is approachable and maintainable."
-    completed: false
+    completed: true
     files_in_scope:
       - "README.md"
       - "CONTRIBUTING.md"
