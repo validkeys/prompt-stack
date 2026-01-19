@@ -233,7 +233,7 @@ tasks:
   - id: "m0-004"
     title: "Implement interactive requirements prompt"
     description: "Create the interactive prompt system that asks one question at a time. Capture user responses, validate them, and save to planning input YAML. Save transcript of the interview for reference. This fulfills the FR-003 requirement for interactive requirements gathering."
-    completed: false
+    completed: true
     files_in_scope:
       - "cmd/your-tool/init.go"
       - "pkg/prompt/prompt.go"

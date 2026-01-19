@@ -252,3 +252,42 @@
   * Dry-run mode validates inputs before execution (test: invalid inputs produce error messages)
   * Executor handles script execution errors gracefully (test: error cases are tested)
 - Verification passed: go build ./pkg/executor, go test ./pkg/executor, go vet ./pkg/executor
+
+## 2026-01-19: Task m0-004 completed
+- Created pkg/prompt package with prompt.go and questions.go files
+- Implemented Prompt struct with questions list and responses map
+- Implemented InterviewResult struct with Responses and Transcript fields
+- Implemented Question struct with ID, Text, Required, and Validate fields
+- Implemented NewPrompt() function to create prompt instances
+- Implemented Run() method that asks questions sequentially and captures responses
+- Implemented context cancellation support for graceful Ctrl+C handling
+- Implemented input validation with customizable validators
+- Implemented required/optional field handling
+- Implemented transcript generation recording all Q&A pairs
+- Created DefaultQuestions() function with 14 default milestone questions
+- Implemented question validation for milestone ID, title, objectives, etc.
+- Created cmd/your-tool/init.go with init command using Cobra
+- Implemented saveInterviewResult() function to save transcript and requirements files
+- Implemented generateYAML() function to format responses as markdown YAML
+- Added --output-dir flag to init command for custom output paths
+- Created comprehensive unit tests with 7 test functions:
+  * TestNewPrompt: tests prompt creation and initialization
+  * TestPromptRun_EmptyQuestions: tests empty question list
+  * TestPromptRun_SingleQuestion: tests single question flow
+  * TestPromptRun_Validation: tests validation logic (2 subtests)
+  * TestPromptRun_OptionalQuestion: tests optional field handling
+  * TestPromptRun_RequiredQuestionEmpty: tests required field retry logic
+  * TestPromptRun_ContextCancellation: tests graceful cancellation
+  * TestPromptRun_TranscriptFormat: tests transcript generation
+- All tests passing (8 test functions, 12 subtests)
+- go fmt formatting correct
+- go vet validation passed
+- Updated final_implementation-plan.yaml to mark m0-004 as completed (completed: true)
+- All acceptance criteria met:
+  * Prompt displays questions sequentially (test: prompt_test.go validates question flow)
+  * User responses are captured and validated (test: validation logic rejects invalid inputs)
+  * Final output saves to YAML file matching template schema (test: generated YAML passes schema validation)
+  * Transcript of interview is saved (test: transcript file contains all Q&A)
+  * Input validation provides helpful error messages (test: invalid inputs produce clear errors)
+  * Prompt handles cancellation gracefully (test: Ctrl+C exits cleanly)
+- Verification passed: go build ./pkg/prompt, go test ./pkg/prompt, go vet ./pkg/prompt, go build ./cmd/your-tool
