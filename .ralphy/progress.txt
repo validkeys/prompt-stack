@@ -340,3 +340,35 @@
   * make test runs all tests (test: make test executes successfully)
   * Coverage reporting configured (test: make coverage generates coverage.out and coverage.html)
 - Verification passed: go test -v -cover ./..., go vet ./..., go fmt ./...
+
+## 2026-01-19: Task m0-007 completed
+- Updated Makefile build target with version injection:
+  * Injects Version from git describe --tags
+  * Injects Commit from git rev-parse --short HEAD
+  * Injects Date from date command
+  * All injected into main.Version, main.Commit, main.Date
+- Created build.sh script for multi-platform builds:
+  * Builds for linux-amd64, darwin-amd64, darwin-arm64
+  * Uses same version injection via ldflags
+  * Strips symbols for smaller binaries (-s -w)
+  * Creates checksums.txt with sha256sum
+- Created .github/workflows/release.yml CI workflow:
+  * Triggers on version tags (v*.*.*)
+  * Extracts version from git tag
+  * Builds binaries for all platforms
+  * Creates SHA256 checksums
+  * Creates GitHub release with all binaries and checksums
+- Ran make build successfully (binary created with version info)
+- Ran ./dist/your-tool --version (shows: your-tool version 6efae75-dirty)
+- Ran ./dist/your-tool --help (shows all commands and version flag works)
+- Ran make test successfully (all tests passing)
+- Ran go vet ./... successfully
+- Ran go fmt ./... successfully
+- Ran make clean successfully (removes dist/ and calls go clean)
+- Updated final_implementation-plan.yaml to mark m0-007 as completed (completed: true)
+- All acceptance criteria met:
+  * make build creates working binary (test: binary runs with --help)
+  * make test runs all tests (test: all tests pass)
+  * make clean removes build artifacts (test: dist/ removed)
+  * Binary can be executed with --help (test: ./dist/your-tool --help works)
+- Verification passed: make build, ./dist/your-tool --help, make test, go vet ./..., go fmt ./..., make clean
