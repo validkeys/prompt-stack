@@ -16,7 +16,7 @@ var rootCmd = &cobra.Command{
 	Long:  `A tool for generating and validating Ralphy YAML files with Plan/Build modes.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("AI-assisted development workflow tool")
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 

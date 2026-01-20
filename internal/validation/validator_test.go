@@ -9,16 +9,19 @@ import (
 func TestYAMLValidator(t *testing.T) {
 	tests := []struct {
 		name      string
-		setupFile func() string
+		setupFile func(t *testing.T) string
 		wantValid bool
 		wantIssue bool
 	}{
 		{
 			name: "valid yaml file",
-			setupFile: func() string {
+			setupFile: func(t *testing.T) string {
+				t.Helper()
 				tmpDir := t.TempDir()
 				path := filepath.Join(tmpDir, "valid.yaml")
-				os.WriteFile(path, []byte("test: value\n"), 0644)
+				if err := os.WriteFile(path, []byte("test: value\n"), 0644); err != nil {
+					t.Fatalf("Failed to write test file %q: %v", path, err)
+				}
 				return path
 			},
 			wantValid: true,
@@ -26,7 +29,8 @@ func TestYAMLValidator(t *testing.T) {
 		},
 		{
 			name: "missing file",
-			setupFile: func() string {
+			setupFile: func(t *testing.T) string {
+				t.Helper()
 				tmpDir := t.TempDir()
 				return filepath.Join(tmpDir, "missing.yaml")
 			},
@@ -38,7 +42,7 @@ func TestYAMLValidator(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			validator := &YAMLValidator{}
-			inputPath := tt.setupFile()
+			inputPath := tt.setupFile(t)
 			result, err := validator.Validate(inputPath)
 
 			if err != nil {
@@ -64,14 +68,17 @@ func TestYAMLValidator(t *testing.T) {
 func TestTaskSizingValidator(t *testing.T) {
 	tests := []struct {
 		name      string
-		setupFile func() string
+		setupFile func(t *testing.T) string
 	}{
 		{
 			name: "existing file",
-			setupFile: func() string {
+			setupFile: func(t *testing.T) string {
+				t.Helper()
 				tmpDir := t.TempDir()
 				path := filepath.Join(tmpDir, "test.yaml")
-				os.WriteFile(path, []byte("test: value\n"), 0644)
+				if err := os.WriteFile(path, []byte("test: value\n"), 0644); err != nil {
+					t.Fatalf("Failed to write test file %q: %v", path, err)
+				}
 				return path
 			},
 		},
@@ -80,7 +87,7 @@ func TestTaskSizingValidator(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			validator := &TaskSizingValidator{}
-			inputPath := tt.setupFile()
+			inputPath := tt.setupFile(t)
 			_, err := validator.Validate(inputPath)
 
 			if err != nil {
@@ -97,14 +104,17 @@ func TestTaskSizingValidator(t *testing.T) {
 func TestConstraintsValidator(t *testing.T) {
 	tests := []struct {
 		name      string
-		setupFile func() string
+		setupFile func(t *testing.T) string
 	}{
 		{
 			name: "existing file",
-			setupFile: func() string {
+			setupFile: func(t *testing.T) string {
+				t.Helper()
 				tmpDir := t.TempDir()
 				path := filepath.Join(tmpDir, "test.yaml")
-				os.WriteFile(path, []byte("test: value\n"), 0644)
+				if err := os.WriteFile(path, []byte("test: value\n"), 0644); err != nil {
+					t.Fatalf("Failed to write test file %q: %v", path, err)
+				}
 				return path
 			},
 		},
@@ -113,7 +123,7 @@ func TestConstraintsValidator(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			validator := &ConstraintsValidator{}
-			inputPath := tt.setupFile()
+			inputPath := tt.setupFile(t)
 			_, err := validator.Validate(inputPath)
 
 			if err != nil {
@@ -130,22 +140,26 @@ func TestConstraintsValidator(t *testing.T) {
 func TestValidate(t *testing.T) {
 	tests := []struct {
 		name       string
-		setupFile  func() string
+		setupFile  func(t *testing.T) string
 		wantResult string
 	}{
 		{
 			name: "valid file with output",
-			setupFile: func() string {
+			setupFile: func(t *testing.T) string {
+				t.Helper()
 				tmpDir := t.TempDir()
 				inputPath := filepath.Join(tmpDir, "input.yaml")
-				os.WriteFile(inputPath, []byte("test: value\n"), 0644)
+				if err := os.WriteFile(inputPath, []byte("test: value\n"), 0644); err != nil {
+					t.Fatalf("Failed to write test file %q: %v", inputPath, err)
+				}
 				return inputPath
 			},
 			wantResult: "WARN",
 		},
 		{
 			name: "invalid file missing",
-			setupFile: func() string {
+			setupFile: func(t *testing.T) string {
+				t.Helper()
 				tmpDir := t.TempDir()
 				return filepath.Join(tmpDir, "missing.yaml")
 			},
@@ -159,7 +173,7 @@ func TestValidate(t *testing.T) {
 			outputPath := filepath.Join(tmpDir, "output.json")
 
 			config := Config{
-				InputPath:     tt.setupFile(),
+				InputPath:     tt.setupFile(t),
 				OutputPath:    outputPath,
 				Strict:        false,
 				Milestone:     "m0",

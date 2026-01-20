@@ -12,7 +12,7 @@ var planCmd = &cobra.Command{
 	Long:  `Generate implementation plans from requirements or templates.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("plan command: Generate implementation plans")
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 

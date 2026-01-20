@@ -21,7 +21,7 @@ var validateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if validateInput == "" {
 			fmt.Println("Error: --input is required")
-			cmd.Help()
+			_ = cmd.Help()
 			os.Exit(1)
 		}
 

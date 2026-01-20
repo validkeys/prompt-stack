@@ -24,7 +24,7 @@
 │   ├── telemetry/
 │   ├── validation/
 │   └── shared/
-├── configs/
+├── .prompt-stack/
 ├── docs/
 ├── examples/
 ├── scripts/
@@ -50,7 +50,7 @@
 - `internal/telemetry`: Metrics, timing, cost tracking; optional sink adapters.
 - `internal/config`: Config loading/merging (defaults, repo `.prompt-stack/config.yaml`, env overrides).
 - `internal/shared`: Cross-cutting primitives (errors, logging interfaces, token budgeting helpers). Keep small; prefer domain-specific packages when possible.
-- `configs/`: Sample `.prompt-stack/config.yaml`, plugin manifests, default policy bundles.
+- `.prompt-stack/`: Configuration directory containing `config.yaml`, knowledge database, and runtime artifacts.
 - `examples/`: Requirements samples, milestone manifests, demo YAML (mirrors `docs/requirements`).
 - `scripts/`: Developer automation (`fmt`, lint, release); shell scripts must be invoked via Make targets.
 

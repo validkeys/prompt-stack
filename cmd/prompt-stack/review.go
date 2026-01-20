@@ -12,7 +12,7 @@ var reviewCmd = &cobra.Command{
 	Long:  `Review implementation progress and quality metrics.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("review command: Review implementation progress")
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 

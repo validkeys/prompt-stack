@@ -1,33 +1,26 @@
 {
   "valid": true,
-  "overall_result": "PASS",
-  "overall_score": 0.95,
-  "validation_type": "multi_layer_enforcement",
-  "validated_at": "2026-01-19T08:45:00Z",
-  "validator": "planning-009",
-  "summary": {
-    "total_tasks": 7,
-    "tasks_with_files_in_scope": 7,
-    "tasks_with_verification": 7,
-    "verification_layers": {
-      "prompt_level": true,
-      "ide_integration": true,
-      "pre_commit": true,
-      "ci_checks": true,
-      "runtime": true,
-      "total_layers": 5
-    },
-    "commit_policy": {
-      "has_prefix_rules": true,
-      "has_scope_requirement": true,
-      "has_conventional_commits": true,
-      "complete": true
-    },
-    "scope_enforcement": {
-      "has_allowed_file_edits": true,
-      "has_disallowed_file_edits": true,
-      "all_tasks_have_files_in_scope": true,
-      "complete": true
-    }
+  "total_tasks": 7,
+  "tasks_with_files_in_scope": 7,
+  "tasks_with_verification": 7,
+  "verification_layers": {
+    "prompt_level": true,
+    "ide_integration": true,
+    "pre_commit": true,
+    "ci_checks": true,
+    "runtime": true,
+    "total_layers": 5
+  },
+  "commit_policy": {
+    "has_prefix_rules": true,
+    "has_scope_requirement": true,
+    "has_conventional_commits": true,
+    "complete": true
+  },
+  "scope_enforcement": {
+    "has_allowed_file_edits": true,
+    "has_disallowed_file_edits": true,
+    "all_tasks_have_files_in_scope": true,
+    "complete": true
   }
 }

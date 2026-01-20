@@ -24,7 +24,7 @@ References (consult these files in the repo)
 - `docs/ralphy-inputs.schema.json` — JSON Schema to validate final YAML (or the schema path provided via inputs).
 - `docs/best-practices.md`, `docs/task-sizing.md`, or their equivalents — research-backed guidance for anchors, affirmative constraints, and task sizing.
 - Additional policy/governance docs (for example repository rules, drift policies, TDD checklists) discovered via `reference_docs` or the repository index (`docs/index.md` if available).
-- `tools/validate_yaml.go` (or the project-provided validator) — preferred YAML syntax validator.
+- `prompt-stack validate-yaml` command (or the project-provided validator) — preferred YAML syntax validator.
 
 Prompt rules and behavior (agent must follow exactly)
 
@@ -96,7 +96,7 @@ Edge cases & remediation guidance (agent responsibilities)
 - If tasks are shorter than 30 minutes, either increase estimate or split them and record rationale in `generation_log.md`.
 
 Notes for reviewers (you)
-- This is a reusable template prompt. Review that the referenced files exist in the repo (`docs/ralphy-inputs.md`, `docs/ralphy-inputs.schema.json`, `docs/best-practices.md`, `tools/validate_yaml.go`) and adjust paths if your repo layout differs.
+- This is a reusable template prompt. Review that the referenced files exist in the repo (`docs/ralphy-inputs.md`, `docs/ralphy-inputs.schema.json`, `docs/best-practices.md`) and adjust paths if your repo layout differs.
 - The prompt leans on `templates/planning-phase.prd-template.yaml` for task/phases structure; update the template reference if that file is moved or renamed.
 
 ---

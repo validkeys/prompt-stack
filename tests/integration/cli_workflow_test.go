@@ -56,8 +56,12 @@ func SetupTestDir(t *testing.T) (string, func()) {
 	}
 
 	return tmpDir, func() {
-		os.Chdir(oldDir)
-		os.RemoveAll(tmpDir)
+		if err := os.Chdir(oldDir); err != nil {
+			t.Errorf("failed to restore working directory to %q: %v", oldDir, err)
+		}
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Errorf("failed to remove temp directory %q: %v", tmpDir, err)
+		}
 	}
 }
 
@@ -78,7 +82,9 @@ func BuildBinary(t *testing.T) string {
 	}
 
 	t.Cleanup(func() {
-		os.RemoveAll(buildDir)
+		if err := os.RemoveAll(buildDir); err != nil {
+			t.Errorf("failed to remove build directory %q: %v", buildDir, err)
+		}
 	})
 
 	return binaryPath
@@ -104,18 +110,27 @@ func FileExists(path string) bool {
 	return !os.IsNotExist(err)
 }
 
-func FileContains(path, substring string) bool {
+func FileContains(t *testing.T, path, substring string) bool {
+	t.Helper()
 	file, err := os.Open(path)
 	if err != nil {
+		t.Fatalf("failed to open %q: %v", path, err)
 		return false
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			t.Errorf("failed to close %q: %v", path, err)
+		}
+	}()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		if strings.Contains(scanner.Text(), substring) {
 			return true
 		}
+	}
+	if err := scanner.Err(); err != nil {
+		t.Fatalf("failed scanning %q: %v", path, err)
 	}
 
 	return false
@@ -126,7 +141,11 @@ func CheckDatabaseForSecrets(t *testing.T, dbPath string) []string {
 	if err != nil {
 		t.Fatalf("failed to open database: %v", err)
 	}
-	defer db.Close()
+	t.Cleanup(func() {
+		if err := db.Close(); err != nil {
+			t.Errorf("failed to close database %q: %v", dbPath, err)
+		}
+	})
 
 	secretPatterns := []string{
 		"AKIA[0-9A-Z]{16}",
@@ -145,7 +164,11 @@ func CheckDatabaseForSecrets(t *testing.T, dbPath string) []string {
 	if err != nil {
 		t.Fatalf("failed to query tables: %v", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			t.Errorf("failed to close table list rows: %v", err)
+		}
+	}()
 
 	var tables []string
 	for rows.Next() {
@@ -155,6 +178,9 @@ func CheckDatabaseForSecrets(t *testing.T, dbPath string) []string {
 		}
 		tables = append(tables, tableName)
 	}
+	if err := rows.Err(); err != nil {
+		t.Fatalf("failed iterating tables: %v", err)
+	}
 
 	for _, table := range tables {
 		tableRows, err := db.Query("SELECT * FROM " + table)
@@ -162,47 +188,56 @@ func CheckDatabaseForSecrets(t *testing.T, dbPath string) []string {
 			continue
 		}
 
-		columns, err := tableRows.Columns()
-		if err != nil {
-			tableRows.Close()
-			continue
-		}
+		func() {
+			defer func() {
+				if err := tableRows.Close(); err != nil {
+					t.Errorf("failed to close rows for table %q: %v", table, err)
+				}
+			}()
 
-		values := make([]interface{}, len(columns))
-		valuePtrs := make([]interface{}, len(columns))
-		for i := range columns {
-			valuePtrs[i] = &values[i]
-		}
-
-		for tableRows.Next() {
-			if err := tableRows.Scan(valuePtrs...); err != nil {
-				continue
+			columns, err := tableRows.Columns()
+			if err != nil {
+				return
 			}
 
-			for i, val := range values {
-				if val == nil {
+			values := make([]interface{}, len(columns))
+			valuePtrs := make([]interface{}, len(columns))
+			for i := range columns {
+				valuePtrs[i] = &values[i]
+			}
+
+			for tableRows.Next() {
+				if err := tableRows.Scan(valuePtrs...); err != nil {
 					continue
 				}
 
-				strVal := ""
-				switch v := val.(type) {
-				case []byte:
-					strVal = string(v)
-				case string:
-					strVal = v
-				default:
-					continue
-				}
+				for i, val := range values {
+					if val == nil {
+						continue
+					}
 
-				for _, pattern := range secretPatterns {
-					if strings.Contains(strVal, pattern) {
-						foundSecrets = append(foundSecrets,
-							"Table: "+table+", Column: "+columns[i]+", Pattern: "+pattern)
+					strVal := ""
+					switch v := val.(type) {
+					case []byte:
+						strVal = string(v)
+					case string:
+						strVal = v
+					default:
+						continue
+					}
+
+					for _, pattern := range secretPatterns {
+						if strings.Contains(strVal, pattern) {
+							foundSecrets = append(foundSecrets,
+								"Table: "+table+", Column: "+columns[i]+", Pattern: "+pattern)
+						}
 					}
 				}
 			}
-		}
-		tableRows.Close()
+			if err := tableRows.Err(); err != nil {
+				t.Errorf("failed iterating rows for table %q: %v", table, err)
+			}
+		}()
 	}
 
 	return foundSecrets
@@ -310,7 +345,7 @@ func testAC2_InitCreatesRequiredFiles(t *testing.T) TestResult {
 		}
 	}
 
-	if !FileContains(configPath, "version:") {
+	if !FileContains(t, configPath, "version:") {
 		return TestResult{
 			Name:    "AC-2: Init command creates required files",
 			Passed:  false,

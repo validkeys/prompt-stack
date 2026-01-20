@@ -79,7 +79,7 @@ repo_access:
 
 execution_resources:
   knowledge_db_path: ".prompt-stack/knowledge.db"
-  yaml_validator: "tools/validate_yaml.go"
+  yaml_validator: "prompt-stack validate-yaml"
   ralphy_script: ".prompt-stack/vendor/ralphy/ralphy.sh"
 
 validation_assets:

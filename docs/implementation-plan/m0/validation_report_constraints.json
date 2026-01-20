@@ -1,21 +1,16 @@
 {
   "valid": true,
-  "overall_result": "PASS",
-  "overall_score": 0.95,
-  "validation_type": "affirmative_constraints",
-  "validated_at": "2026-01-19T18:20:00Z",
-  "validator": "planning-007",
-  "total_constraints": 26,
-  "affirmative_count": 26,
+  "total_constraints": 28,
+  "affirmative_count": 28,
   "negative_count": 0,
   "summary": {
     "affirmative_percentage": 100,
-    "specific_constraints": 21,
-    "vague_constraints": 5,
-    "pattern_references": 6
+    "specific_constraints": 18,
+    "vague_constraints": 10,
+    "pattern_references": 5
   },
   "recommendations": [
-    "Make 5 vague constraints more specific and actionable",
+    "Make 10 vague constraints more specific and actionable",
     "Reference existing patterns and examples in more constraints"
   ]
 }

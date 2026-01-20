@@ -22,7 +22,6 @@ func ValidateProjectStructure(rootDir string) *ProjectStructureResult {
 	requiredDirs := []string{
 		"cmd/prompt-stack",
 		"internal",
-		"pkg",
 		"docs",
 		".prompt-stack",
 	}
@@ -54,10 +53,10 @@ func ValidateProjectStructure(rootDir string) *ProjectStructureResult {
 	requiredPackages := []string{
 		"cmd/prompt-stack",
 		"internal/config",
-		"internal/database",
+		"internal/knowledge/database",
 		"internal/validation",
-		"pkg/executor",
-		"pkg/prompt",
+		"internal/cli/prompt",
+		"internal/executor",
 	}
 
 	for _, pkg := range requiredPackages {

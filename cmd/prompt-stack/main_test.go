@@ -164,7 +164,9 @@ tasks:
 			}
 
 			return func() {
-				os.Chdir(oldDir)
+				if err := os.Chdir(oldDir); err != nil {
+					t.Errorf("failed to restore working directory to %q: %v", oldDir, err)
+				}
 			}
 		}},
 		{"review command compiles", []string{"review"}, nil},

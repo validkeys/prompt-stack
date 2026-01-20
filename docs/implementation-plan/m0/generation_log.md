@@ -17,7 +17,7 @@ Generated PRD document for milestone M0 ("Initial setup with requirements gather
 
 ### Assumptions
 1. **Knowledge DB**: Marked `.prompt-stack/knowledge.db` with `assumption: true` since it may not exist yet (will be created during M0 implementation)
-2. **Validator Tool**: YAML validator (`tools/validate_yaml.go`) exists but may have dependency issues
+2. **Validator Tool**: YAML validation is available via `prompt-stack validate-yaml` (preferred)
 3. **Reference Documents**: All required reference docs exist in repository (`docs/best-practices.md`, `docs/ralphy-inputs.schema.json`, etc.)
 4. **Style Anchor Files**: All referenced style anchor files exist and are accessible
 

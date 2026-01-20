@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kyledavis/prompt-stack/pkg/executor"
+	"github.com/kyledavis/prompt-stack/internal/executor"
 	"github.com/spf13/cobra"
 )
 

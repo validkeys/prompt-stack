@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/kyledavis/prompt-stack/pkg/prompt"
+	"github.com/kyledavis/prompt-stack/internal/cli/prompt"
 )
 
 func TestRequirementsCommandExists(t *testing.T) {
@@ -492,9 +492,11 @@ func TestSavePlanningResult(t *testing.T) {
 		tmpDir := t.TempDir()
 		outputDir := filepath.Join(tmpDir, "test-output")
 
-		defer func() {
-			os.RemoveAll(".prompt-stack")
-		}()
+		t.Cleanup(func() {
+			if err := os.RemoveAll(".prompt-stack"); err != nil {
+				t.Errorf("failed to remove .prompt-stack: %v", err)
+			}
+		})
 
 		err := savePlanningResult(result, outputDir)
 		if err != nil {
@@ -511,9 +513,11 @@ func TestSavePlanningResult(t *testing.T) {
 		outputDir := filepath.Join(tmpDir, "test-output-2")
 
 		transcriptPath := ".prompt-stack/requirements-transcript.txt"
-		defer func() {
-			os.RemoveAll(".prompt-stack")
-		}()
+		t.Cleanup(func() {
+			if err := os.RemoveAll(".prompt-stack"); err != nil {
+				t.Errorf("failed to remove .prompt-stack: %v", err)
+			}
+		})
 
 		err := savePlanningResult(result, outputDir)
 		if err != nil {
@@ -534,9 +538,11 @@ func TestSavePlanningResult(t *testing.T) {
 		tmpDir := t.TempDir()
 		outputDir := filepath.Join(tmpDir, "test-output-3")
 
-		defer func() {
-			os.RemoveAll(".prompt-stack")
-		}()
+		t.Cleanup(func() {
+			if err := os.RemoveAll(".prompt-stack"); err != nil {
+				t.Errorf("failed to remove .prompt-stack: %v", err)
+			}
+		})
 
 		err := savePlanningResult(result, outputDir)
 		if err != nil {
@@ -569,7 +575,7 @@ func TestRequirementsCommandIntegration(t *testing.T) {
 	t.Run("requirements_command_has_output_flag", func(t *testing.T) {
 		flag := requirementsCmd.Flags().Lookup("output")
 		if flag == nil {
-			t.Error("requirements command does not have --output flag")
+			t.Fatal("requirements command does not have --output flag")
 		}
 
 		if flag.Name != "output" {

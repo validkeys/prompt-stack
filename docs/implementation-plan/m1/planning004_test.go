@@ -132,19 +132,28 @@ func TestImplementationPlanTaskSizingConstraints(t *testing.T) {
 		if inTaskSizing && strings.HasPrefix(trimmed, "min_minutes:") {
 			parts := strings.Split(trimmed, ":")
 			if len(parts) > 1 {
-				fmt.Sscanf(strings.TrimSpace(parts[1]), "%d", &minMinutes)
+				n, err := fmt.Sscanf(strings.TrimSpace(parts[1]), "%d", &minMinutes)
+				if err != nil || n != 1 {
+					t.Fatalf("Failed to parse task_sizing.min_minutes from %q: n=%d err=%v", trimmed, n, err)
+				}
 			}
 		}
 		if inTaskSizing && strings.HasPrefix(trimmed, "max_minutes:") {
 			parts := strings.Split(trimmed, ":")
 			if len(parts) > 1 {
-				fmt.Sscanf(strings.TrimSpace(parts[1]), "%d", &maxMinutes)
+				n, err := fmt.Sscanf(strings.TrimSpace(parts[1]), "%d", &maxMinutes)
+				if err != nil || n != 1 {
+					t.Fatalf("Failed to parse task_sizing.max_minutes from %q: n=%d err=%v", trimmed, n, err)
+				}
 			}
 		}
 		if inTaskSizing && strings.HasPrefix(trimmed, "max_files:") {
 			parts := strings.Split(trimmed, ":")
 			if len(parts) > 1 {
-				fmt.Sscanf(strings.TrimSpace(parts[1]), "%d", &maxFiles)
+				n, err := fmt.Sscanf(strings.TrimSpace(parts[1]), "%d", &maxFiles)
+				if err != nil || n != 1 {
+					t.Fatalf("Failed to parse task_sizing.max_files from %q: n=%d err=%v", trimmed, n, err)
+				}
 			}
 		}
 		if inTaskSizing && trimmed != "" && !strings.HasPrefix(trimmed, "  ") && !strings.HasPrefix(trimmed, "-") {
@@ -252,9 +261,4 @@ func TestImplementationPlanSchemaCompliance(t *testing.T) {
 	if len(missingFields) > 0 {
 		t.Errorf("Missing schema-required fields: %v", missingFields)
 	}
-}
-
-func sprintf(format string, a ...interface{}) string {
-	// Simple implementation for testing
-	return format
 }

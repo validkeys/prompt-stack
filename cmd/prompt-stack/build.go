@@ -12,7 +12,7 @@ var buildCmd = &cobra.Command{
 	Long:  `Build project components based on implementation plan tasks.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("build command: Build project from implementation plan")
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 

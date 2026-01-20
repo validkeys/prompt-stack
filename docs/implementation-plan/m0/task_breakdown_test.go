@@ -2,13 +2,15 @@ package m0
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
+	"strconv"
+	"strings"
 	"testing"
 )
 
 // TestTaskBreakdownStructure validates the structure of task_breakdown.yaml
 func TestTaskBreakdownStructure(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -46,7 +48,7 @@ func TestTaskBreakdownStructure(t *testing.T) {
 
 // TestTaskSizingCompliance validates task sizing against policy
 func TestTaskSizingCompliance(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -72,7 +74,10 @@ func TestTaskSizingCompliance(t *testing.T) {
 	taskLines := extractTaskLines(content)
 	for _, line := range taskLines {
 		if contains(line, "estimated_duration_minutes:") {
-			duration := extractDuration(line)
+			duration, err := extractDuration(line)
+			if err != nil {
+				t.Fatalf("Failed to parse duration from line %q: %v", line, err)
+			}
 			if duration < 30 || duration > 150 {
 				t.Errorf("Task duration %d is outside policy range (30-150)", duration)
 			}
@@ -82,7 +87,7 @@ func TestTaskSizingCompliance(t *testing.T) {
 
 // TestStyleAnchorsPerTask validates each task has 2-3 style anchors
 func TestStyleAnchorsPerTask(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -90,7 +95,10 @@ func TestStyleAnchorsPerTask(t *testing.T) {
 	content := string(data)
 
 	// Extract all style anchors for tasks
-	anchorCounts := extractStyleAnchorCounts(content)
+	anchorCounts, err := extractStyleAnchorCounts(content)
+	if err != nil {
+		t.Fatalf("Failed to extract style anchor counts: %v", err)
+	}
 
 	for taskID, count := range anchorCounts {
 		if count < 2 || count > 3 {
@@ -106,7 +114,7 @@ func TestStyleAnchorsPerTask(t *testing.T) {
 
 // TestDependenciesAcyclic validates dependency graph is acyclic
 func TestDependenciesAcyclic(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -132,7 +140,7 @@ func TestDependenciesAcyclic(t *testing.T) {
 
 // TestContextBudgetValidation validates context budgets
 func TestContextBudgetValidation(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -160,7 +168,7 @@ func TestContextBudgetValidation(t *testing.T) {
 
 // TestSingleResponsibility validates each task has clear single responsibility
 func TestSingleResponsibility(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -182,7 +190,7 @@ func TestSingleResponsibility(t *testing.T) {
 
 // TestAcceptanceCriteria validates each task has acceptance criteria
 func TestAcceptanceCriteria(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -206,7 +214,7 @@ func TestAcceptanceCriteria(t *testing.T) {
 
 // TestFilesInScope validates each task has files_in_scope
 func TestFilesInScope(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -250,7 +258,7 @@ func TestFilesInScope(t *testing.T) {
 
 // TestBasedOnFiles validates that breakdown references correct input files
 func TestBasedOnFiles(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -272,7 +280,7 @@ func TestBasedOnFiles(t *testing.T) {
 
 // TestTaskCountAndIDs validates task count and ID format
 func TestTaskCountAndIDs(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -296,7 +304,7 @@ func TestTaskCountAndIDs(t *testing.T) {
 
 // TestMetadataCompleteness validates metadata section
 func TestMetadataCompleteness(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -329,7 +337,7 @@ func TestMetadataCompleteness(t *testing.T) {
 
 // TestStyleAnchorReferences validates style anchors reference existing files
 func TestStyleAnchorReferences(t *testing.T) {
-	data, err := ioutil.ReadFile("task_breakdown.yaml")
+	data, err := os.ReadFile("task_breakdown.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read task_breakdown.yaml: %v", err)
 	}
@@ -389,13 +397,23 @@ func extractTaskLines(content string) []string {
 	return lines
 }
 
-func extractDuration(line string) int {
-	var duration int
-	fmt.Sscanf(line, "    estimated_duration_minutes: %d", &duration)
-	return duration
+func extractDuration(line string) (int, error) {
+	trimmed := strings.TrimSpace(line)
+	const prefix = "estimated_duration_minutes:"
+	idx := strings.Index(trimmed, prefix)
+	if idx < 0 {
+		return 0, fmt.Errorf("duration line missing %q: %q", prefix, line)
+	}
+
+	value := strings.TrimSpace(trimmed[idx+len(prefix):])
+	duration, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, fmt.Errorf("parse duration %q: %w", value, err)
+	}
+	return duration, nil
 }
 
-func extractStyleAnchorCounts(content string) map[string]int {
+func extractStyleAnchorCounts(content string) (map[string]int, error) {
 	counts := make(map[string]int)
 	currentTask := ""
 	inStyleAnchors := false
@@ -403,7 +421,11 @@ func extractStyleAnchorCounts(content string) map[string]int {
 	lines := splitLines(content)
 	for _, line := range lines {
 		if contains(line, "- id: \"") {
-			currentTask = extractID(line)
+			taskID, err := extractID(line)
+			if err != nil {
+				return nil, err
+			}
+			currentTask = taskID
 			counts[currentTask] = 0
 			inStyleAnchors = false
 		} else if contains(line, "style_anchors:") {
@@ -415,13 +437,23 @@ func extractStyleAnchorCounts(content string) map[string]int {
 		}
 	}
 
-	return counts
+	return counts, nil
 }
 
-func extractID(line string) string {
-	var id string
-	fmt.Sscanf(line, "    - id: \"%s\"", &id)
-	return id
+func extractID(line string) (string, error) {
+	trimmed := strings.TrimSpace(line)
+	const prefix = "- id:"
+	idx := strings.Index(trimmed, prefix)
+	if idx < 0 {
+		return "", fmt.Errorf("id line missing %q: %q", prefix, line)
+	}
+
+	value := strings.TrimSpace(trimmed[idx+len(prefix):])
+	value = strings.Trim(value, "\"'")
+	if value == "" {
+		return "", fmt.Errorf("empty task id in line %q", line)
+	}
+	return value, nil
 }
 
 func extractTaskSection(content, taskID string) string {

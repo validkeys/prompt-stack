@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"example.com/style-anchor/pkg/greeter"
+	"github.com/kyledavis/prompt-stack/examples/style-anchor/pkg/greeter"
 )
 
 func main() {

@@ -6,9 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/kyledavis/prompt-stack/internal/cli/prompt"
 	"github.com/kyledavis/prompt-stack/internal/config"
-	"github.com/kyledavis/prompt-stack/internal/database"
-	"github.com/kyledavis/prompt-stack/pkg/prompt"
+	"github.com/kyledavis/prompt-stack/internal/knowledge/database"
 	"github.com/spf13/cobra"
 )
 

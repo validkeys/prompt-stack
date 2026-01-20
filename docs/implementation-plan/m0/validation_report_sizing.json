@@ -1,12 +1,7 @@
 {
   "valid": true,
-  "overall_result": "PASS",
-  "overall_score": 0.95,
-  "validation_type": "task_sizing",
-  "validated_at": "2026-01-19T08:45:00Z",
-  "validator": "planning-006",
+  "total_tasks": 7,
   "summary": {
-    "total_tasks": 7,
     "tasks_within_range": 7,
     "tasks_outside_range": 0,
     "average_duration": 57.857142857142854,

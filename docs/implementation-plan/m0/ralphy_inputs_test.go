@@ -2,14 +2,14 @@ package m0
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 )
 
 // TestRalphyInputsStructure validates the structure of ralphy_inputs.yaml
 func TestRalphyInputsStructure(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -37,7 +37,7 @@ func TestRalphyInputsStructure(t *testing.T) {
 
 // TestRequiredSchemaFields validates all required fields from docs/ralphy-inputs.schema.json
 func TestRequiredSchemaFields(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -63,7 +63,7 @@ func TestRequiredSchemaFields(t *testing.T) {
 
 // TestVersionFormat validates semantic version format
 func TestVersionFormat(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -84,7 +84,7 @@ func TestVersionFormat(t *testing.T) {
 
 // TestTaskSizingConfiguration validates task_sizing fields
 func TestTaskSizingConfiguration(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -106,7 +106,7 @@ func TestTaskSizingConfiguration(t *testing.T) {
 
 // TestTDDConfiguration validates tdd fields
 func TestTDDConfiguration(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -124,7 +124,7 @@ func TestTDDConfiguration(t *testing.T) {
 
 // TestModelPreferencesConfiguration validates model_preferences fields
 func TestModelPreferencesConfiguration(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -142,7 +142,7 @@ func TestModelPreferencesConfiguration(t *testing.T) {
 
 // TestOutputsConfiguration validates outputs fields
 func TestOutputsConfiguration(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -168,7 +168,7 @@ func TestOutputsConfiguration(t *testing.T) {
 
 // TestGlobalConstraints validates global_constraints section
 func TestGlobalConstraints(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -194,7 +194,7 @@ func TestGlobalConstraints(t *testing.T) {
 
 // TestRequiredPatterns validates required patterns presence
 func TestRequiredPatterns(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -219,7 +219,7 @@ func TestRequiredPatterns(t *testing.T) {
 
 // TestTaskDefinitions validates task definitions structure
 func TestTaskDefinitions(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -274,7 +274,7 @@ func TestTaskDefinitions(t *testing.T) {
 
 // TestRalphyStyleAnchorsPerTask validates 2-3 style anchors per task in Ralphy inputs
 func TestRalphyStyleAnchorsPerTask(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -305,7 +305,7 @@ func TestRalphyStyleAnchorsPerTask(t *testing.T) {
 
 // TestAffirmativeConstraints validates affirmative constraint usage
 func TestAffirmativeConstraints(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -328,7 +328,7 @@ func TestAffirmativeConstraints(t *testing.T) {
 
 // TestVerificationSteps validates verification steps are present
 func TestVerificationSteps(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -352,7 +352,7 @@ func TestVerificationSteps(t *testing.T) {
 
 // TestDependencies validates task dependencies
 func TestDependencies(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -372,7 +372,7 @@ func TestDependencies(t *testing.T) {
 
 // TestCommitPolicy validates commit_policy section
 func TestCommitPolicy(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -397,7 +397,7 @@ func TestCommitPolicy(t *testing.T) {
 
 // TestStyleAnchorsTopLevel validates top-level style_anchors
 func TestStyleAnchorsTopLevel(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -423,7 +423,7 @@ func TestStyleAnchorsTopLevel(t *testing.T) {
 
 // TestAllowedDependencies validates allowed_dependencies
 func TestAllowedDependencies(t *testing.T) {
-	data, err := ioutil.ReadFile("ralphy_inputs.yaml")
+	data, err := os.ReadFile("ralphy_inputs.yaml")
 	if err != nil {
 		t.Fatalf("Failed to read ralphy_inputs.yaml: %v", err)
 	}
@@ -479,30 +479,4 @@ func extractRalphyTaskSection(content, taskID string) string {
 	}
 
 	return strings.Join(section, "\n")
-}
-
-func countStyleAnchorsInTask(taskSection string) int {
-	// Count file: entries within style_anchors section of this task
-	styleAnchorsIdx := strings.Index(taskSection, "style_anchors:")
-	if styleAnchorsIdx < 0 {
-		return 0
-	}
-
-	// Extract the style_anchors block
-	anchorsPart := taskSection[styleAnchorsIdx:]
-
-	// Count file: entries until next task-level field
-	count := 0
-	lines := strings.Split(anchorsPart, "\n")
-	for _, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "file:") {
-			count++
-		} else if len(trimmed) > 0 && !strings.HasPrefix(trimmed, "- ") && !strings.HasPrefix(trimmed, " ") {
-			// Hit a new field, stop counting
-			break
-		}
-	}
-
-	return count
 }

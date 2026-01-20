@@ -1,22 +1,16 @@
 {
-  "valid": true,
-  "overall_result": "PASS",
-  "overall_score": 1.0,
-  "validation_type": "yaml_syntax",
-  "validated_at": "2026-01-19T08:45:00Z",
-  "validator": "planning-004a",
   "summary": {
-    "validation_type": "yaml_syntax",
-    "status": "passed",
-    "validator_tool": "tools/validate_yaml.go",
-    "file_validated": "docs/implementation-plan/m0/ralphy_inputs.yaml",
-    "schema_used": "docs/ralphy-inputs.schema.json",
-    "validation_details": {
-      "yaml_conversion": "success",
-      "json_conversion": "success",
-      "schema_validation": "success"
-    },
     "exit_code": 0,
-    "message": "validation OK"
+    "file_validated": "/Users/kyledavis/Sites/prompt-stack/docs/implementation-plan/m0/ralphy_inputs.yaml",
+    "message": "Validation passed",
+    "schema_used": "docs/ralphy-inputs.schema.json",
+    "status": "passed",
+    "validation_details": {
+      "json_conversion": "success",
+      "schema_validation": "success",
+      "yaml_conversion": "success"
+    },
+    "validation_type": "yaml_syntax",
+    "validator_tool": "prompt-stack"
   }
 }

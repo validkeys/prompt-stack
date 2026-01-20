@@ -75,7 +75,11 @@ func TestRalphyDryRunCreatesReportFiles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get current directory: %v", err)
 	}
-	defer os.Chdir(originalWd)
+	t.Cleanup(func() {
+		if err := os.Chdir(originalWd); err != nil {
+			t.Errorf("failed to restore working directory to %q: %v", originalWd, err)
+		}
+	})
 
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatalf("failed to change to temp directory: %v", err)
@@ -122,14 +126,22 @@ func TestRalphyCommandIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get current directory: %v", err)
 	}
-	defer os.Chdir(originalWd)
+	t.Cleanup(func() {
+		if err := os.Chdir(originalWd); err != nil {
+			t.Errorf("failed to restore working directory to %q: %v", originalWd, err)
+		}
+	})
 
 	t.Run("ralphy command with --help", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		if err := os.Chdir(tmpDir); err != nil {
 			t.Fatalf("failed to change to temp directory: %v", err)
 		}
-		defer os.Chdir(originalWd)
+		t.Cleanup(func() {
+			if err := os.Chdir(originalWd); err != nil {
+				t.Errorf("failed to restore working directory to %q: %v", originalWd, err)
+			}
+		})
 
 		if err := os.MkdirAll(".prompt-stack/vendor/ralphy", 0755); err != nil {
 			t.Fatalf("failed to create vendor directory: %v", err)

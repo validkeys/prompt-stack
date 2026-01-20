@@ -15,7 +15,6 @@ func TestValidateProjectStructure(t *testing.T) {
 		requiredDirs := []string{
 			"cmd/prompt-stack",
 			"internal",
-			"pkg",
 			"docs",
 			".prompt-stack",
 		}
@@ -41,10 +40,10 @@ func TestValidateProjectStructure(t *testing.T) {
 		requiredPackages := []string{
 			"cmd/prompt-stack",
 			"internal/config",
-			"internal/database",
 			"internal/validation",
-			"pkg/executor",
-			"pkg/prompt",
+			"internal/knowledge/database",
+			"internal/cli/prompt",
+			"internal/executor",
 		}
 		for _, pkg := range requiredPackages {
 			if err := os.MkdirAll(filepath.Join(tmpDir, pkg), 0755); err != nil {
@@ -75,7 +74,6 @@ func TestValidateProjectStructure(t *testing.T) {
 		expectedMissingDirs := []string{
 			"cmd/prompt-stack",
 			"internal",
-			"pkg",
 			"docs",
 			".prompt-stack",
 		}
@@ -100,7 +98,6 @@ func TestValidateProjectStructure(t *testing.T) {
 		requiredDirs := []string{
 			"cmd/prompt-stack",
 			"internal",
-			"pkg",
 			"docs",
 			".prompt-stack",
 		}
@@ -144,7 +141,6 @@ func TestValidateProjectStructure(t *testing.T) {
 		requiredDirs := []string{
 			"cmd/prompt-stack",
 			"internal",
-			"pkg",
 			"docs",
 			".prompt-stack",
 		}
@@ -175,10 +171,10 @@ func TestValidateProjectStructure(t *testing.T) {
 
 		expectedMissingPackages := []string{
 			"internal/config",
-			"internal/database",
 			"internal/validation",
-			"pkg/executor",
-			"pkg/prompt",
+			"internal/knowledge/database",
+			"internal/cli/prompt",
+			"internal/executor",
 		}
 
 		for _, expectedPkg := range expectedMissingPackages {

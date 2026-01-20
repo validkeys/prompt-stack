@@ -11,18 +11,18 @@ var helpCmd = &cobra.Command{
 Run "prompt-stack help [command]" for more information about a command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
-			cmd.Parent().Help()
+			_ = cmd.Parent().Help()
 			return
 		}
 
 		c, _, err := cmd.Parent().Find(args)
 		if err != nil {
 			cmd.Printf("Unknown help topic: %s\n", args[0])
-			cmd.Parent().Help()
+			_ = cmd.Parent().Help()
 			return
 		}
 
-		c.Help()
+		_ = c.Help()
 	},
 }
 

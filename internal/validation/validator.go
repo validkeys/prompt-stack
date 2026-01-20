@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"time"
+
+	"github.com/kyledavis/prompt-stack/internal/build"
+	"github.com/kyledavis/prompt-stack/internal/shared"
+	"github.com/kyledavis/prompt-stack/internal/validation/constraints"
 )
 
 // ValidationResult represents result of a validation run matching validation-report.schema.json
@@ -80,12 +83,12 @@ type Config struct {
 	Strict        bool
 	Milestone     string
 	QualityTarget float64
-	EventBus      *EventBus
+	EventBus      *shared.EventBus
 }
 
 // Validate runs all validators against input file
 func Validate(config Config) (*ValidationResult, error) {
-	EmitValidateEvents(config.EventBus, config.InputPath, nil)
+	shared.EmitValidateEvents(config.EventBus, config.InputPath, nil)
 
 	result := &ValidationResult{
 		ReportType:        "final_quality_report",
@@ -151,7 +154,7 @@ func Validate(config Config) (*ValidationResult, error) {
 		result.ApprovalReason = fmt.Sprintf("Quality score %.4f meets threshold %.2f", result.OverallScore, config.QualityTarget)
 	}
 
-	EmitValidateEvents(config.EventBus, config.InputPath, result)
+	shared.EmitValidateEvents(config.EventBus, config.InputPath, result)
 
 	if config.OutputPath != "" {
 		if err := saveResult(result, config.OutputPath); err != nil {
@@ -177,6 +180,9 @@ func saveResult(result *ValidationResult, path string) error {
 }
 
 // findProjectRoot walks up the filesystem from the current working directory to find go.mod
+// TODO: Use this function for future validation features that need project root detection
+//
+//nolint:unused
 func findProjectRoot() string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -249,49 +255,62 @@ func (v *TaskSizingValidator) Validate(inputPath string) (ComponentResult, error
 		Valid:  true,
 		Issues: []Issue{},
 		Details: map[string]interface{}{
-			"validator": "tools/task_sizing/validate.go",
+			"validator":        "cmd/prompt-stack/task_sizing_cmd.go",
+			"implementation":   "internal/build/task_sizing.go",
+			"source_yaml_file": inputPath,
 		},
 	}
 
-	// Run the task_sizing validator tool in its module directory so deps resolve
-	root := findProjectRoot()
-	scriptDir := filepath.Join("tools", "task_sizing")
-	if root != "" {
-		scriptDir = filepath.Join(root, "tools", "task_sizing")
-	}
-
-	cmd := exec.Command("go", "run", "./validate.go", "--file", inputPath)
-	cmd.Dir = scriptDir
-	output, err := cmd.CombinedOutput()
+	exitCode, sizingResult, err := build.ValidateTaskSizing(inputPath)
 	if err != nil {
 		result.Valid = false
-		result.Score = 0.8
+		result.Score = 0.0
 		result.Issues = append(result.Issues, Issue{
-			Severity: "HIGH",
+			Severity: "CRITICAL",
 			Path:     inputPath,
-			Message:  fmt.Sprintf("validation failed: %v", err),
-		})
-		result.Issues = append(result.Issues, Issue{
-			Severity: "LOW",
-			Path:     inputPath,
-			Message:  string(output),
+			Message:  fmt.Sprintf("task sizing execution error: %v", err),
 		})
 		return result, nil
 	}
 
-	// Try to parse the tool output (JSON) and adjust score if no tasks found
-	var parsed map[string]interface{}
-	if err := json.Unmarshal(output, &parsed); err == nil {
-		if v, ok := parsed["total_tasks"]; ok {
-			if f, ok := v.(float64); ok {
-				if int(f) == 0 {
-					// no tasks -> lower score
-					result.Score = 0.8
-				}
+	// Include the structured result for diagnostics.
+	result.Details = sizingResult
+
+	if sizingResult.TotalTasks == 0 {
+		result.Score = 0.8
+		result.Issues = append(result.Issues, Issue{
+			Severity: "LOW",
+			Path:     inputPath,
+			Message:  "no tasks found for task sizing validation",
+		})
+		return result, nil
+	}
+
+	if exitCode != build.ExitSuccess {
+		result.Valid = false
+		result.Score = 0.8
+		for _, v := range sizingResult.Violations {
+			msg := fmt.Sprintf("task %s: %s", v.TaskID, v.Issue)
+			if v.Title != "" {
+				msg = fmt.Sprintf("%s (%s)", msg, v.Title)
 			}
+
+			fix := "Adjust task sizing to match configured bounds"
+			if v.Issue == "duration_below_minimum" || v.Issue == "duration_above_maximum" {
+				fix = "Update estimated_duration_minutes or split/merge tasks to fit the min/max range"
+			}
+			if v.Issue == "too_many_files" {
+				fix = "Split the task so it touches fewer files"
+			}
+
+			result.Issues = append(result.Issues, Issue{
+				Severity:      "HIGH",
+				Component:     "task_sizing",
+				Path:          inputPath,
+				Message:       msg,
+				FixSuggestion: fix,
+			})
 		}
-		// include parsed output in details for diagnostics
-		result.Details = parsed
 	}
 
 	return result, nil
@@ -311,33 +330,59 @@ func (v *ConstraintsValidator) Validate(inputPath string) (ComponentResult, erro
 		Valid:  true,
 		Issues: []Issue{},
 		Details: map[string]interface{}{
-			"validator": "tools/validate_constraints/validate.go",
+			"validator":        "cmd/prompt-stack/validate_constraints_cmd.go",
+			"implementation":   "internal/validation/constraints/constraints.go",
+			"source_yaml_file": inputPath,
 		},
 	}
 
-	root := findProjectRoot()
-	scriptDir := filepath.Join("tools", "validate_constraints")
-	if root != "" {
-		scriptDir = filepath.Join(root, "tools", "validate_constraints")
-	}
-
-	cmd := exec.Command("go", "run", "./validate.go", "--file", inputPath)
-	cmd.Dir = scriptDir
-	output, err := cmd.CombinedOutput()
+	exitCode, constraintsResult, err := constraints.ValidateConstraintsFromFile(inputPath)
 	if err != nil {
 		result.Valid = false
-		result.Score = 0.9
+		result.Score = 0.0
 		result.Issues = append(result.Issues, Issue{
-			Severity: "HIGH",
+			Severity: "CRITICAL",
 			Path:     inputPath,
-			Message:  fmt.Sprintf("validation failed: %v", err),
-		})
-		result.Issues = append(result.Issues, Issue{
-			Severity: "LOW",
-			Path:     inputPath,
-			Message:  string(output),
+			Message:  fmt.Sprintf("constraints execution error: %v", err),
 		})
 		return result, nil
+	}
+
+	result.Details = constraintsResult
+
+	if constraintsResult != nil && constraintsResult.TotalConstraints == 0 {
+		result.Score = 0.85
+		result.Issues = append(result.Issues, Issue{
+			Severity:  "LOW",
+			Component: "constraints",
+			Path:      inputPath,
+			Message:   "no constraints found to validate",
+		})
+		return result, nil
+	}
+
+	if exitCode != constraints.ExitSuccess {
+		result.Valid = false
+		result.Score = 0.9
+		if constraintsResult != nil {
+			for _, v := range constraintsResult.Violations {
+				msg := fmt.Sprintf("%s: %s", v.ConstraintType, v.Issue)
+				if v.ConstraintText != "" {
+					msg = fmt.Sprintf("%s (%s)", msg, v.ConstraintText)
+				}
+				fix := v.Suggestion
+				if fix == "" {
+					fix = "Rephrase constraints to be specific and affirmative"
+				}
+				result.Issues = append(result.Issues, Issue{
+					Severity:      "HIGH",
+					Component:     "constraints",
+					Path:          inputPath,
+					Message:       msg,
+					FixSuggestion: fix,
+				})
+			}
+		}
 	}
 
 	return result, nil

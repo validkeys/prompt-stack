@@ -64,6 +64,14 @@ outputs:
 
 global_constraints:
 
+  forbidden_patterns:
+    - pattern: "\\bany\\b"
+      when: "type_annotations"
+      message: "ALWAYS use unknown with type guards in place of any"
+    - pattern: "@ts-ignore"
+      when: "typescript_error_handling"
+      message: "ALWAYS fix TypeScript types instead of using @ts-ignore"
+
   required_patterns:
     - pattern: "import.*zod"
       when: "validating_external_data"
@@ -98,7 +106,7 @@ global_constraints:
     - "ALWAYS write docstrings for exported functions with clear purpose, parameters, return values, and examples"
     - "ALWAYS check errors immediately after function calls and wrap with context using fmt.Errorf"
     - "ALWAYS validate external inputs at entry points using Zod schemas for TypeScript or custom validators for Go"
-    - "USE only dependencies listed in go.mod: Go 1.x, Cobra for CLI, better-sqlite3 for database"
+    - "ONLY use dependencies listed in go.mod: Go 1.x, Cobra for CLI, better-sqlite3 for database"
     - "ALWAYS run go vet ./... before committing to catch common Go mistakes"
     - "ALWAYS write unit tests for new code targeting 80%+ test coverage measured by go test -cover"
     - "ALWAYS use structured logging with log levels (debug, info, error) and context fields"

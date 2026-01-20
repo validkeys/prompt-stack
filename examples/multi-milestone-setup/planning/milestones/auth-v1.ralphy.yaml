@@ -71,7 +71,7 @@ tasks:
 verification:
   quality_gates:
     - name: "yaml_syntax"
-      tool: "tools/validate_yaml.go"
+      tool: "prompt-stack validate-yaml"
     - name: "schema_validation"
       schema: "docs/ralphy-inputs.schema.json"
     - name: "secrets_scan"

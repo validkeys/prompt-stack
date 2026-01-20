@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/kyledavis/prompt-stack/pkg/prompt"
+	"github.com/kyledavis/prompt-stack/internal/cli/prompt"
 	"github.com/spf13/cobra"
 )
 

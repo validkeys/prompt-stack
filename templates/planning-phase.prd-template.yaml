@@ -162,18 +162,21 @@ tasks:
       yaml_validation: "yaml_validation_report.json"
     files_in_scope:
       - "{{outputs.planning-004.implementation_plan}}"
-      - "tools/validate_yaml.go"
+      - "cmd/prompt-stack/validate_yaml_cmd.go"
+      - "internal/validation/schema_validator.go"
       - "docs/ralphy-yaml-spec.md"
     style_anchors:
-      - file: "tools/validate_yaml.go"
-        reason: "YAML validator tool implementation"
+      - file: "cmd/prompt-stack/validate_yaml_cmd.go"
+        reason: "YAML validator CLI command"
+      - file: "internal/validation/schema_validator.go"
+        reason: "YAML validator implementation"
       - file: "docs/ralphy-yaml-spec.md"
         reason: "Yaml spec examples for validation rules"
       - file: "examples/style-anchor/pkg/greeter/greeter.go"
         reason: "Repository example with code + tests + README (high-leverage anchor)"
     verification:
       pre_commit:
-        - "YAML syntax validation passes using tools/validate_yaml.go"
+        - "YAML syntax validation passes using prompt-stack validate-yaml command"
         - "No YAML parsing errors or structural issues"
     output_format: "yaml_validation_report.json"
     estimated_duration_minutes: 20
