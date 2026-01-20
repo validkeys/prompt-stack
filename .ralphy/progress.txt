@@ -532,3 +532,35 @@
   * Commands follow consistent naming pattern (single word names) ✓
   * All command files compile without errors ✓
 - Verification passed: go build ./cmd/prompt-stack, go test ./cmd/prompt-stack, go vet ./..., go fmt ./...
+
+## 2026-01-19: Task m1-002 completed
+- Created internal/config/config.go with config management:
+  * Config struct with version, default_dir, database, and validation fields
+  * DefaultConfig with minimal defaults (version: 0.1.0, db path: .prompt-stack/knowledge.db)
+  * Load() function to read config from file
+  * Save() function to write config to file
+  * Init() function to create config with defaults
+- Created internal/database/schema.go with database initialization:
+  * Init() function to create database file and tables
+  * createTables() function with 4 tables: patterns, requirements, tasks, validation_reports
+  * setSchemaVersion() function to track schema version
+- Updated cmd/prompt-stack/init.go to create config and database on init:
+  * Creates .prompt-stack/config.yaml with minimal defaults
+  * Creates .prompt-stack/knowledge.db SQLite database with schema
+  * Skips creation if files already exist
+- Added dependencies: gopkg.in/yaml.v3, github.com/mattn/go-sqlite3
+- Created comprehensive unit tests:
+  * config_test.go: 4 test functions (Init, Load, Save, DefaultConfig) with 8 subtests
+  * schema_test.go: 3 test functions (Init, CreateTables, SetSchemaVersion) with 6 subtests
+- All tests passing (7 test functions, 14 subtests total)
+- go fmt formatting correct
+- go vet validation passed
+- Verified init command creates config.yaml with minimal defaults (version, default_dir, database.path, validation.strict)
+- Verified init command creates knowledge.db SQLite database with 4 tables (patterns, requirements, tasks, validation_reports)
+- Updated implementation-plan.yaml to mark m1-002 as completed (completed: true)
+- All acceptance criteria met:
+  * prompt-stack init creates .prompt-stack/config.yaml ✓
+  * prompt-stack init creates .prompt-stack/knowledge.db ✓
+  * Config file contains minimal defaults ✓
+  * Database schema includes required tables for patterns storage ✓
+- Verification passed: go build ./cmd/prompt-stack, go test ./..., go vet ./..., go fmt ./...

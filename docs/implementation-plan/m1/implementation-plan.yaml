@@ -123,6 +123,7 @@ tasks:
       - file: "docs/requirements/project-structure.md"
         reason: "Project layout specification for config file placement"
     estimated_duration_minutes: 90
+    completed: true
     verification:
       pre_commit:
         - "prompt-stack init creates .prompt-stack/config.yaml"

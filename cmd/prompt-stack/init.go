@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/kyledavis/prompt-stack/internal/config"
+	"github.com/kyledavis/prompt-stack/internal/database"
 	"github.com/kyledavis/prompt-stack/pkg/prompt"
 	"github.com/spf13/cobra"
 )
@@ -21,7 +23,31 @@ var initCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 
-		fmt.Println("=== Requirements Gathering Interview ===")
+		fmt.Println("=== Prompt Stack Initialization ===")
+
+		configPath := ".prompt-stack/config.yaml"
+		if _, err := os.Stat(configPath); os.IsNotExist(err) {
+			fmt.Printf("Creating config file at %s\n", configPath)
+			if err := config.Init(configPath); err != nil {
+				return fmt.Errorf("failed to initialize config: %w", err)
+			}
+			fmt.Printf("✓ Created %s\n", configPath)
+		} else {
+			fmt.Printf("✓ Config already exists at %s\n", configPath)
+		}
+
+		dbPath := ".prompt-stack/knowledge.db"
+		if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+			fmt.Printf("Creating database at %s\n", dbPath)
+			if err := database.Init(dbPath); err != nil {
+				return fmt.Errorf("failed to initialize database: %w", err)
+			}
+			fmt.Printf("✓ Created %s\n", dbPath)
+		} else {
+			fmt.Printf("✓ Database already exists at %s\n", dbPath)
+		}
+
+		fmt.Println("\n=== Requirements Gathering Interview ===")
 		fmt.Println("This will ask you a series of questions to define your milestone requirements.")
 		fmt.Println("Press Ctrl+C to cancel at any time.")
 		fmt.Println()

@@ -1,0 +1,6 @@
+version: 0.1.0
+default_output_dir: docs/implementation-plan/m0
+database:
+    path: .prompt-stack/knowledge.db
+validation:
+    strict: false
