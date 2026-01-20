@@ -26,6 +26,15 @@ Run the program:
 
 ## Usage
 
+### View help
+
+Display available commands and usage information:
+
+```sh
+./dist/prompt-stack --help
+./dist/prompt-stack help [command]
+```
+
 ### Initialize a new milestone
 
 Run an interactive interview to gather milestone requirements:
@@ -33,7 +42,12 @@ Run an interactive interview to gather milestone requirements:
 ```sh
 ./dist/prompt-stack init
 ./dist/prompt-stack init --output-dir docs/implementation-plan/m1
+./dist/prompt-stack init --no-interactive
 ```
+
+The init command creates:
+- `.prompt-stack/config.yaml` - Configuration file with default settings
+- `.prompt-stack/knowledge.db` - SQLite database for storing patterns and requirements
 
 ### Generate implementation plans
 

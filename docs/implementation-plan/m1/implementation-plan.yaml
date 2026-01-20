@@ -242,6 +242,7 @@ tasks:
       - file: "docs/style-markers.md"
         reason: "Friendly developer onboarding pattern from Hugo"
     estimated_duration_minutes: 45
+    completed: true
     verification:
       pre_commit:
         - "README includes CLI usage examples for all commands"
