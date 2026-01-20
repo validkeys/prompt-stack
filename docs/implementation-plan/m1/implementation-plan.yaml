@@ -79,9 +79,10 @@ outputs:
     - .github/**
   commit_policy:
     prefix_rules:
-      - feat:
-      - fix:
-      - test:
+      - feat: "m1-"
+      - fix: "m1-"
+      - test: "m1-"
+    task_prefix_required: true
 tasks:
   - id: "m1-001"
     title: "Implement help command with core command listing"
@@ -96,6 +97,7 @@ tasks:
       - file: "docs/style-markers.md"
         reason: "Single-command UX with subcommands pattern from Hugo"
     estimated_duration_minutes: 45
+    completed: true
     verification:
       pre_commit:
         - "prompt-stack --help lists init, plan, validate, review, build commands"
