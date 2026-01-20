@@ -670,3 +670,25 @@
    * Documentation matches implemented functionality ✓ (verified via automated tests)
    * Contributing guidelines include development setup ✓ (cloning, dependencies, build, test, fmt, lint, clean)
  - Verification passed: go test ./tests/integration/..., go vet ./..., go fmt ./...
+
+## 2026-01-19: Task m1-008 completed
+ - Verified .prompt-stack/vendor/ralphy/ralphy.sh exists and is executable (vendored from m0 implementation)
+ - Created cmd/prompt-stack/ralphy.go with ralphy command implementation
+ - Implemented runRalphyDryRun() function that calls executor package
+ - Added --dry-run flag to ralphy command
+ - Implemented runRalphyLive() function that returns "not implemented" error
+ - Created cmd/prompt-stack/ralphy_test.go with comprehensive tests:
+   * TestRalphyCommandExists: validates ralphy command has required fields
+   * TestRalphyCommandDryRunFlag: validates --dry-run flag exists and works
+   * TestRalphyDryRunCreatesReportFiles: validates dry-run creates .prompt-stack/report.txt and audit.log
+   * TestRalphyCommandIntegration: integration tests for --help and dry-run functionality
+ - All ralphy command tests passing (4 test functions, 5 subtests)
+ - All tests passing across entire codebase
+ - go fmt formatting correct
+ - go vet validation passed
+ - Updated implementation-plan.yaml to mark m1-008 as completed (completed: true)
+ - All acceptance criteria met:
+   * .prompt-stack/vendor/ralphy/ralphy.sh exists and is executable ✓
+   * Dry-run command writes ./.prompt-stack/report.txt and ./.prompt-stack/audit.log ✓
+   * Materialization helper compiles and tests pass ✓ (executor package compiles and tests pass)
+ - Verification passed: go test ./..., go vet ./..., go fmt ./...

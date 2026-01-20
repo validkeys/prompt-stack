@@ -265,6 +265,7 @@ tasks:
       - file: "examples/style-anchor/pkg/greeter/greeter.go"
         reason: "Packaging and embed patterns for small assets"
     estimated_duration_minutes: 60
+    completed: true
     verification:
       pre_commit:
         - ".prompt-stack/vendor/ralphy/ralphy.sh exists and is executable"
