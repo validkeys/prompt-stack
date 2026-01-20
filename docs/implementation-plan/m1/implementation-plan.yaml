@@ -168,6 +168,7 @@ tasks:
       - file: "docs/style-markers.md"
         reason: "Single-command UX with subcommands pattern from Hugo"
     estimated_duration_minutes: 75
+    completed: true
     verification:
       pre_commit:
         - "All core commands exist (plan, validate, review, build)"

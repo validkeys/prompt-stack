@@ -508,3 +508,27 @@
   * Command follows Cobra framework conventions (SetHelpCommand used)
 - Verification passed: go build ./cmd/prompt-stack, go test ./cmd/prompt-stack, go vet ./..., go fmt ./...
 
+
+## 2026-01-19: Task m1-004 completed
+- Verified all core commands exist from m0 implementation (plan, validate, review, build)
+- Verified each command has Run function:
+  * plan command has placeholder Run showing help
+  * validate command has full implementation from m0
+  * review command has placeholder Run showing help
+  * build command has placeholder Run showing help
+- Verified commands follow consistent naming pattern (single-word names)
+- Verified all command files compile without errors (go build successful)
+- Verified existing tests in main_test.go cover:
+  * TestCommandsExist: validates all commands have required fields (Use, Short, Run)
+  * TestAllCommandsAvailable: verifies all commands appear in help output
+  * TestCommandsCompile: ensures all commands execute without errors
+- All tests passing (all existing tests pass)
+- go fmt formatting correct
+- go vet validation passed
+- Updated implementation-plan.yaml to mark m1-004 as completed (completed: true)
+- All acceptance criteria met:
+  * All core commands exist (plan, validate, review, build) ✓
+  * Each command has placeholder Run function (plan/review/build) or full implementation (validate) ✓
+  * Commands follow consistent naming pattern (single word names) ✓
+  * All command files compile without errors ✓
+- Verification passed: go build ./cmd/prompt-stack, go test ./cmd/prompt-stack, go vet ./..., go fmt ./...
