@@ -146,6 +146,7 @@ tasks:
       - file: "examples/style-anchor/pkg/greeter/greeter_test.go"
         reason: "Table-driven test patterns for validation tests"
     estimated_duration_minutes: 60
+    completed: true
     verification:
       pre_commit:
         - "Validation logic checks directory structure matches spec"

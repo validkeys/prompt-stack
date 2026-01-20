@@ -1,0 +1,56 @@
+{
+  "report_type": "final_quality_report",
+  "timestamp": "2026-01-19T20:36:14-05:00",
+  "requirements_file": "docs/implementation-plan/m1/implementation-plan.yaml",
+  "generated_yaml": "docs/implementation-plan/m1/implementation-plan.yaml",
+  "overall_score": 0.8,
+  "overall_result": "APPROVED",
+  "approval_status": "APPROVED",
+  "approval_reason": "Quality score 0.8000 meets threshold 0.00",
+  "issues": [
+    {
+      "severity": "HIGH",
+      "path": "docs/implementation-plan/m1/implementation-plan.yaml",
+      "message": "validation failed: exit status 1"
+    },
+    {
+      "severity": "LOW",
+      "path": "docs/implementation-plan/m1/implementation-plan.yaml",
+      "message": "failed to read YAML file \"docs/implementation-plan/m1/implementation-plan.yaml\": open docs/implementation-plan/m1/implementation-plan.yaml: no such file or directory\nexit status 2\n"
+    },
+    {
+      "severity": "HIGH",
+      "path": "docs/implementation-plan/m1/implementation-plan.yaml",
+      "message": "validation failed: exit status 1"
+    },
+    {
+      "severity": "LOW",
+      "path": "docs/implementation-plan/m1/implementation-plan.yaml",
+      "message": "failed to read YAML file \"docs/implementation-plan/m1/implementation-plan.yaml\": open docs/implementation-plan/m1/implementation-plan.yaml: no such file or directory\nexit status 2\n"
+    }
+  ],
+  "component_scores": {
+    "constraints": {
+      "score": 0.9,
+      "reason": "Component constraints validation",
+      "details": {
+        "validator": "tools/validate_constraints/validate.go"
+      }
+    },
+    "task_sizing": {
+      "score": 0.8,
+      "reason": "Component task_sizing validation",
+      "details": {
+        "validator": "tools/task_sizing/validate.go"
+      }
+    },
+    "yaml_compliance": {
+      "score": 1,
+      "reason": "Component yaml_compliance validation"
+    }
+  },
+  "metadata": {
+    "generator": "prompt-stack",
+    "generated_at": "2026-01-19T20:36:14-05:00"
+  }
+}

@@ -564,3 +564,27 @@
   * Config file contains minimal defaults ✓
   * Database schema includes required tables for patterns storage ✓
 - Verification passed: go build ./cmd/prompt-stack, go test ./..., go vet ./..., go fmt ./...
+
+## 2026-01-19: Task m1-003 completed
+- Created internal/validation/project_structure.go with project structure validation:
+  * ProjectStructureResult struct with IsValid, Errors, Warnings fields
+  * ValidateProjectStructure() function to validate project layout
+  * Checks for required directories: cmd/prompt-stack, internal, pkg, docs, .prompt-stack
+  * Checks for required files: cmd/prompt-stack/main.go, README.md, Makefile, go.mod, go.sum
+  * Checks for required packages: cmd/prompt-stack, internal/config, internal/database, internal/validation, pkg/executor, pkg/prompt
+  * Provides clear error messages for missing items
+- Created comprehensive unit tests in internal/validation/project_structure_test.go:
+  * TestValidateProjectStructure/validates_correct_project_structure: validates complete valid structure
+  * TestValidateProjectStructure/reports_missing_directories: validates missing directory detection
+  * TestValidateProjectStructure/reports_missing_files: validates missing file detection
+  * TestValidateProjectStructure/reports_missing_packages: validates missing package detection
+  * TestValidateProjectStructure/provides_clear_error_messages: validates error message clarity
+- All tests passing (1 test function, 5 subtests)
+- go fmt formatting correct
+- go vet validation passed
+- Updated implementation-plan.yaml to mark m1-003 as completed (completed: true)
+- All acceptance criteria met:
+  * Validation logic checks directory structure matches spec ✓
+  * Validation provides clear error messages for mismatches ✓
+  * validate command can be run to check project structure ✓ (tested: prompt-stack validate works)
+- Verification passed: go build ./internal/validation, go test ./internal/validation, go vet ./..., go fmt ./...
