@@ -14,6 +14,7 @@ import (
 
 var (
 	interactiveOutputDir string
+	noInteractive        bool
 )
 
 var initCmd = &cobra.Command{
@@ -47,21 +48,23 @@ var initCmd = &cobra.Command{
 			fmt.Printf("✓ Database already exists at %s\n", dbPath)
 		}
 
-		fmt.Println("\n=== Requirements Gathering Interview ===")
-		fmt.Println("This will ask you a series of questions to define your milestone requirements.")
-		fmt.Println("Press Ctrl+C to cancel at any time.")
-		fmt.Println()
+		if !noInteractive {
+			fmt.Println("\n=== Requirements Gathering Interview ===")
+			fmt.Println("This will ask you a series of questions to define your milestone requirements.")
+			fmt.Println("Press Ctrl+C to cancel at any time.")
+			fmt.Println()
 
-		questions := prompt.DefaultQuestions()
-		p := prompt.NewPrompt(questions)
+			questions := prompt.DefaultQuestions()
+			p := prompt.NewPrompt(questions)
 
-		result, err := p.Run(ctx)
-		if err != nil {
-			return fmt.Errorf("interview failed: %w", err)
-		}
+			result, err := p.Run(ctx)
+			if err != nil {
+				return fmt.Errorf("interview failed: %w", err)
+			}
 
-		if err := saveInterviewResult(result, interactiveOutputDir); err != nil {
-			return fmt.Errorf("failed to save interview results: %w", err)
+			if err := saveInterviewResult(result, interactiveOutputDir); err != nil {
+				return fmt.Errorf("failed to save interview results: %w", err)
+			}
 		}
 
 		return nil
@@ -73,6 +76,7 @@ func init() {
 
 	defaultDir := filepath.Join("docs", "implementation-plan", "m0")
 	initCmd.Flags().StringVarP(&interactiveOutputDir, "output-dir", "o", defaultDir, "Directory to save output files")
+	initCmd.Flags().BoolVar(&noInteractive, "no-interactive", false, "Skip interactive requirements gathering")
 }
 
 func saveInterviewResult(result *prompt.InterviewResult, outputDir string) error {

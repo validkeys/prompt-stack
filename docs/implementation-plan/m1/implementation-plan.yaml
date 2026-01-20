@@ -217,6 +217,7 @@ tasks:
       - file: "docs/style-markers.md"
         reason: "Makefile-first developer workflow pattern from Kubernetes"
     estimated_duration_minutes: 90
+    completed: true
     verification:
       pre_commit:
         - "Integration tests cover init -> validate -> plan workflow"
