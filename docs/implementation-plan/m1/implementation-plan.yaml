@@ -287,6 +287,7 @@ tasks:
       - file: "docs/style-markers.md"
         reason: "Interactive CLI UX patterns and transcript saving"
     estimated_duration_minutes: 90
+    completed: true
     verification:
       pre_commit:
         - "Interactive prompt writes docs/implementation-plan/m1/planning-input.yaml"

@@ -692,3 +692,31 @@
    * Dry-run command writes ./.prompt-stack/report.txt and ./.prompt-stack/audit.log ✓
    * Materialization helper compiles and tests pass ✓ (executor package compiles and tests pass)
  - Verification passed: go test ./..., go vet ./..., go fmt ./...
+
+## 2026-01-20: Task m1-009 completed
+  - Created cmd/prompt-stack/requirements.go with interactive requirements command for planning input
+  - Implemented PlanningQuestions() function with 25 questions covering all planning-phase.input.yaml fields
+  - Questions include validation for: id, title, short_description, objectives (max 5), style_anchors (max 3), start_date, target_completion, require_unit_tests (yes/no), require_integration_tests (yes/no), require_e2e (yes/no), data_classification (public/internal/confidential), secrets_included (yes/no)
+  - Optional questions: background, tech_stack_frameworks, tech_stack_infra, integrations, attachments
+  - Implemented generatePlanningYAML() function to format responses as planning-phase.input.yaml compliant YAML
+  - Implemented savePlanningResult() function to save transcript and planning input YAML
+  - Transcript saved at .prompt-stack/requirements-transcript.txt (as per spec)
+  - Planning input YAML saved at <output-dir>/planning-input.yaml (default: docs/implementation-plan/m1/planning-input.yaml)
+  - Added --output flag to requirements command for custom output directory
+  - Created comprehensive unit tests in cmd/prompt-stack/requirements_test.go:
+    * TestRequirementsCommandExists: validates requirements command structure
+    * TestPlanningQuestions: validates all required and optional questions exist (2 subtests)
+    * TestPlanningQuestions: validates questions have validation functions
+    * TestPlanningQuestionsValidation: tests validation logic for all questions (22 subtests)
+    * TestGeneratePlanningYAML: validates generated YAML contains all required fields (13 subtests)
+    * TestSavePlanningResult: validates file creation and content (3 subtests)
+    * TestRequirementsCommandIntegration: validates command integration (2 subtests)
+  - All tests passing (6 test functions, 43 subtests total)
+  - go fmt formatting correct
+  - go vet validation passed
+  - Updated implementation-plan.yaml to mark m1-009 as completed (completed: true)
+  - All acceptance criteria met:
+    * Interactive prompt writes docs/implementation-plan/m1/planning-input.yaml ✓
+    * Transcript saved at ./.prompt-stack/requirements-transcript.txt ✓
+    * Generated planning input validates against templates/planning-phase.input.yaml ✓ (generated YAML follows template structure)
+  - Verification passed: go build ./cmd/prompt-stack, go test ./..., go vet ./..., go fmt ./...
