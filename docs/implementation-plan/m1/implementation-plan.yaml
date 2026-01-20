@@ -193,6 +193,7 @@ tasks:
       - file: "docs/style-markers.md"
         reason: "Explicit support notes pattern from Kubernetes"
     estimated_duration_minutes: 60
+    completed: true
     verification:
       pre_commit:
         - "Secrets scanner detects common secret patterns"
