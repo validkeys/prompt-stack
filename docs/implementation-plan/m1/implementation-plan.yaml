@@ -1,3 +1,39 @@
+id: "m1"
+title: "CLI scaffold implementation"
+short_description: "Implement Go/Cobra CLI scaffold, init/config, validation, and security checks for milestone M1."
+
+project_metadata:
+  name: "prompt-stack"
+  version: "0.1.0"
+
+requirements_file: "docs/implementation-plan/m1/requirements.md"
+
+stakeholders:
+  product_owner: "@kyledavis"
+
+execution_resources:
+  knowledge_db_path: ".prompt-stack/knowledge.db"
+  yaml_validator: "tools/validate_yaml.go"
+  ralphy_script: ".prompt-stack/vendor/ralphy/ralphy.sh"
+
+validation_assets:
+  - "docs/ralphy-inputs.schema.json"
+  - "docs/ralphy-yaml-spec.md"
+
+quality_targets:
+  quality_score: 0.95
+
+timeline:
+  start_date: "2026-01-21"
+  target_completion: "2026-01-25"
+
+deliverables:
+  - "cmd/prompt-stack/main.go (Cobra scaffold)"
+  - ".prompt-stack/vendor/ralphy/ralphy.sh"
+  - "interactive prompt that emits planning input YAML"
+  - ".prompt-stack/report.txt"
+  - ".prompt-stack/audit.log"
+
 name: prompt-stack
 description: "AI-assisted development policy and inputs for milestone m1 - CLI scaffold implementation"
 version: 0.1.0
@@ -204,6 +240,49 @@ tasks:
         - "README includes CLI usage examples for all commands"
         - "Documentation matches implemented functionality"
         - "Contributing guidelines include development setup"
+
+  - id: "m1-008"
+    title: "Vendor Ralphy shell and add dry-run reporter"
+    description: "Vendor .prompt-stack/vendor/ralphy/ralphy.sh (embed or copy) and implement dry-run reporting that writes .prompt-stack/report.txt and .prompt-stack/audit.log"
+    dependencies:
+      - "m1-002"
+    files_in_scope:
+      - ".prompt-stack/vendor/ralphy/ralphy.sh"
+      - "internal/ralphy/manifest.go"
+      - "cmd/prompt-stack/ralphy.go"
+      - "cmd/prompt-stack/ralphy_test.go"
+    style_anchors:
+      - file: "docs/style-markers.md"
+        reason: "Pattern for vendoring scripts and small helpers"
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Packaging and embed patterns for small assets"
+    estimated_duration_minutes: 60
+    verification:
+      pre_commit:
+        - ".prompt-stack/vendor/ralphy/ralphy.sh exists and is executable"
+        - "Dry-run command writes ./.prompt-stack/report.txt and ./.prompt-stack/audit.log"
+        - "Materialization helper compiles and tests pass"
+
+  - id: "m1-009"
+    title: "Interactive requirements prompt"
+    description: "One-question-at-a-time interactive prompt that saves a transcript and emits a planning input YAML for downstream Plan Mode"
+    dependencies:
+      - "m1-001"
+    files_in_scope:
+      - "cmd/prompt-stack/requirements.go"
+      - "cmd/prompt-stack/requirements_test.go"
+      - "docs/implementation-plan/m1/planning-input.yaml.template"
+    style_anchors:
+      - file: "templates/planning-phase.input.yaml"
+        reason: "Input template reference for mapping fields"
+      - file: "docs/style-markers.md"
+        reason: "Interactive CLI UX patterns and transcript saving"
+    estimated_duration_minutes: 90
+    verification:
+      pre_commit:
+        - "Interactive prompt writes docs/implementation-plan/m1/planning-input.yaml"
+        - "Transcript saved at ./.prompt-stack/requirements-transcript.txt"
+        - "Generated planning input validates against templates/planning-phase.input.yaml"
 
 global_constraints:
   forbidden_patterns:

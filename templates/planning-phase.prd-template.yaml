@@ -221,6 +221,35 @@ tasks:
     output_format: "secrets_scan_report.json"
     estimated_duration_minutes: 30
 
+  # Phase 4d: Requirements coverage validation (new)
+  - id: "planning-004d"
+    title: "Re-review requirements document for coverage validation"
+    description: "After generating the initial implementation plan, re-review the original requirements document to ensure:\n1. All functional requirements are addressed by tasks\n2. All acceptance criteria have corresponding verification steps\n3. All non-functional requirements (performance, security, etc.) are covered\n4. No requirements are missed or only partially addressed\n\nThis critical validation step ensures the implementation plan comprehensively addresses the original requirements."
+
+    depends_on: ["planning-004"]
+    outputs:
+      requirements_coverage: "requirements_coverage_report.json"
+    files_in_scope:
+      - "{{requirements_file}}"  # Original requirements document
+      - "{{outputs.planning-004.implementation_plan}}"  # Generated implementation plan
+      - "{{outputs.planning-001.structured_analysis}}"  # Structured analysis from planning-001
+    style_anchors:
+      - file: "docs/best-practices.md"
+        reason: "Example of comprehensive requirements coverage validation"
+      - file: "docs/requirements/main.md"
+        reason: "Requirements documentation reference"
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Repository example with code + tests + README (high-leverage anchor)"
+    verification:
+      pre_commit:
+        - "All functional requirements mapped to tasks"
+        - "All acceptance criteria have verification steps"
+        - "Non-functional requirements addressed (performance, security, etc.)"
+        - "No requirements missed or partially covered"
+        - "Coverage score ≥95%"
+    output_format: "requirements_coverage_report.json"
+    estimated_duration_minutes: 25
+
   # Phase 5: AI Validation - Style Anchors Compliance
   - id: "planning-005"
     title: "Validate style anchors compliance"
@@ -372,7 +401,8 @@ tasks:
       "planning-009",
       "planning-004a",
       "planning-004b",
-      "planning-004c"
+      "planning-004c",
+      "planning-004d"
     ]
     outputs:
       final_quality_report: "final_quality_report.json"
@@ -385,6 +415,7 @@ tasks:
       - "{{outputs.planning-004a.yaml_validation}}"
       - "{{outputs.planning-004b.schema_validation}}"
       - "{{outputs.planning-004c.secrets_scan}}"
+      - "{{outputs.planning-004d.requirements_coverage}}"
     style_anchors:
       - file: "docs/best-practices.md"
         reason: "Example of comprehensive quality reporting"
@@ -433,15 +464,16 @@ instructions: |
   1. Replace {{placeholders}} with actual values or provide equivalent runtime mappings:
       - {{requirements_file}}: Path to requirements document (required). You may pass this mapping at runtime or replace the placeholder with an explicit path.
 
-   2. Output placeholder mapping (the template publishes named outputs for each task):
-      - planning-001 outputs.structured_analysis => {{outputs.planning-001.structured_analysis}} (structured_analysis.json)
-      - planning-002 outputs.patterns_report => {{outputs.planning-002.patterns_report}} (patterns_report.json)
-      - planning-003 outputs.task_breakdown => {{outputs.planning-003.task_breakdown}} (task_breakdown.yaml)
-      - planning-004 outputs.implementation_plan => {{outputs.planning-004.implementation_plan}} (implementation-plan.yaml)
-      - planning-004a outputs.yaml_validation => {{outputs.planning-004a.yaml_validation}}
-      - planning-004b outputs.schema_validation => {{outputs.planning-004b.schema_validation}}
-      - planning-004c outputs.secrets_scan => {{outputs.planning-004c.secrets_scan}}
-      - planning-005..planning-011 outputs are similarly named and used by downstream tasks
+    2. Output placeholder mapping (the template publishes named outputs for each task):
+       - planning-001 outputs.structured_analysis => {{outputs.planning-001.structured_analysis}} (structured_analysis.json)
+       - planning-002 outputs.patterns_report => {{outputs.planning-002.patterns_report}} (patterns_report.json)
+       - planning-003 outputs.task_breakdown => {{outputs.planning-003.task_breakdown}} (task_breakdown.yaml)
+       - planning-004 outputs.implementation_plan => {{outputs.planning-004.implementation_plan}} (implementation-plan.yaml)
+       - planning-004a outputs.yaml_validation => {{outputs.planning-004a.yaml_validation}}
+       - planning-004b outputs.schema_validation => {{outputs.planning-004b.schema_validation}}
+       - planning-004c outputs.secrets_scan => {{outputs.planning-004c.secrets_scan}}
+       - planning-004d outputs.requirements_coverage => {{outputs.planning-004d.requirements_coverage}} (requirements_coverage_report.json)
+       - planning-005..planning-011 outputs are similarly named and used by downstream tasks
 
   3. Required pre-conditions:
      - Knowledge base ({{knowledge_db_path}}) should be populated for best results
@@ -484,7 +516,7 @@ research_compliance:
 
 # Expected Performance
 performance_targets:
-  total_duration_minutes: 190  # Sum of all task estimates (approx)
+  total_duration_minutes: 215  # Sum of all task estimates (approx)
   parallel_opportunities: "Limited (sequential analysis)"
   context_reduction_target: "80%+ vs naive approach"
   quality_score_target: ">=0.95"

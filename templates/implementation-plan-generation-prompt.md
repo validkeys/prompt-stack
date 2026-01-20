@@ -35,14 +35,18 @@ Prompt rules and behavior (agent must follow exactly)
 1. Ask the user: "Where is the requirements document (path) that I should read?" and record the answer. The agent will create the final PRD file named `make-implementation-plan.prd.yaml` in the same folder as the provided `requirements_file`.
 2. Read `requirements_file` fully and produce a concise 1-paragraph summary (one sentence summary + 2–3 bullet highlights: objectives, success metrics, constraints).
 3. Load `templates/planning-phase.prd-template.yaml` and use it as the authoritative structure. Replace placeholders (`{{...}}`) with concrete values derived from `requirements_file` and provided inputs.
-4. Generate a single `make-implementation-plan.prd.yaml` artifact (top-level sections: `metadata`, `global_constraints`, `tasks`, `instructions`, `validation`) that:
-   - Includes all schema-required top-level fields: `name`, `version`, `rules_file`, `task_sizing`, `tdd`, `model_preferences`, `outputs` (from `docs/ralphy-inputs.schema.json`).
-   - Includes project `description` and milestone data from the requirements file.
-   - Embeds `requirements_file` under `files_in_scope` for all relevant phases (at minimum planning-001 and planning-004).
-   - Populates `style_anchors` with 2–3 concrete anchors per task (prefer repository examples with code + tests + README) and records `file` plus `reason` for each entry.
-   - Ensures each task has: `id`, `title`, `description`, `outputs`, `files_in_scope`, `style_anchors`, `estimated_duration_minutes`, `verification`, and any dependency references.
-   - Applies `global_constraints` consistent with `templates/planning-phase.prd-template.yaml` (affirmative constraints, task sizing ranges, forbidden/required patterns).
-   - Records inline validation and quality findings inside the same document (e.g. under `validation.reports` and `metadata.final_quality_report`).
+ 4. Generate a single `make-implementation-plan.prd.yaml` artifact (top-level sections: `metadata`, `global_constraints`, `tasks`, `instructions`, `validation`) that:
+    - Includes all schema-required top-level fields: `name`, `version`, `rules_file`, `task_sizing`, `tdd`, `model_preferences`, `outputs` (from `docs/ralphy-inputs.schema.json`).
+    - Includes project `description` and milestone data from the requirements file.
+    - Embeds `requirements_file` under `files_in_scope` for all relevant phases (at minimum planning-001 and planning-004).
+    - Populates `style_anchors` with 2–3 concrete anchors per task (prefer repository examples with code + tests + README) and records `file` plus `reason` for each entry.
+    - Ensures each task has: `id`, `title`, `description`, `outputs`, `files_in_scope`, `style_anchors`, `estimated_duration_minutes`, `verification`, and any dependency references.
+    - Applies `global_constraints` consistent with `templates/planning-phase.prd-template.yaml` (affirmative constraints, task sizing ranges, forbidden/required patterns).
+    - Records inline validation and quality findings inside the same document (e.g. under `validation.reports` and `metadata.final_quality_report`).
+ 4a. After generating the initial implementation plan, add a Ralphy YAML task to re-review the requirements document to ensure all requirements and acceptance criteria have been covered. This task should:
+    - Depend on the initial plan generation (planning-004)
+    - Include verification that all requirements and acceptance criteria from the requirements document are addressed
+    - Be placed before the final quality report generation (planning-010)
 5. For any missing but required inputs (style anchors, knowledge_db_path, schema references, or `reference_docs`), add the field with an `assumption:` note and set a sensible default. Mark those placeholders in the YAML with `assumption: true` and include a short justification inside the same document.
 6. Inline validation steps (performed by the agent) must summarize their findings within the `validation` section of the YAML rather than emitting external files.
 6.a. All temporary or sidecar artifacts produced by the generator (intermediate JSON reports, schema validation artifacts, generated test files or helper code, secrets-scan outputs, etc.) MUST be written to `temp_artifacts_dir` (organize by milestone) and MUST NOT be written into `output_dir` or `docs/implementation-plan/<milestone>/`.

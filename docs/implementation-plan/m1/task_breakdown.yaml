@@ -1,0 +1,196 @@
+# Task Breakdown for M1 - Repo Init & CLI scaffold
+# Generated from structured_analysis.json and patterns_report.json
+# Following single-responsibility principle with tasks sized 30-150 minutes
+
+milestone: m1
+milestone_title: "M2 — Repo Init & CLI scaffold (1-2 days)"
+generated_at: "2026-01-19T17:45:00Z"
+based_on:
+  - docs/implementation-plan/m1/structured_analysis.json
+  - docs/implementation-plan/m0/patterns_report.json
+
+tasks:
+  - id: "m1-001"
+    title: "Implement help command with core command listing"
+    description: "Implement help command that lists core commands (init, plan, validate, review, build) following Cobra framework patterns"
+    dependencies: []
+    estimated_duration_minutes: 45
+    context_tokens: 850
+    files_in_scope:
+      - cmd/prompt-stack/main.go
+      - cmd/prompt-stack/help.go
+      - cmd/prompt-stack/help_test.go
+    style_anchors:
+      - file: "examples/style-anchor/cmd/mytool/main.go"
+        reason: "Cobra command structure and help integration pattern"
+      - file: "docs/style-markers.md"
+        reason: "Single-command UX with subcommands pattern from Hugo"
+    acceptance_criteria:
+      - "prompt-stack --help lists init, plan, validate, review, build commands"
+      - "Help command exits with status 0"
+      - "Command follows Cobra framework conventions"
+
+  - id: "m1-002"
+    title: "Implement init command with config file creation"
+    description: "Implement init command that creates .prompt-stack/config.yaml with minimal defaults and .prompt-stack/knowledge.db SQLite database"
+    dependencies: ["m1-001"]
+    estimated_duration_minutes: 90
+    context_tokens: 1200
+    files_in_scope:
+      - cmd/prompt-stack/init.go
+      - cmd/prompt-stack/init_test.go
+      - internal/config/config.go
+      - internal/database/schema.go
+      - .prompt-stack/config.yaml.template
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Minimal public package pattern for config and database packages"
+      - file: "docs/style-markers.md"
+        reason: "Config-driven defaults pattern from fzf"
+      - file: "docs/requirements/project-structure.md"
+        reason: "Project layout specification for config file placement"
+    acceptance_criteria:
+      - "prompt-stack init creates .prompt-stack/config.yaml"
+      - "prompt-stack init creates .prompt-stack/knowledge.db"
+      - "Config file contains minimal defaults"
+      - "Database schema includes required tables for patterns storage"
+
+  - id: "m1-003"
+    title: "Implement project structure validation"
+    description: "Verify project structure matches docs/requirements/project-structure.md spec with validation logic"
+    dependencies: ["m1-001"]
+    estimated_duration_minutes: 60
+    context_tokens: 950
+    files_in_scope:
+      - internal/validation/project_structure.go
+      - internal/validation/project_structure_test.go
+      - cmd/prompt-stack/validate.go
+    style_anchors:
+      - file: "docs/requirements/project-structure.md"
+        reason: "Project layout specification for validation logic"
+      - file: "examples/style-anchor/pkg/greeter/greeter_test.go"
+        reason: "Table-driven test patterns for validation tests"
+    acceptance_criteria:
+      - "Validation logic checks directory structure matches spec"
+      - "Validation provides clear error messages for mismatches"
+      - "validate command can be run to check project structure"
+
+  - id: "m1-004"
+    title: "Implement core command stubs (plan, validate, review, build)"
+    description: "Implement plan, validate, review, build commands with placeholder Run functions that show help"
+    dependencies: ["m1-001"]
+    estimated_duration_minutes: 75
+    context_tokens: 1100
+    files_in_scope:
+      - cmd/prompt-stack/plan.go
+      - cmd/prompt-stack/validate.go
+      - cmd/prompt-stack/review.go
+      - cmd/prompt-stack/build.go
+      - cmd/prompt-stack/commands_test.go
+    style_anchors:
+      - file: "examples/style-anchor/cmd/mytool/main.go"
+        reason: "Cobra command structure for multiple subcommands"
+      - file: "docs/style-markers.md"
+        reason: "Single-command UX with subcommands pattern from Hugo"
+    acceptance_criteria:
+      - "All core commands exist (plan, validate, review, build)"
+      - "Each command has placeholder Run function"
+      - "Commands follow consistent naming pattern"
+      - "All command files compile without errors"
+
+  - id: "m1-005"
+    title: "Implement secrets scanning and validation"
+    description: "Implement secrets scanning to ensure no secrets are written to knowledge.db database"
+    dependencies: ["m1-002"]
+    estimated_duration_minutes: 60
+    context_tokens: 900
+    files_in_scope:
+      - internal/security/secrets_scanner.go
+      - internal/security/secrets_scanner_test.go
+      - internal/database/validation.go
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter.go"
+        reason: "Package structure for security utilities"
+      - file: "docs/style-markers.md"
+        reason: "Explicit support notes pattern from Kubernetes"
+    acceptance_criteria:
+      - "Secrets scanner detects common secret patterns"
+      - "Database validation prevents secrets insertion"
+      - "Zero secrets in knowledge.db after init command"
+
+  - id: "m1-006"
+    title: "Add integration tests for CLI workflow"
+    description: "Create integration tests that test the complete CLI workflow from init to validation"
+    dependencies: ["m1-002", "m1-003", "m1-004"]
+    estimated_duration_minutes: 90
+    context_tokens: 1300
+    files_in_scope:
+      - tests/integration/cli_workflow_test.go
+      - tests/integration/test_helpers.go
+      - Makefile
+    style_anchors:
+      - file: "examples/style-anchor/pkg/greeter/greeter_test.go"
+        reason: "Test structure and table-driven patterns"
+      - file: "docs/style-markers.md"
+        reason: "Makefile-first developer workflow pattern from Kubernetes"
+    acceptance_criteria:
+      - "Integration tests cover init -> validate -> plan workflow"
+      - "Tests use temporary directories for isolation"
+      - "make test runs integration tests"
+      - "Tests verify acceptance criteria AC-1, AC-2, AC-3"
+
+  - id: "m1-007"
+    title: "Update documentation and README"
+    description: "Update project documentation with CLI usage examples and implementation details"
+    dependencies: ["m1-001", "m1-002", "m1-004"]
+    estimated_duration_minutes: 45
+    context_tokens: 800
+    files_in_scope:
+      - README.md
+      - docs/commands.md
+      - CONTRIBUTING.md
+    style_anchors:
+      - file: "docs/style-markers.md"
+        reason: "UX-first README pattern from fzf with concise highlights and examples"
+      - file: "docs/style-markers.md"
+        reason: "Friendly developer onboarding pattern from Hugo"
+    acceptance_criteria:
+      - "README includes CLI usage examples for all commands"
+      - "Documentation matches implemented functionality"
+      - "Contributing guidelines include development setup"
+
+dependency_graph:
+  level_1: ["m1-001"]
+  level_2: ["m1-002", "m1-003", "m1-004"]
+  level_3: ["m1-005"]
+  level_4: ["m1-006"]
+  level_5: ["m1-007"]
+
+parallel_execution_opportunities:
+  - tasks: ["m1-002", "m1-003", "m1-004"]
+    condition: "After m1-001 completes, these three tasks can run in parallel"
+  - tasks: ["m1-005", "m1-006"]
+    condition: "After m1-002 completes, these tasks can run in parallel"
+
+validation_summary:
+  total_tasks: 7
+  task_sizing_compliance: true
+  task_sizing_details:
+    min_minutes: 45
+    max_minutes: 90
+    avg_minutes: 66.4
+  single_responsibility_compliance: true
+  single_responsibility_details:
+    tasks_with_single_focus: 7/7
+  style_anchors_compliance: true
+  style_anchors_details:
+    min_anchors_per_task: 2
+    max_anchors_per_task: 3
+    avg_anchors_per_task: 2.29
+  dependencies_acyclic: true
+  dependencies_details:
+    dependency_levels: 5
+  context_token_limits:
+    min_tokens: 800
+    max_tokens: 1300
+    avg_tokens: 1014
