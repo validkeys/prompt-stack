@@ -1,0 +1,20 @@
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - staticcheck
+    - revive
+    - govet
+    - gofmt
+    - goimports
+    - errcheck
+
+linters-settings:
+  revive:
+    ignore-generated-header: true
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0

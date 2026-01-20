@@ -1,0 +1,196 @@
+name: prompt-stack-init-refactor
+version: "0.1.0"
+description: "Refactor 'init' command to be non-interactive by default and expose explicit interactive path via a dedicated 'requirements' command. Includes TDD-driven tasks, acceptance criteria, and small-scope commits per best-practices."
+rules_file: docs/opencode-rules.md
+task_sizing:
+  min_minutes: 30
+  max_minutes: 150
+  max_files: 5
+tdd:
+  required: true
+  test_command: go test ./...
+  failure_instruction: |
+    If tests fail, return failing output to the implementer and update the implementation so all tests pass. Do not modify tests unless the change is explicitly to update expected behavior and documented in the task rationale.
+model_preferences:
+  primary: opencode
+  review_model: gpt-4
+  strategies:
+    - surgical-minimal-diff
+    - tests-first
+outputs:
+  allowed_file_edits:
+    - cmd/**
+    - tests/**
+    - docs/**
+    - internal/**
+  disallowed_file_edits:
+    - scripts/**
+    - .github/**
+  commit_policy:
+    prefix_rules:
+      - feat:
+      - fix:
+      - test:
+
+style_anchors:
+  - cmd/prompt-stack/init.go
+  - cmd/prompt-stack/requirements.go
+  - tests/integration/cli_workflow_test.go
+  - docs/commands.md
+
+tasks:
+  - id: M1-01
+    title: "Make init non-interactive by default (basic setup only)"
+    estimate_minutes: 60
+    files:
+      - cmd/prompt-stack/init.go
+    instructions: |
+      Change the init command so that by default it only performs repository setup:
+      - create './.prompt-stack/config.yaml' with minimal defaults
+      - initialize './.prompt-stack/knowledge.db' (schema present)
+      - print concise next-step instructions (for example: Run 'prompt-stack requirements' to start interactive interview)
+      Do not run any interactive interview steps unless the --interactive flag is supplied.
+      
+      Commenting requirement: For every Go file modified as part of this task, add enterprise-grade documentation comments following Go standards: include a file-level package comment, package import commentary if needed, and doc comments for all exported types, functions, constants, and variables. Each comment should be a full sentence that begins with the identifier name and explains intent, behavior, and important invariants.
+    style_anchors:
+      - cmd/prompt-stack/init.go
+      - docs/commands.md
+    tdd:
+      required: true
+      test_command: go test ./...
+      failure_instruction: Run tests locally, inspect failing lines, and fix implementation without changing tests unless updating expected behavior with documented rationale.
+      acceptance_criteria:
+      - Unit test TestInitCreatesConfigAndDB added to cmd/prompt-stack/init_test.go that runs init with no flags and asserts:
+        - .prompt-stack/config.yaml exists and contains minimal defaults
+        - .prompt-stack/knowledge.db exists and contains core tables
+        - stdout contains a non-interactive summary and next-step hint
+        - All modified Go files include package-level comment and doc comments for exported identifiers; linting for documentation (golangci-lint or equivalent) reports no documentation warnings for changed files.
+        - golangci-lint run ./... returns exit 0
+        - All tests pass: go test ./... returns exit 0
+        - tests/integration/cli_workflow_test.go updated if it relied on interactive init; integration suite passes.
+
+  - id: M1-02
+    title: "Add explicit --interactive flag to init (opt-in behavior)"
+    estimate_minutes: 45
+    files:
+      - cmd/prompt-stack/init.go
+    instructions: |
+      Add a boolean flag --interactive to init (default false). Behavior:
+      - if --interactive provided, run the interactive interview flow or delegate to requirements command logic
+      - forbid passing both --interactive and --no-interactive simultaneously (return an error)
+      Prefer delegating to the existing requirements command logic (avoid duplicating interview code).
+
+      Commenting requirement: All touched Go files must include enterprise-grade comments as described above: package comment, and doc comments for exported identifiers. Ensure comments explain the why and any invariants.
+    style_anchors:
+      - cmd/prompt-stack/requirements.go
+      - cmd/prompt-stack/init.go
+    tdd:
+      required: true
+      test_command: go test ./...
+      acceptance_criteria:
+        - Unit test TestInitInteractiveFlag added to cmd/prompt-stack/init_test.go that runs init --interactive (in a test harness) and asserts interactive flow runs (or delegation occurs) and transcript files are produced where expected.
+        - Passing both --interactive and --no-interactive returns a non-zero error and appropriate message; covered by unit test TestInitFlagConflict.
+        - All modified Go files include package-level comment and doc comments for exported identifiers; documentation linting reports no issues for changed files.
+        - golangci-lint run ./... returns exit 0
+        - All tests pass.
+
+  - id: M1-03
+    title: "Delegate interactive behavior to requirements command (avoid duplication)"
+    estimate_minutes: 45
+    files:
+      - cmd/prompt-stack/requirements.go
+      - cmd/prompt-stack/init.go
+    instructions: |
+      Refactor so that init --interactive either calls into the requirements command handler or invokes a shared function that contains the interview logic. Ensure single source of truth for the interview flow and transcript saving.
+
+      Commenting requirement: Introduce or update comments for any shared function or package-level API to explain intended usage, concurrency considerations, side effects, and error behavior. Ensure exported helpers have godoc comments.
+    style_anchors:
+      - cmd/prompt-stack/requirements.go
+    tdd:
+      required: true
+      test_command: go test ./...
+      acceptance_criteria:
+        - Code has a shared function (for example, RunRequirementsInterview(outputDir string) error) used by requirements and init --interactive.
+        - Unit tests confirm requirements and init --interactive both produce identical transcripts and outputs for a mocked interview flow.
+        - No duplicated interview logic remains in init.go (small lint/comparison test can assert file does not contain interview code duplicate blocks).
+        - All shared/public functions and types introduced have godoc-style comments explaining usage, invariants, and error cases.
+        - golangci-lint run ./... returns exit 0
+        - All tests pass.
+
+  - id: M1-04
+    title: "Update CLI help text and docs to reflect non-interactive default"
+    estimate_minutes: 45
+    files:
+      - cmd/prompt-stack/help.go
+      - docs/commands.md
+      - README.md
+      - docs/architecture.md
+    instructions: |
+      - Update the init command Short and Long descriptions to state that init is non-interactive by default and advise prompt-stack requirements to run interactive interviews.
+      - Update docs/commands.md, README.md, and docs/architecture.md to reflect the new behavior and examples.
+      - Keep examples showing ./dist/prompt-stack init --interactive if desired.
+
+      Commenting requirement: Update comments in help.go and any code-level help strings to be clear, concise, and maintain Go documentation standards. Where examples are updated in Go files, include comments explaining examples' intent.
+    style_anchors:
+      - docs/commands.md
+    tdd:
+      required: true
+      test_command: go test ./...
+      acceptance_criteria:
+        - Unit test TestHelpOutput (cmd/prompt-stack/help_test.go) updated to look for updated phrasing; asserts help includes requirements usage hint.
+        - All modified Go files that contain help text or exported help functions include appropriate doc comments.
+        - golangci-lint run ./... returns exit 0
+        - Documentation examples updated and integration documentation tests (if any) pass.
+
+  - id: M1-05
+    title: "Update unit & integration tests to match new init behavior"
+    estimate_minutes: 60
+    files:
+      - tests/integration/cli_workflow_test.go
+      - cmd/prompt-stack/requirements_test.go
+      - cmd/prompt-stack/init_test.go (new)
+    instructions: |
+      Identify tests that assumed init was interactive by default and update them to:
+      - call prompt-stack init --interactive where interactivity is required, or
+      - assert non-interactive behavior for plain prompt-stack init (prefer this where appropriate).
+      Ensure integration tests still verify that init creates expected files and requirements remains the interactive entrypoint.
+
+      Commenting requirement: Tests and helper files must include file-level comments explaining the test purpose and any non-obvious harness behavior. Exported test helpers should have doc comments.
+    style_anchors:
+      - tests/integration/cli_workflow_test.go
+    tdd:
+      required: true
+      test_command: go test ./...
+      acceptance_criteria:
+        - Integration tests updated such that RunCommand ... init without flags does not hang (no prompt) and returns success after creating .prompt-stack artifacts.
+        - Tests that need interactive behavior call --interactive explicitly.
+        - golangci-lint run ./... returns exit 0
+        - go test ./... passes in CI and locally.
+        - All updated test files and helpers include file-level comments and doc comments for exported helpers.
+
+  - id: M1-06
+    title: "Update docs and milestone notes to reflect change"
+    estimate_minutes: 30
+    files:
+      - docs/requirements/milestones.md
+      - docs/implementation-plan/m1/implementation-plan.yaml
+    instructions: |
+      Update any docs that currently describe init as interactive by default (milestones, READMEs, architecture docs). Add a short changelog entry in the m1 implementation plan describing the UX change and rationale.
+
+      Commenting requirement: When updating implementation-plan and milestone docs that are code-adjacent, add brief header comments in YAML describing why the change was made and link to the related test IDs. For any Go files touched during documentation updates, ensure they include proper doc comments.
+    style_anchors:
+      - docs/requirements/milestones.md
+    tdd:
+      required: true
+      test_command: echo "docs updated"
+      acceptance_criteria:
+        - Docs updated to say prompt-stack init is non-interactive by default and prompt-stack requirements is the interview command.
+        - Link or example for init --interactive added if desired.
+        - Documentation files and any changed Go files include appropriate header comments explaining the change and rationale.
+
+assumptions:
+  - The repository already has a working requirements command implemented in cmd/prompt-stack/requirements.go and a requirements interview flow.
+  - Database schema initialization routines are present and can be invoked by init to create knowledge.db.
+
+notes: |
+  This plan follows docs/best-practices.md — tasks are sized 30–150 minutes, include 2–3 style anchors each, and require TDD with acceptance criteria. Tests must be green before merging. Mark any inferred behavior with assumption: true in commit messages when applicable.

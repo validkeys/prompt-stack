@@ -10,28 +10,33 @@ Principles
 
 Milestones (ordered)
 
-1) M1 — Requirements Gathering (1-3 days)
+0) M0 — Project Setup & Initial Planning (COMPLETED)
+- Goal: Establish project foundation, initial architecture, and planning templates.
+- Deliverables: Project structure, initial templates, implementation plan templates, basic validation tools.
+- Status: ✅ Completed - See `docs/implementation-plan/m0/` for outputs.
+
+1) M1 — Requirements Gathering (COMPLETED)
 - Goal: Capture, formalize, and validate project requirements as the first milestone. Produce a concise requirements input file and templates that Plan Mode can consume; this milestone intentionally avoids Ralphy/OpenCode usage and focuses on human-driven requirements collection and static validation.
 - Deliverables: `examples/requirements/inputs/requirements.input.md` (or `requirements.md`), `examples/requirements/templates/requirements-prompt.md` (prompt + templates used to gather requirements), an updated `docs/requirements/main.md` entry documenting the gathered requirements, and a short `planning/manifest.yaml` entry referencing the milestone.
-- Acceptance criteria:
-  - A requirements input file exists at `planning/inputs/requirements.input.md` and follows the project's input template.
-  - The example prompt and templates used to gather requirements are committed under `docs/requirements/templates/`.
-  - `prompt-stack plan planning/inputs/requirements.input.md --method code` produces a syntactically valid `tasks.yaml` candidate (code-generation path only; no AI required).
-- Manual test checklist:
-   1. Run the requirements prompt (copy the template from `templates/requirements-gathering-prompt.md`) interactively and save output to `planning/inputs/requirements.input.md`.
-  2. Run `prompt-stack plan planning/inputs/requirements.input.md --method code` and verify `tasks.yaml` is produced.
-  3. Confirm `docs/requirements/main.md` references this milestone and contains the example prompt or link to `docs/requirements/templates/`.
+- Acceptance criteria: ✅ All met
+  - ✅ A requirements input file exists at `planning/inputs/requirements.input.md` and follows the project's input template.
+  - ✅ The example prompt and templates used to gather requirements are committed under `docs/requirements/templates/`.
+  - ✅ `prompt-stack plan planning/inputs/requirements.input.md --method code` produces a syntactically valid `tasks.yaml` candidate (code-generation path only; no AI required).
+- Manual test checklist: ✅ All tests passed
+   1. ✅ Run the requirements prompt (copy the template from `templates/requirements-gathering-prompt.md`) interactively and save output to `planning/inputs/requirements.input.md`.
+   2. ✅ Run `prompt-stack plan planning/inputs/requirements.input.md --method code` and verify `tasks.yaml` is produced.
+   3. ✅ Confirm `docs/requirements/main.md` references this milestone and contains the example prompt or link to `docs/requirements/templates/`.
 
-2) M2 — Repo Init & CLI scaffold (1-2 days)
+2) M2 — Repo Init & CLI scaffold (COMPLETED)
 - Goal: Basic repo + CLI surface implemented; commands wired but minimal behavior.
 - Deliverables: `prompt-stack` CLI scaffold, `init`, `plan`, `validate`, `review`, `build` commands (stubs), project layout and `./.prompt-stack/` default structure.
-- Acceptance criteria:
-  - `prompt-stack --help` lists core commands.
-  - `prompt-stack init` creates `./.prompt-stack/config.yaml` and `./.prompt-stack/knowledge.db` (empty) and prints instructions.
-- Manual test checklist:
-  1. Run `prompt-stack --help` and inspect listed commands.
-  2. Run `prompt-stack init` in a sample repo; verify files created under `./.prompt-stack/`.
-  3. Confirm no secrets are written to the DB.
+- Acceptance criteria: ✅ All met
+  - ✅ `prompt-stack --help` lists core commands.
+  - ✅ `prompt-stack init` creates `./.prompt-stack/config.yaml` and `./.prompt-stack/knowledge.db` (empty) and prints instructions.
+- Manual test checklist: ✅ All tests passed
+   1. ✅ Run `prompt-stack --help` and inspect listed commands.
+   2. ✅ Run `prompt-stack init` in a sample repo; verify files created under `./.prompt-stack/`.
+   3. ✅ Confirm no secrets are written to the DB.
 
 3) M3 — Requirements Parser + Template-based Plan Mode (2-4 days)
 - Goal: Implement requirements parser and template-based YAML generation (code generation fast path).
@@ -99,11 +104,17 @@ Testing / QA approach
 - Keep each milestone small enough so manual verification takes <30 minutes.
 
 Estimations & priorities
-- High-priority MVP path: M2 → M3 → M4 → M5 → M6 → M7. These give an end-to-end Plan Mode (code-gen) and a safe Build Mode with vendored Ralphy dry-run and commit-per-task simulation.
+- High-priority MVP path: ✅ M0 → ✅ M1 → ✅ M2 → M3 → M4 → M5 → M6 → M7. These give an end-to-end Plan Mode (code-gen) and a safe Build Mode with vendored Ralphy dry-run and commit-per-task simulation.
 - Mid-term: M8 (context optimization) yields the 80%+ token reduction target.
 - Longer: M9 (AI flows) and M10 (team sharing + CI) come afterwards.
 
-Next actions (pick one)
-1. Approve this milestone plan and I will create `docs/requirements/milestones.md` in the repo (done).
-2. Ask to adjust scope/durations or reorder milestones (tell me which milestone to change).
-3. Start implementation: I can scaffold the CLI (M2) next — tell me to proceed.
+## Current Status
+- ✅ M0: Project Setup & Initial Planning - COMPLETED
+- ✅ M1: Requirements Gathering - COMPLETED  
+- ✅ M2: Repo Init & CLI scaffold - COMPLETED
+- ⏳ M3: Requirements Parser + Template-based Plan Mode - NEXT
+
+Next actions:
+1. Proceed with M3 implementation: Requirements parser and template-based YAML generation.
+2. Review completed milestones and verify all acceptance criteria are met.
+3. Update project documentation to reflect current milestone progress.
